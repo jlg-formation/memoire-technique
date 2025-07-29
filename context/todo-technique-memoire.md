@@ -121,4 +121,3 @@
 - [ ] Vérifier la sauvegarde locale
 - [ ] Tester les exports PDF, DOCX, ZIP
 - [ ] Vérifier la génération IA sur un exemple complet
-

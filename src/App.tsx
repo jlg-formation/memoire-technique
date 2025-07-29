@@ -5,7 +5,11 @@ function App() {
     <Routes>
       <Route
         path="/"
-        element={<div>Bienvenue dans l’outil de mémoire technique</div>}
+        element={
+          <div className="font-bold text-blue-500">
+            Bienvenue dans l’outil de mémoire technique
+          </div>
+        }
       />
     </Routes>
   );

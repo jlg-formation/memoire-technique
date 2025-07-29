@@ -3,12 +3,14 @@
 ## 1. Architecture générale
 
 ### Type d’application
+
 - **Frontend only SPA** (Single Page Application)
 - Hébergée sur **GitHub Pages**
 - **Pas de backend**
 - **Stockage local avec `localForage`**
 
 ### Stack technique
+
 - **Vite**
 - **React**
 - **Bun** (pour le développement / scripts)
@@ -37,42 +39,50 @@
 ## 3. Modules principaux
 
 ### 📄 Projets
+
 - Création/édition de projets via formulaire
 - Sauvegarde via `localForage` (clé = ID projet)
 - Export `.json` ou `.zip` (via JSZip)
 
 ### 👥 Intervenants
+
 - Saisie structurée : nom, rôle, diplôme, missions
 - Stockage dans le projet + snippets favoris
 
 ### 🧰 Moyens matériels
+
 - Liste simple (text input)
 - Possibilité d’enregistrer comme snippet
 
 ### 📊 Planning
+
 - Génération automatique par l’IA
 - Paramètres : type de bâtiment, date de début
 - Sortie texte + tableau (markdown ou HTML)
 
 ### 📎 Pièces marché (upload)
+
 - PDF via `pdf.js`
 - DOCX via `mammoth.js`
 - Extraction automatique du texte
 - Résumé et checklist générés par l’IA
 
 ### 🧠 Génération IA
+
 - Appels à l’API OpenAI (`gpt-4o`)
 - Construction du contexte : projet + intervenants + pièces
 - Ton neutre et professionnel
 - Pas de réécriture contextuelle à la volée
 
 ### 📝 Éditeur Markdown
+
 - Composant `CodeMirror` + `react-markdown`
 - Édition manuelle complète
 - Aperçu en direct
 - Pas d’éditeur WYSIWYG ni de suggestions IA
 
 ### 📦 Export
+
 - Export vers :
   - `.pdf` (Markdown → HTML → `jsPDF`)
   - `.docx` (`docx.js`)
@@ -121,17 +131,17 @@
 
 ## 8. Bibliothèques utilisées (principales)
 
-| Fonction                  | Lib choisie                |
-|---------------------------|-----------------------------|
-| Build                     | Vite + Bun                 |
-| UI                        | React + Tailwind CSS v4     |
-| Routage                   | React Router               |
-| État                      | Zustand                    |
-| Persistance               | localForage                |
-| PDF parsing               | pdf.js                     |
-| DOCX parsing              | mammoth.js                 |
-| PDF export                | jsPDF                      |
-| DOCX export               | docx                       |
-| IA                        | OpenAI API (GPT-4o)        |
-| Markdown                 | CodeMirror + react-markdown |
-| Compression ZIP           | JSZip + FileSaver.js        |
+| Fonction        | Lib choisie                 |
+| --------------- | --------------------------- |
+| Build           | Vite + Bun                  |
+| UI              | React + Tailwind CSS v4     |
+| Routage         | React Router                |
+| État            | Zustand                     |
+| Persistance     | localForage                 |
+| PDF parsing     | pdf.js                      |
+| DOCX parsing    | mammoth.js                  |
+| PDF export      | jsPDF                       |
+| DOCX export     | docx                        |
+| IA              | OpenAI API (GPT-4o)         |
+| Markdown        | CodeMirror + react-markdown |
+| Compression ZIP | JSZip + FileSaver.js        |
