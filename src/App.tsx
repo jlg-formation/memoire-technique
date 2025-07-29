@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router";
+import Projects from "./pages/Projects";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           </div>
         }
       />
+      <Route path="/projects" element={<Projects />} />
     </Routes>
   );
 }
