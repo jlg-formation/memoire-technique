@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
-import { extractPdfText } from "../lib/pdf";
-import { summarize } from "../lib/openai";
+import { pdfToText, summarize } from "../lib/openai";
+import { base64ToFile, fileToBase64 } from "../lib/files";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 
@@ -29,11 +29,16 @@ function Groupement() {
     file?: File,
   ): Promise<void> => {
     if (!file) return;
-    const text = await extractPdfText(file);
+    const b64 = await fileToBase64(file);
     updateCompanies(
       companies.map((c) =>
         c.id === id
-          ? { ...c, presentationText: text, presentationSummary: undefined }
+          ? {
+              ...c,
+              presentationFile: b64,
+              presentationText: undefined,
+              presentationSummary: undefined,
+            }
           : c,
       ),
     );
@@ -45,7 +50,7 @@ function Groupement() {
     file?: File,
   ): Promise<void> => {
     if (!file) return;
-    const text = await extractPdfText(file);
+    const b64 = await fileToBase64(file);
     updateCompanies(
       companies.map((c) =>
         c.id === companyId
@@ -53,7 +58,12 @@ function Groupement() {
               ...c,
               mobilizedPeople: (c.mobilizedPeople ?? []).map((p) =>
                 p.id === personId
-                  ? { ...p, cvText: text, cvSummary: undefined }
+                  ? {
+                      ...p,
+                      cvFile: b64,
+                      cvText: undefined,
+                      cvSummary: undefined,
+                    }
                   : p,
               ),
             }
@@ -68,21 +78,25 @@ function Groupement() {
   ): Promise<void> => {
     const company = companies.find((c) => c.id === companyId);
     const person = company?.mobilizedPeople?.find((p) => p.id === personId);
-    if (!person?.cvText) return;
+    if (!person?.cvFile) return;
     const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
     if (!key) {
       alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
       return;
     }
     try {
-      const summary = await summarize(person.cvText, summaryWords, key);
+      const file = base64ToFile(person.cvFile, "cv.pdf", "application/pdf");
+      const text = await pdfToText(file, key);
+      const summary = await summarize(text, summaryWords, key);
       updateCompanies(
         companies.map((c) =>
           c.id === companyId
             ? {
                 ...c,
                 mobilizedPeople: (c.mobilizedPeople ?? []).map((p) =>
-                  p.id === personId ? { ...p, cvSummary: summary } : p,
+                  p.id === personId
+                    ? { ...p, cvText: text, cvSummary: summary }
+                    : p,
                 ),
               }
             : c,
