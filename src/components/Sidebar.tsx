@@ -21,6 +21,14 @@ function Sidebar() {
       >
         Projets
       </NavLink>
+      <NavLink
+        to="/groupement"
+        className={({ isActive }) =>
+          `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+        }
+      >
+        Groupement
+      </NavLink>
     </nav>
   );
 }

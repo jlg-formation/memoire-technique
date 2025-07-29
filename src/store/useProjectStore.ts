@@ -12,6 +12,7 @@ type ProjectStore = {
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   setProject: (project: Project) => void;
+  updateCurrentProject: (data: Partial<Project>) => void;
 };
 
 export const useProjectStore = create<ProjectStore>((set) => {
@@ -34,5 +35,22 @@ export const useProjectStore = create<ProjectStore>((set) => {
       void removeProject(id);
     },
     setProject: (project) => set({ currentProject: project }),
+    updateCurrentProject: (data) => {
+      set((state) => {
+        if (!state.currentProject) return state;
+        const updated = {
+          ...state.currentProject,
+          ...data,
+          updatedAt: new Date().toISOString(),
+        };
+        void persistProject(updated);
+        return {
+          projects: state.projects.map((p) =>
+            p.id === updated.id ? updated : p,
+          ),
+          currentProject: updated,
+        };
+      });
+    },
   };
 });
