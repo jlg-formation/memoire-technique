@@ -109,7 +109,7 @@ Le projet sera **déployé sur GitHub Pages** et utilisera le **stockage local d
 ## Contraintes techniques
 
 - Application **frontend-only** (type Vite + Vue/React + Tailwind)
-- API OpenAI en mode `dangerouslyAllowBrowser: true`
+- API OpenAI via le package `openai` en mode `dangerouslyAllowBrowser: true`
 - Hébergement statique (GitHub Pages)
 - Stockage uniquement en localStorage (aucune donnée sur un serveur)
 - Code sous **licence libre (ex. MIT ou GPL)**
