@@ -19,7 +19,7 @@
 - **TypeScript**
 - **Tailwind CSS v4**
 - **React Router**
-- **OpenAI API** (via `dangerouslyAllowBrowser: true`)
+- **OpenAI SDK** (`openai`, `dangerouslyAllowBrowser: true`)
 
 ---
 
@@ -142,6 +142,6 @@
 | DOCX parsing    | mammoth.js                  |
 | PDF export      | jsPDF                       |
 | DOCX export     | docx                        |
-| IA              | OpenAI API (GPT-4o)         |
+| IA              | OpenAI SDK (GPT-4o)         |
 | Markdown        | CodeMirror + react-markdown |
 | Compression ZIP | JSZip + FileSaver.js        |
