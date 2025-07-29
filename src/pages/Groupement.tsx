@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { GroupMember } from "../types/project";
+import { extractPdfText } from "../lib/pdf";
+import { summarize } from "../lib/openai";
 
 function Groupement() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   const [name, setName] = useState("");
+  const [summaryWords, setSummaryWords] = useState(100);
 
   if (!currentProject) {
     return (
@@ -13,6 +16,43 @@ function Groupement() {
   }
 
   const members = currentProject.groupMembers ?? [];
+
+  const updateMembers = (updated: GroupMember[]) => {
+    updateCurrentProject({ groupMembers: updated });
+  };
+
+  const handleRateChange = (id: string, value: number) => {
+    updateMembers(
+      members.map((m) => (m.id === id ? { ...m, dailyRate: value } : m)),
+    );
+  };
+
+  const handleFileChange = async (id: string, file?: File) => {
+    if (!file) return;
+    const text = await extractPdfText(file);
+    updateMembers(
+      members.map((m) =>
+        m.id === id ? { ...m, cvText: text, cvSummary: undefined } : m,
+      ),
+    );
+  };
+
+  const handleSummarize = async (id: string) => {
+    const member = members.find((m) => m.id === id);
+    if (!member?.cvText) return;
+    try {
+      const summary = await summarize(
+        member.cvText,
+        summaryWords,
+        import.meta.env.VITE_OPENAI_KEY,
+      );
+      updateMembers(
+        members.map((m) => (m.id === id ? { ...m, cvSummary: summary } : m)),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleAdd = () => {
     if (!name.trim()) return;
@@ -70,25 +110,69 @@ function Groupement() {
             Ajouter
           </button>
         </div>
+        <div className="flex items-center space-x-2">
+          <label className="font-semibold">Résumé en</label>
+          <input
+            type="number"
+            className="w-20 border p-1"
+            value={summaryWords}
+            onChange={(e) => setSummaryWords(Number(e.target.value))}
+          />
+          <span>mots</span>
+        </div>
         <ul className="space-y-1">
           {members.map((member) => (
-            <li key={member.id} className="flex items-center justify-between">
-              <label className="flex items-center space-x-2">
+            <li key={member.id} className="space-y-2 rounded border p-2">
+              <div className="flex items-center justify-between">
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="mandataire"
+                    checked={currentProject.mandataireId === member.id}
+                    onChange={() => handleMandataire(member.id)}
+                  />
+                  <span>{member.name}</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(member.id)}
+                  className="text-red-500"
+                >
+                  Supprimer
+                </button>
+              </div>
+              <div className="flex space-x-2">
                 <input
-                  type="radio"
-                  name="mandataire"
-                  checked={currentProject.mandataireId === member.id}
-                  onChange={() => handleMandataire(member.id)}
+                  type="number"
+                  className="w-24 border p-1"
+                  value={member.dailyRate ?? ""}
+                  onChange={(e) =>
+                    handleRateChange(member.id, Number(e.target.value))
+                  }
+                  placeholder="TJM €"
                 />
-                <span>{member.name}</span>
-              </label>
-              <button
-                type="button"
-                onClick={() => handleDelete(member.id)}
-                className="text-red-500"
-              >
-                Supprimer
-              </button>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) =>
+                    handleFileChange(member.id, e.target.files?.[0])
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => handleSummarize(member.id)}
+                  className="bg-green-500 px-2 text-white"
+                >
+                  Résumer
+                </button>
+              </div>
+              {member.cvSummary && (
+                <textarea
+                  className="mt-2 w-full border p-2"
+                  readOnly
+                  value={member.cvSummary}
+                />
+              )}
             </li>
           ))}
         </ul>

@@ -1,6 +1,9 @@
 export interface GroupMember {
   id: string;
   name: string;
+  dailyRate?: number;
+  cvText?: string;
+  cvSummary?: string;
 }
 
 export interface Project {
