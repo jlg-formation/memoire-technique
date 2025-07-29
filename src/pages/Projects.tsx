@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
-import { importProjectJSON } from "../lib/export";
+import {
+  importProjectJSON,
+  importProjectZIP,
+  exportProjectJSON,
+  exportProjectZIP,
+  downloadBlob,
+} from "../lib/export";
+import type { Project } from "../types/project";
 
 function Projects() {
   const { projects, currentProject, addProject, deleteProject, setProject } =
@@ -30,10 +37,26 @@ function Projects() {
   ): Promise<void> => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const json = await file.text();
-    const project = importProjectJSON(json);
+    let project: Project;
+    if (file.name.endsWith(".zip")) {
+      project = await importProjectZIP(file);
+    } else {
+      const json = await file.text();
+      project = importProjectJSON(json);
+    }
     addProject(project);
     e.target.value = "";
+  };
+
+  const handleExportJSON = (project: Project): void => {
+    const json = exportProjectJSON(project);
+    const blob = new Blob([json], { type: "application/json" });
+    downloadBlob(blob, `${project.title}.json`);
+  };
+
+  const handleExportZIP = async (project: Project): Promise<void> => {
+    const blob = await exportProjectZIP(project);
+    downloadBlob(blob, `${project.title}.zip`);
   };
 
   return (
@@ -64,33 +87,51 @@ function Projects() {
         <button type="submit" className="bg-blue-500 px-4 py-2 text-white">
           Ajouter
         </button>
-        <input
-          type="file"
-          accept="application/json"
-          onChange={handleImport}
-          className="w-full"
-        />
       </form>
+      <input
+        type="file"
+        accept=".json,.zip"
+        onChange={handleImport}
+        className="w-full"
+      />
       <ul className="space-y-2">
         {projects.map((project) => (
-          <li key={project.id} className="flex justify-between border p-2">
-            <button
-              type="button"
-              onClick={() => setProject(project)}
-              className="text-left"
-            >
-              <div className="font-semibold">{project.title}</div>
-              <div className="text-sm text-gray-600">
-                {project.startDate} – {project.endDate}
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => deleteProject(project.id)}
-              className="text-red-500"
-            >
-              Supprimer
-            </button>
+          <li key={project.id} className="space-y-1 border p-2">
+            <div className="flex justify-between">
+              <button
+                type="button"
+                onClick={() => setProject(project)}
+                className="text-left"
+              >
+                <div className="font-semibold">{project.title}</div>
+                <div className="text-sm text-gray-600">
+                  {project.startDate} – {project.endDate}
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => deleteProject(project.id)}
+                className="text-red-500"
+              >
+                Supprimer
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => handleExportJSON(project)}
+                className="rounded bg-green-500 px-2 py-1 text-white"
+              >
+                Export JSON
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExportZIP(project)}
+                className="rounded bg-green-500 px-2 py-1 text-white"
+              >
+                Export ZIP
+              </button>
+            </div>
           </li>
         ))}
       </ul>
