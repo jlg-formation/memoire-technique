@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
-import type { GroupMember } from "../types/project";
+import type { ParticipatingCompany } from "../types/project";
 import { extractPdfText } from "../lib/pdf";
 import { summarize } from "../lib/openai";
+import MobilizedPeopleList from "../components/MobilizedPeopleList";
 
 function Groupement() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -15,55 +16,92 @@ function Groupement() {
     );
   }
 
-  const members = currentProject.groupMembers ?? [];
+  const companies = currentProject.participatingCompanies ?? [];
 
-  const updateMembers = (updated: GroupMember[]) => {
-    updateCurrentProject({ groupMembers: updated });
+  const updateCompanies = (updated: ParticipatingCompany[]) => {
+    updateCurrentProject({ participatingCompanies: updated });
   };
 
-  const handleRateChange = (id: string, value: number) => {
-    updateMembers(
-      members.map((m) => (m.id === id ? { ...m, dailyRate: value } : m)),
-    );
-  };
-
-  const handleFileChange = async (id: string, file?: File) => {
+  const handlePresentationChange = async (
+    id: string,
+    file?: File,
+  ): Promise<void> => {
     if (!file) return;
     const text = await extractPdfText(file);
-    updateMembers(
-      members.map((m) =>
-        m.id === id ? { ...m, cvText: text, cvSummary: undefined } : m,
+    updateCompanies(
+      companies.map((c) =>
+        c.id === id
+          ? { ...c, presentationText: text, presentationSummary: undefined }
+          : c,
       ),
     );
   };
 
-  const handleSummarize = async (id: string) => {
-    const member = members.find((m) => m.id === id);
-    if (!member?.cvText) return;
+  const handlePersonFileChange = async (
+    companyId: string,
+    personId: string,
+    file?: File,
+  ): Promise<void> => {
+    if (!file) return;
+    const text = await extractPdfText(file);
+    updateCompanies(
+      companies.map((c) =>
+        c.id === companyId
+          ? {
+              ...c,
+              mobilizedPeople: (c.mobilizedPeople ?? []).map((p) =>
+                p.id === personId
+                  ? { ...p, cvText: text, cvSummary: undefined }
+                  : p,
+              ),
+            }
+          : c,
+      ),
+    );
+  };
+
+  const handleSummarizePerson = async (
+    companyId: string,
+    personId: string,
+  ): Promise<void> => {
+    const company = companies.find((c) => c.id === companyId);
+    const person = company?.mobilizedPeople?.find((p) => p.id === personId);
+    if (!person?.cvText) return;
     try {
       const summary = await summarize(
-        member.cvText,
+        person.cvText,
         summaryWords,
         import.meta.env.VITE_OPENAI_KEY,
       );
-      updateMembers(
-        members.map((m) => (m.id === id ? { ...m, cvSummary: summary } : m)),
+      updateCompanies(
+        companies.map((c) =>
+          c.id === companyId
+            ? {
+                ...c,
+                mobilizedPeople: (c.mobilizedPeople ?? []).map((p) =>
+                  p.id === personId ? { ...p, cvSummary: summary } : p,
+                ),
+              }
+            : c,
+        ),
       );
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleAdd = () => {
+  const handleAddCompany = () => {
     if (!name.trim()) return;
-    const newMember: GroupMember = { id: crypto.randomUUID(), name };
-    updateCurrentProject({ groupMembers: [...members, newMember] });
+    const newCompany: ParticipatingCompany = { id: crypto.randomUUID(), name };
+    updateCurrentProject({
+      participatingCompanies: [...companies, newCompany],
+    });
     setName("");
   };
 
-  const handleDelete = (id: string) => {
+  const handleDeleteCompany = (id: string) => {
     updateCurrentProject({
-      groupMembers: members.filter((m) => m.id !== id),
+      participatingCompanies: companies.filter((c) => c.id !== id),
       mandataireId:
         currentProject.mandataireId === id
           ? undefined
@@ -94,7 +132,7 @@ function Groupement() {
       </select>
 
       <div className="space-y-2">
-        <label className="block font-semibold">Participants</label>
+        <label className="block font-semibold">Entreprises participantes</label>
         <div className="flex space-x-2">
           <input
             className="flex-1 border p-2"
@@ -104,7 +142,7 @@ function Groupement() {
           />
           <button
             type="button"
-            onClick={handleAdd}
+            onClick={handleAddCompany}
             className="bg-blue-500 px-4 py-2 text-white"
           >
             Ajouter
@@ -121,21 +159,21 @@ function Groupement() {
           <span>mots</span>
         </div>
         <ul className="space-y-1">
-          {members.map((member) => (
-            <li key={member.id} className="space-y-2 rounded border p-2">
+          {companies.map((company) => (
+            <li key={company.id} className="space-y-2 rounded border p-2">
               <div className="flex items-center justify-between">
                 <label className="flex items-center space-x-2">
                   <input
                     type="radio"
                     name="mandataire"
-                    checked={currentProject.mandataireId === member.id}
-                    onChange={() => handleMandataire(member.id)}
+                    checked={currentProject.mandataireId === company.id}
+                    onChange={() => handleMandataire(company.id)}
                   />
-                  <span>{member.name}</span>
+                  <span>{company.name}</span>
                 </label>
                 <button
                   type="button"
-                  onClick={() => handleDelete(member.id)}
+                  onClick={() => handleDeleteCompany(company.id)}
                   className="text-red-500"
                 >
                   Supprimer
@@ -143,36 +181,34 @@ function Groupement() {
               </div>
               <div className="flex space-x-2">
                 <input
-                  type="number"
-                  className="w-24 border p-1"
-                  value={member.dailyRate ?? ""}
-                  onChange={(e) =>
-                    handleRateChange(member.id, Number(e.target.value))
-                  }
-                  placeholder="TJM €"
-                />
-                <input
                   type="file"
                   accept="application/pdf"
                   onChange={(e) =>
-                    handleFileChange(member.id, e.target.files?.[0])
+                    handlePresentationChange(company.id, e.target.files?.[0])
                   }
                 />
-                <button
-                  type="button"
-                  onClick={() => handleSummarize(member.id)}
-                  className="bg-green-500 px-2 text-white"
-                >
-                  Résumer
-                </button>
               </div>
-              {member.cvSummary && (
+              {company.presentationSummary && (
                 <textarea
                   className="mt-2 w-full border p-2"
                   readOnly
-                  value={member.cvSummary}
+                  value={company.presentationSummary}
                 />
               )}
+              <MobilizedPeopleList
+                company={company}
+                onFileChange={handlePersonFileChange}
+                onSummarize={handleSummarizePerson}
+                onUpdate={(updated) =>
+                  updateCompanies(
+                    companies.map((c) =>
+                      c.id === company.id
+                        ? { ...c, mobilizedPeople: updated }
+                        : c,
+                    ),
+                  )
+                }
+              />
             </li>
           ))}
         </ul>

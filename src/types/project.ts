@@ -1,9 +1,16 @@
-export interface GroupMember {
+export interface MobilizedPerson {
   id: string;
   name: string;
-  dailyRate?: number;
   cvText?: string;
   cvSummary?: string;
+}
+
+export interface ParticipatingCompany {
+  id: string;
+  name: string;
+  presentationText?: string;
+  presentationSummary?: string;
+  mobilizedPeople?: MobilizedPerson[];
 }
 
 export interface Project {
@@ -14,6 +21,6 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   groupType?: "solidaire" | "conjoint";
-  groupMembers?: GroupMember[];
+  participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;
 }
