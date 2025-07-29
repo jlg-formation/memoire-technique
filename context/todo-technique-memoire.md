@@ -2,17 +2,6 @@
 
 > Généré le 2025-07-29 07:50
 
-## 🏗️ Initialisation du projet
-
-- [ ] Créer un nouveau projet Vite + React + TypeScript
-- [ ] Ajouter Bun en tant que gestionnaire de scripts
-- [ ] Installer Tailwind CSS v4
-- [ ] Configurer React Router
-- [ ] Installer Zustand pour la gestion d'état
-- [ ] Installer localForage et créer un wrapper d'accès aux projets
-
----
-
 ## 📁 Structure de base
 
 - [ ] Créer les dossiers `/components`, `/pages`, `/store`, `/types`, `/lib`, `/assets`

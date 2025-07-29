@@ -38,5 +38,6 @@
     "@swc/core",
     "@tailwindcss/oxide",
     "esbuild"
-  ]
+  ],
+  "packageManager": "bun@1.2.19"
 }
