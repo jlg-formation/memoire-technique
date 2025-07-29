@@ -3,9 +3,11 @@ import { useProjectStore } from "../store/useProjectStore";
 import type { GroupMember } from "../types/project";
 import { extractPdfText } from "../lib/pdf";
 import { summarize } from "../lib/openai";
+import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 
 function Groupement() {
   const { currentProject, updateCurrentProject } = useProjectStore();
+  const { apiKey } = useOpenAIKeyStore();
   const [name, setName] = useState("");
   const [summaryWords, setSummaryWords] = useState(100);
 
@@ -40,12 +42,13 @@ function Groupement() {
   const handleSummarize = async (id: string) => {
     const member = members.find((m) => m.id === id);
     if (!member?.cvText) return;
+    const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+    if (!key) {
+      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      return;
+    }
     try {
-      const summary = await summarize(
-        member.cvText,
-        summaryWords,
-        import.meta.env.VITE_OPENAI_KEY,
-      );
+      const summary = await summarize(member.cvText, summaryWords, key);
       updateMembers(
         members.map((m) => (m.id === id ? { ...m, cvSummary: summary } : m)),
       );

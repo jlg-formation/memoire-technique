@@ -29,3 +29,10 @@ export async function summarize(
   };
   return data.choices[0].message.content.trim();
 }
+
+export async function testKey(apiKey: string): Promise<boolean> {
+  const response = await fetch("https://api.openai.com/v1/models", {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  return response.ok;
+}
