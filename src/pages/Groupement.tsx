@@ -3,10 +3,12 @@ import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 import { extractPdfText } from "../lib/pdf";
 import { summarize } from "../lib/openai";
+import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 
 function Groupement() {
   const { currentProject, updateCurrentProject } = useProjectStore();
+  const { apiKey } = useOpenAIKeyStore();
   const [name, setName] = useState("");
   const [summaryWords, setSummaryWords] = useState(100);
 
@@ -67,12 +69,13 @@ function Groupement() {
     const company = companies.find((c) => c.id === companyId);
     const person = company?.mobilizedPeople?.find((p) => p.id === personId);
     if (!person?.cvText) return;
+    const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+    if (!key) {
+      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      return;
+    }
     try {
-      const summary = await summarize(
-        person.cvText,
-        summaryWords,
-        import.meta.env.VITE_OPENAI_KEY,
-      );
+      const summary = await summarize(person.cvText, summaryWords, key);
       updateCompanies(
         companies.map((c) =>
           c.id === companyId
