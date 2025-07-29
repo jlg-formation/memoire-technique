@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
+import { importProjectJSON } from "../lib/export";
 
 function Projects() {
   const { projects, currentProject, addProject, deleteProject, setProject } =
@@ -22,6 +23,17 @@ function Projects() {
     setTitle("");
     setStartDate("");
     setEndDate("");
+  };
+
+  const handleImport = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const json = await file.text();
+    const project = importProjectJSON(json);
+    addProject(project);
+    e.target.value = "";
   };
 
   return (
@@ -52,6 +64,12 @@ function Projects() {
         <button type="submit" className="bg-blue-500 px-4 py-2 text-white">
           Ajouter
         </button>
+        <input
+          type="file"
+          accept="application/json"
+          onChange={handleImport}
+          className="w-full"
+        />
       </form>
       <ul className="space-y-2">
         {projects.map((project) => (
