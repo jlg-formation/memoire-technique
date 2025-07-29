@@ -1,13 +1,5 @@
 # TODO Liste Technique – Générateur de Mémoires Techniques
 
-> Généré le 2025-07-29 07:50
-
-## 📁 Structure de base
-
-- [ ] Créer les dossiers `/components`, `/pages`, `/store`, `/types`, `/lib`, `/assets`
-- [ ] Configurer Tailwind (fichier `tailwind.config.ts`)
-- [ ] Ajouter routing de base avec React Router
-
 ---
 
 ## 🧠 Système de projets
