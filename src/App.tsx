@@ -1,8 +1,13 @@
+import { Routes, Route } from "react-router";
+
 function App() {
   return (
-    <>
-      <p className="text-blue-500 font-bold">Hello World!</p>
-    </>
+    <Routes>
+      <Route
+        path="/"
+        element={<div>Bienvenue dans l’outil de mémoire technique</div>}
+      />
+    </Routes>
   );
 }
 
