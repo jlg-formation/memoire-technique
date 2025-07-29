@@ -1,6 +1,7 @@
 export interface MobilizedPerson {
   id: string;
   name: string;
+  cvFile?: string;
   cvText?: string;
   cvSummary?: string;
 }
@@ -8,6 +9,7 @@ export interface MobilizedPerson {
 export interface ParticipatingCompany {
   id: string;
   name: string;
+  presentationFile?: string;
   presentationText?: string;
   presentationSummary?: string;
   mobilizedPeople?: MobilizedPerson[];

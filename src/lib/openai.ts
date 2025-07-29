@@ -87,3 +87,7 @@ export async function askPdfQuestion(
   };
   return data.choices[0].message.content.trim();
 }
+
+export async function pdfToText(file: File, apiKey: string): Promise<string> {
+  return askPdfQuestion(file, "Transcris ce PDF en texte brut.", apiKey);
+}
