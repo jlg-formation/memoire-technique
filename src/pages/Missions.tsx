@@ -1,12 +1,16 @@
 import { useProjectStore } from "../store/useProjectStore";
+import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import type {
   MissionDays,
   ParticipatingCompany,
   MobilizedPerson,
+  MissionJustifications,
 } from "../types/project";
+import { estimateMissionDays } from "../lib/OpenAI";
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
+  const { apiKey } = useOpenAIKeyStore();
 
   if (!currentProject) {
     return (
@@ -32,6 +36,8 @@ function Missions() {
     );
   }
   const missionDays: MissionDays = currentProject.missionDays ?? {};
+  const missionJustifications: MissionJustifications =
+    currentProject.missionJustifications ?? {};
 
   const getDays = (
     mission: string,
@@ -75,6 +81,58 @@ function Missions() {
     }, 0);
   };
 
+  const handleJustificationChange = (mission: string, text: string): void => {
+    const updated: MissionJustifications = {
+      ...missionJustifications,
+      [mission]: text,
+    };
+    updateCurrentProject({ missionJustifications: updated });
+  };
+
+  const handleEstimate = async (): Promise<void> => {
+    const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+    if (!key) {
+      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      return;
+    }
+    try {
+      const estimations = await estimateMissionDays(
+        missions,
+        companies,
+        currentProject.worksAmount,
+        key,
+      );
+      const newDays: MissionDays = { ...missionDays };
+      const newJustifications: MissionJustifications = {
+        ...missionJustifications,
+      };
+      estimations.forEach((est) => {
+        newJustifications[est.name] = est.justification;
+        est.people.forEach((p) => {
+          const company = companies.find((c) =>
+            (c.mobilizedPeople ?? []).some(
+              (mp) => mp.name.toLowerCase() === p.name.toLowerCase(),
+            ),
+          );
+          if (!company) return;
+          const person = (company.mobilizedPeople ?? []).find(
+            (mp) => mp.name.toLowerCase() === p.name.toLowerCase(),
+          );
+          if (!person) return;
+          newDays[est.name] ??= {};
+          newDays[est.name][company.id] ??= {};
+          newDays[est.name][company.id][person.id] = p.days;
+        });
+      });
+      updateCurrentProject({
+        missionDays: newDays,
+        missionJustifications: newJustifications,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const allMissionsTotal = missions.reduce(
     (sum, m) => sum + missionTotal(m),
     0,
@@ -92,6 +150,13 @@ function Missions() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Missions</h1>
+      <button
+        type="button"
+        onClick={handleEstimate}
+        className="cursor-pointer rounded bg-green-500 px-2 py-1 text-white"
+      >
+        Estimer par IA
+      </button>
       {missions.map((mission) => (
         <div key={mission} className="space-y-2 border p-2">
           <h2 className="font-semibold">{mission}</h2>
@@ -144,6 +209,12 @@ function Missions() {
           <div className="font-bold">
             Total mission: {missionTotal(mission).toFixed(2)} €
           </div>
+          <textarea
+            className="w-full border p-2"
+            placeholder="Justification"
+            value={missionJustifications[mission] ?? ""}
+            onChange={(e) => handleJustificationChange(mission, e.target.value)}
+          />
         </div>
       ))}
       <div className="text-lg font-bold">
