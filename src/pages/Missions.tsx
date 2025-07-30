@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
+import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+import { estimateMissionDays } from "../lib/OpenAI";
 import type {
   MissionDays,
   MissionJustifications,
@@ -8,6 +11,8 @@ import type {
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
+  const { apiKey } = useOpenAIKeyStore();
+  const [estimating, setEstimating] = useState(false);
 
   if (!currentProject) {
     return (
@@ -108,6 +113,24 @@ function Missions() {
     0,
   );
 
+  const handleEstimate = async (): Promise<void> => {
+    if (!apiKey) {
+      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      return;
+    }
+    setEstimating(true);
+    try {
+      const result = await estimateMissionDays(missions, companies, apiKey);
+      updateCurrentProject({
+        missionDays: result.missionDays,
+        missionJustifications: result.missionJustifications,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    setEstimating(false);
+  };
+
   if (!missions.length || !companies.length) {
     return (
       <div className="space-y-4 p-4">
@@ -120,6 +143,14 @@ function Missions() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Missions</h1>
+      <button
+        type="button"
+        onClick={handleEstimate}
+        className="cursor-pointer rounded bg-green-500 px-4 py-2 text-white"
+      >
+        Estimer par IA
+      </button>
+      {estimating && <div>Estimation en cours...</div>}
       {missions.map((mission) => (
         <div key={mission} className="space-y-2 border p-2">
           <h2 className="font-semibold">{mission}</h2>
