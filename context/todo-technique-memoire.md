@@ -75,22 +75,7 @@
 - [ ] Créer une `Sidebar` pour navigation globale
 - [ ] Ajouter `Tabs` horizontaux dans chaque module
 - [ ] Définir navigation entre étapes
-
----
-
-## 🛠️ Utilitaires
-
-- [ ] Créer helper pour appels à OpenAI
-- [ ] Créer wrapper localForage (getProject, saveProject, etc.)
-- [ ] Gérer les horodatages (création, modification, versions)
-
----
-
-## 🔒 Sécurité
-
-- [ ] Saisie de la clé OpenAI via `.env.local` (dev)
-- [ ] Prompt utilisateur pour la clé en production
-- [ ] Ne jamais exposer la clé dans le code public
+- [ ] Rendre l'appli responsive
 
 ---
 
@@ -103,6 +88,7 @@
 
 ## TODO JLG
 
-- faire une page ou l'on voit la generation du memoire technique en markdown.
 - donner une image de garde
-- Faire une page ou l'on donne les reference de l'AO ou on repond (numero, date limite)
+- Entrer les references : photos avec label, texte en vrac. Utiliser IA pour trouver montant HT travaux, MOA, année.
+- Gerer le reportage photographique de la visite avec texte associé éditable et reformulable.
+- Retrouver le nom du MOA
