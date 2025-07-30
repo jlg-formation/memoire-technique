@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
-import { summarize } from "../lib/openai";
+import { summarize } from "../lib/OpenAI";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";

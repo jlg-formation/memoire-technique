@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
-import { testKey } from "../lib/openai";
+import { testKey } from "../lib/OpenAI";
 
 function Settings() {
   const { apiKey, setApiKey } = useOpenAIKeyStore();

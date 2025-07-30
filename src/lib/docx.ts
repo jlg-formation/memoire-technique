@@ -2,7 +2,9 @@ let mammoth: typeof import("mammoth") | undefined;
 
 async function loadMammoth() {
   if (!mammoth) {
-    mammoth = (await import("mammoth")) as typeof import("mammoth");
+    mammoth = (await import(
+      /* @vite-ignore */ "mammoth"
+    )) as typeof import("mammoth");
   }
   if (!mammoth) {
     throw new Error("Cannot load mammoth");

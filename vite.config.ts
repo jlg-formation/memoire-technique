@@ -6,4 +6,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   base: "/memoire-technique/", // ← Ajouté pour GitHub Pages
   plugins: [react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      external: ["mammoth"],
+    },
+  },
 });
