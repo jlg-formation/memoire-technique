@@ -3,7 +3,7 @@ import { useProjectStore } from "../store/useProjectStore";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
-import { extractMethodologyScores } from "../lib/OpenAI";
+import { extractMethodologyScores, extractMissions } from "../lib/OpenAI";
 import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
@@ -34,6 +34,14 @@ function MarketDocs() {
       text,
     };
     updateCurrentProject({ marketDocuments: [...docs, doc] });
+    if (docType === "AE" && apiKey) {
+      try {
+        const missions = await extractMissions(text, apiKey);
+        updateCurrentProject({ missions });
+      } catch (err) {
+        console.error(err);
+      }
+    }
     if (docType === "RC" && apiKey) {
       try {
         const notation = await extractMethodologyScores(text, apiKey);

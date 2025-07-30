@@ -45,4 +45,6 @@ export interface Project {
   memoHtml?: string;
   /** Barème de la note méthodologique extrait du RC */
   notation?: NotationItem[];
+  /** Missions demandées dans l'acte d'engagement */
+  missions?: string[];
 }
