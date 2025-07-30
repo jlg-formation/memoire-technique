@@ -20,6 +20,7 @@ function Projects() {
 
   const [consultationTitle, setConsultationTitle] = useState("");
   const [submissionDeadline, setSubmissionDeadline] = useState("");
+  const [worksAmount, setWorksAmount] = useState("");
   const [processing, setProcessing] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -28,7 +29,7 @@ function Projects() {
       id: crypto.randomUUID(),
       consultationTitle,
       submissionDeadline,
-      worksAmount: undefined,
+      worksAmount: +worksAmount,
       creationDate: new Date().toISOString(),
       lastUpdateDate: new Date().toISOString(),
     });
@@ -65,6 +66,7 @@ function Projects() {
       const info = await extractConsultationInfo(text, apiKey);
       setConsultationTitle(info.consultationTitle ?? "");
       setSubmissionDeadline(info.submissionDeadline ?? "");
+      setWorksAmount(info.worksAmount + "");
     } catch (err) {
       console.error(err);
     }
@@ -112,6 +114,14 @@ function Projects() {
           placeholder="Date limite"
           required
         />
+        <input
+          className="w-full border p-2"
+          type="number"
+          value={worksAmount}
+          onChange={(e) => setWorksAmount(e.target.value)}
+          placeholder="Montant des travaux HT"
+          required
+        />
         {processing && <div>Analyse en cours...</div>}
         <button
           type="submit"
@@ -147,6 +157,9 @@ function Projects() {
                 </div>
                 <div className="text-sm text-gray-600">
                   Date limite : {project.submissionDeadline}
+                </div>
+                <div className="text-sm text-gray-600">
+                  Montant des travaux HT : {project.worksAmount}
                 </div>
               </button>
               <button
