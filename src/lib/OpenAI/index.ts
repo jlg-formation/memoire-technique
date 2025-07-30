@@ -6,4 +6,3 @@ export type { MethodologyScore } from "./extractMethodologyScores";
 export { default as extractConsultationInfo } from "./extractConsultationInfo";
 export type { ConsultationInfo } from "./extractConsultationInfo";
 export { default as extractMissions } from "./extractMissions";
-export { default as extractWorksAmount } from "./extractWorksAmount";
