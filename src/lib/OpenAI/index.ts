@@ -8,3 +8,4 @@ export type { ConsultationInfo } from "./extractConsultationInfo";
 export { default as extractMissions } from "./extractMissions";
 export { default as estimateMissionDays } from "./estimateMissionDays";
 export type { MissionDayEstimation } from "./estimateMissionDays";
+export { default as generateMemoire } from "./generateMemoire";
