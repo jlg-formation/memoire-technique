@@ -31,7 +31,10 @@ export interface NotationItem {
 
 export interface Project {
   id: string;
-  title: string;
+  /** Titre de la consultation extrait du RC */
+  consultationTitle: string;
+  /** Date limite de remise des offres au format ISO */
+  submissionDeadline: string;
   creationDate: string;
   lastUpdateDate: string;
   groupType?: "solidaire" | "conjoint";
