@@ -1,6 +1,17 @@
-import mammoth from "mammoth";
+let mammoth: typeof import("mammoth") | undefined;
+
+async function loadMammoth() {
+  if (!mammoth) {
+    mammoth = (await import("mammoth")) as typeof import("mammoth");
+  }
+  if (!mammoth) {
+    throw new Error("Cannot load mammoth");
+  }
+  return mammoth;
+}
 
 export async function extractDocxText(file: File): Promise<string> {
+  const mammoth = await loadMammoth();
   const buffer = await file.arrayBuffer();
 
   try {
