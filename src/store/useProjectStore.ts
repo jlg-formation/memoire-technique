@@ -6,6 +6,8 @@ import {
   deleteProject as removeProject,
 } from "../lib/storage";
 
+const CURRENT_PROJECT_KEY = "current_project_id";
+
 type ProjectStore = {
   projects: Project[];
   currentProject: Project | null;
@@ -17,7 +19,15 @@ type ProjectStore = {
 
 export const useProjectStore = create<ProjectStore>((set) => {
   // Load persisted projects on initialization
-  void loadProjects().then((projects) => set({ projects }));
+  void loadProjects().then((projects) => {
+    const savedId = localStorage.getItem(CURRENT_PROJECT_KEY);
+    set({
+      projects,
+      currentProject: savedId
+        ? (projects.find((p) => p.id === savedId) ?? null)
+        : null,
+    });
+  });
 
   return {
     projects: [],
@@ -27,14 +37,23 @@ export const useProjectStore = create<ProjectStore>((set) => {
       void persistProject(project);
     },
     deleteProject: (id) => {
-      set((state) => ({
-        projects: state.projects.filter((p) => p.id !== id),
-        currentProject:
-          state.currentProject?.id === id ? null : state.currentProject,
-      }));
+      set((state) => {
+        const current =
+          state.currentProject?.id === id ? null : state.currentProject;
+        if (!current) {
+          localStorage.removeItem(CURRENT_PROJECT_KEY);
+        }
+        return {
+          projects: state.projects.filter((p) => p.id !== id),
+          currentProject: current,
+        };
+      });
       void removeProject(id);
     },
-    setProject: (project) => set({ currentProject: project }),
+    setProject: (project) => {
+      localStorage.setItem(CURRENT_PROJECT_KEY, project.id);
+      set({ currentProject: project });
+    },
     updateCurrentProject: (data) => {
       set((state) => {
         if (!state.currentProject) return state;
