@@ -16,6 +16,21 @@ function Missions() {
 
   const missions = currentProject.missions ?? [];
   const companies = currentProject.participatingCompanies ?? [];
+  const missingRates = companies.flatMap((company) =>
+    (company.mobilizedPeople ?? []).filter((p) => !p.dailyRate),
+  );
+
+  if (missingRates.length) {
+    return (
+      <div className="space-y-2 p-4 text-red-500">
+        {missingRates.map((p) => (
+          <div key={p.id}>
+            Aller dans la page Groupement pour indiquer un TUJ pour {p.name}
+          </div>
+        ))}
+      </div>
+    );
+  }
   const missionDays: MissionDays = currentProject.missionDays ?? {};
 
   const getDays = (
