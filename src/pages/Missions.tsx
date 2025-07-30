@@ -1,7 +1,12 @@
 import { useProjectStore } from "../store/useProjectStore";
+import type {
+  MissionDays,
+  ParticipatingCompany,
+  MobilizedPerson,
+} from "../types/project";
 
 function Missions() {
-  const { currentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useProjectStore();
 
   if (!currentProject) {
     return (
@@ -10,19 +15,125 @@ function Missions() {
   }
 
   const missions = currentProject.missions ?? [];
+  const companies = currentProject.participatingCompanies ?? [];
+  const missionDays: MissionDays = currentProject.missionDays ?? {};
+
+  const getDays = (
+    mission: string,
+    companyId: string,
+    personId: string,
+  ): number => missionDays[mission]?.[companyId]?.[personId] ?? 0;
+
+  const handleChange = (
+    mission: string,
+    companyId: string,
+    personId: string,
+    days: number,
+  ): void => {
+    const updated: MissionDays = {
+      ...missionDays,
+      [mission]: {
+        ...(missionDays[mission] ?? {}),
+        [companyId]: {
+          ...(missionDays[mission]?.[companyId] ?? {}),
+          [personId]: days,
+        },
+      },
+    };
+    updateCurrentProject({ missionDays: updated });
+  };
+
+  const personCost = (
+    mission: string,
+    company: ParticipatingCompany,
+    person: MobilizedPerson,
+  ): number =>
+    getDays(mission, company.id, person.id) * (person.dailyRate ?? 0);
+
+  const missionTotal = (mission: string): number => {
+    return companies.reduce((total, company) => {
+      const people = company.mobilizedPeople ?? [];
+      return (
+        total +
+        people.reduce((sum, p) => sum + personCost(mission, company, p), 0)
+      );
+    }, 0);
+  };
+
+  const allMissionsTotal = missions.reduce(
+    (sum, m) => sum + missionTotal(m),
+    0,
+  );
+
+  if (!missions.length || !companies.length) {
+    return (
+      <div className="space-y-4 p-4">
+        <h1 className="text-xl font-bold">Missions</h1>
+        <div>Aucune mission ou entreprise détectée.</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Missions</h1>
-      {missions.length ? (
-        <ul className="list-disc pl-6">
-          {missions.map((mission, idx) => (
-            <li key={idx}>{mission}</li>
-          ))}
-        </ul>
-      ) : (
-        <div>Aucune mission détectée.</div>
-      )}
+      {missions.map((mission) => (
+        <div key={mission} className="space-y-2 border p-2">
+          <h2 className="font-semibold">{mission}</h2>
+          {companies.map((company) => {
+            const people = company.mobilizedPeople ?? [];
+            const companyTotal = people.reduce(
+              (sum, p) => sum + personCost(mission, company, p),
+              0,
+            );
+            return (
+              <div key={company.id} className="space-y-1">
+                <h3 className="font-medium">{company.name}</h3>
+                <ul className="space-y-1 pl-2">
+                  {people.map((person) => {
+                    const days = getDays(mission, company.id, person.id);
+                    const cost = personCost(mission, company, person);
+                    return (
+                      <li
+                        key={person.id}
+                        className="flex items-center justify-between"
+                      >
+                        <span className="flex-1">{person.name}</span>
+                        <input
+                          type="number"
+                          className="w-20 border p-1"
+                          value={days}
+                          onChange={(e) =>
+                            handleChange(
+                              mission,
+                              company.id,
+                              person.id,
+                              Number(e.target.value),
+                            )
+                          }
+                        />
+                        <span>{person.dailyRate ?? 0} €/j</span>
+                        <span className="font-semibold">
+                          {cost.toFixed(2)} €
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+                <div className="font-semibold">
+                  Total {company.name}: {companyTotal.toFixed(2)} €
+                </div>
+              </div>
+            );
+          })}
+          <div className="font-bold">
+            Total mission: {missionTotal(mission).toFixed(2)} €
+          </div>
+        </div>
+      ))}
+      <div className="text-lg font-bold">
+        Total général: {allMissionsTotal.toFixed(2)} €
+      </div>
     </div>
   );
 }

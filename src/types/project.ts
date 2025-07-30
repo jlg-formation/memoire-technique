@@ -29,6 +29,11 @@ export interface NotationItem {
   points: number;
 }
 
+export type MissionDays = Record<
+  string,
+  Record<string, Record<string, number>>
+>;
+
 export interface Project {
   id: string;
   /** Titre de la consultation extrait du RC */
@@ -47,4 +52,6 @@ export interface Project {
   notation?: NotationItem[];
   /** Missions demandées dans l'acte d'engagement */
   missions?: string[];
+  /** Jours alloués par mission, entreprise et personne mobilisée */
+  missionDays?: MissionDays;
 }
