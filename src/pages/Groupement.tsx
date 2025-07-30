@@ -231,17 +231,22 @@ function Groupement() {
           />
           <span>mots</span>
         </div>
+        {companies.length > 1 && (
+          <p className="font-semibold">Sélectionnez le mandataire</p>
+        )}
         <ul className="space-y-1">
           {companies.map((company) => (
             <li key={company.id} className="space-y-2 rounded border p-2">
               <div className="flex items-center justify-between">
                 <label className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    name="mandataire"
-                    checked={currentProject.mandataireId === company.id}
-                    onChange={() => handleMandataire(company.id)}
-                  />
+                  {companies.length > 1 && (
+                    <input
+                      type="radio"
+                      name="mandataire"
+                      checked={currentProject.mandataireId === company.id}
+                      onChange={() => handleMandataire(company.id)}
+                    />
+                  )}
                   <span>{company.name}</span>
                 </label>
                 <button
