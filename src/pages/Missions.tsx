@@ -177,7 +177,7 @@ function Missions() {
                         key={person.id}
                         className="space-y-1 rounded border p-2"
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
                           <span className="flex-1">{person.name}</span>
                           <input
                             type="number"

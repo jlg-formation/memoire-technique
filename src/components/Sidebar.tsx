@@ -1,9 +1,24 @@
 import { NavLink } from "react-router";
 
-function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+function Sidebar({ isOpen, onClose }: SidebarProps) {
   return (
-    <nav className="flex h-screen w-64 flex-col bg-gray-100 p-4">
-      <h2 className="mb-4 text-lg font-bold">Menu</h2>
+    <nav
+      className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-gray-100 p-4 transition-transform md:static md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-lg font-bold">Menu</h2>
+        <button
+          type="button"
+          onClick={onClose}
+          className="cursor-pointer md:hidden"
+        >
+          ✕
+        </button>
+      </div>
       <NavLink
         to="/"
         end
