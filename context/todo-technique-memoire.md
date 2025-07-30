@@ -102,3 +102,12 @@
 - [ ] Vérifier la sauvegarde locale
 - [ ] Tester les exports PDF, DOCX, ZIP
 - [ ] Vérifier la génération IA sur un exemple complet
+
+## TODO JLG
+
+- la ou on peut importer un PDF, donner la possibilité d'importer un docx.
+- faire une page ou l'on voit la generation du memoire technique en markdown.
+- donner une image de garde
+- Faire une page ou l'on donne les reference de l'AO ou on repond (numero, date limite)
+- faire une page ou l'on donne le RC, le CCTP, le CCAP, l'AE.
+- Pour creer un projet il faut donner un titre et un doc pdf (que l'IA va parser pour avoir ses infos)
