@@ -84,7 +84,10 @@ function Projects() {
           onChange={(e) => setEndDate(e.target.value)}
           required
         />
-        <button type="submit" className="bg-blue-500 px-4 py-2 text-white">
+        <button
+          type="submit"
+          className="cursor-pointer bg-blue-500 px-4 py-2 text-white"
+        >
           Ajouter
         </button>
       </form>
@@ -101,7 +104,7 @@ function Projects() {
               <button
                 type="button"
                 onClick={() => setProject(project)}
-                className="text-left"
+                className="cursor-pointer text-left"
               >
                 <div className="font-semibold">{project.title}</div>
                 <div className="text-sm text-gray-600">
@@ -111,7 +114,7 @@ function Projects() {
               <button
                 type="button"
                 onClick={() => deleteProject(project.id)}
-                className="text-red-500"
+                className="cursor-pointer text-red-500"
               >
                 Supprimer
               </button>
@@ -120,14 +123,14 @@ function Projects() {
               <button
                 type="button"
                 onClick={() => handleExportJSON(project)}
-                className="rounded bg-green-500 px-2 py-1 text-white"
+                className="cursor-pointer rounded bg-green-500 px-2 py-1 text-white"
               >
                 Export JSON
               </button>
               <button
                 type="button"
                 onClick={() => handleExportZIP(project)}
-                className="rounded bg-green-500 px-2 py-1 text-white"
+                className="cursor-pointer rounded bg-green-500 px-2 py-1 text-white"
               >
                 Export ZIP
               </button>
