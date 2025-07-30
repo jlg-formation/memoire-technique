@@ -66,7 +66,7 @@ function MarketDocs() {
               <button
                 type="button"
                 onClick={() => handleDelete(doc.id)}
-                className="text-red-500"
+                className="cursor-pointer text-red-500"
               >
                 Supprimer
               </button>

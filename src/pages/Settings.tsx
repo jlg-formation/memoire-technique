@@ -39,14 +39,14 @@ function Settings() {
         <button
           type="button"
           onClick={handleSave}
-          className="rounded bg-blue-500 px-4 py-2 text-white"
+          className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
         >
           Enregistrer
         </button>
         <button
           type="button"
           onClick={handleTest}
-          className="rounded bg-green-500 px-4 py-2 text-white"
+          className="cursor-pointer rounded bg-green-500 px-4 py-2 text-white"
         >
           Tester
         </button>

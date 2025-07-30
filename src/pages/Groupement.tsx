@@ -216,7 +216,7 @@ function Groupement() {
           <button
             type="button"
             onClick={handleAddCompany}
-            className="bg-blue-500 px-4 py-2 text-white"
+            className="cursor-pointer bg-blue-500 px-4 py-2 text-white"
           >
             Ajouter
           </button>
@@ -252,7 +252,7 @@ function Groupement() {
                 <button
                   type="button"
                   onClick={() => handleDeleteCompany(company.id)}
-                  className="text-red-500"
+                  className="cursor-pointer text-red-500"
                 >
                   Supprimer
                 </button>
@@ -268,7 +268,7 @@ function Groupement() {
                 <button
                   type="button"
                   onClick={() => handleSummarizePresentation(company.id)}
-                  className="bg-green-500 px-2 text-white"
+                  className="cursor-pointer bg-green-500 px-2 text-white"
                 >
                   Résumer
                 </button>

@@ -54,7 +54,7 @@ function MobilizedPeopleList({
         <button
           type="button"
           onClick={handleAdd}
-          className="bg-blue-500 px-2 text-white"
+          className="cursor-pointer bg-blue-500 px-2 text-white"
         >
           Ajouter
         </button>
@@ -82,7 +82,7 @@ function MobilizedPeopleList({
                 <button
                   type="button"
                   onClick={() => handleDelete(person.id)}
-                  className="text-red-500"
+                  className="cursor-pointer text-red-500"
                 >
                   Supprimer
                 </button>
@@ -99,7 +99,7 @@ function MobilizedPeopleList({
               <button
                 type="button"
                 onClick={() => onSummarize(company.id, person.id)}
-                className="bg-green-500 px-2 text-white"
+                className="cursor-pointer bg-green-500 px-2 text-white"
               >
                 Résumer
               </button>
