@@ -62,8 +62,8 @@ function Projects() {
       : await extractPdfText(file);
     try {
       const info = await extractConsultationInfo(text, apiKey);
-      setConsultationTitle(info.consultationTitle);
-      setSubmissionDeadline(info.submissionDeadline);
+      setConsultationTitle(info.consultationTitle ?? "");
+      setSubmissionDeadline(info.submissionDeadline ?? "");
     } catch (err) {
       console.error(err);
     }
