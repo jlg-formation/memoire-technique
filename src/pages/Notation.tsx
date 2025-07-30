@@ -15,22 +15,24 @@ function Notation() {
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Notation</h1>
       {items.length ? (
-        <table className="w-full table-auto border">
-          <thead>
-            <tr>
-              <th className="border p-2 text-left">Aspect</th>
-              <th className="border p-2">Points</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, idx) => (
-              <tr key={idx}>
-                <td className="border p-2">{item.label}</td>
-                <td className="border p-2 text-center">{item.points}</td>
+        <div className="overflow-x-auto">
+          <table className="w-full table-auto border">
+            <thead>
+              <tr>
+                <th className="border p-2 text-left">Aspect</th>
+                <th className="border p-2">Points</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {items.map((item, idx) => (
+                <tr key={idx}>
+                  <td className="border p-2">{item.label}</td>
+                  <td className="border p-2 text-center">{item.points}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div>Aucune notation extraite.</div>
       )}

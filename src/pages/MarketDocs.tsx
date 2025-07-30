@@ -61,7 +61,7 @@ function MarketDocs() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Pièces de marché</h1>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <select
           className="border p-2"
           value={docType}
@@ -83,7 +83,7 @@ function MarketDocs() {
       <ul className="space-y-2">
         {docs.map((doc) => (
           <li key={doc.id} className="space-y-1 border p-2">
-            <div className="flex justify-between">
+            <div className="flex flex-wrap justify-between gap-2">
               <div className="font-semibold">
                 {doc.name} ({doc.type})
               </div>

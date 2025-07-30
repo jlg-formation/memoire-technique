@@ -142,7 +142,7 @@ function Projects() {
       <ul className="space-y-2">
         {projects.map((project) => (
           <li key={project.id} className="space-y-1 border p-2">
-            <div className="flex justify-between">
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
               <button
                 type="button"
                 onClick={() => setProject(project)}
@@ -170,7 +170,7 @@ function Projects() {
                 Supprimer
               </button>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => handleExportJSON(project)}

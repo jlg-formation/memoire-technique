@@ -217,7 +217,7 @@ function Groupement() {
 
       <div className="space-y-2">
         <label className="block font-semibold">Entreprises participantes</label>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <input
             className="flex-1 border p-2"
             value={name}
@@ -232,7 +232,7 @@ function Groupement() {
             Ajouter
           </button>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-wrap items-center gap-2">
           <label className="font-semibold">Résumé en</label>
           <input
             type="number"
@@ -248,8 +248,8 @@ function Groupement() {
         <ul className="space-y-1">
           {companies.map((company) => (
             <li key={company.id} className="space-y-2 rounded border p-2">
-              <div className="flex items-center justify-between">
-                <label className="flex items-center space-x-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label className="flex items-center gap-2">
                   {companies.length > 1 && (
                     <input
                       type="radio"
@@ -268,7 +268,7 @@ function Groupement() {
                   Supprimer
                 </button>
               </div>
-              <div className="flex space-x-2">
+              <div className="flex flex-wrap gap-2">
                 <input
                   type="file"
                   accept=".pdf,.docx"
