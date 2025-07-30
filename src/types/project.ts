@@ -3,7 +3,6 @@ export interface MobilizedPerson {
   name: string;
   /** Taux journalier hors taxes en euros */
   dailyRate?: number;
-  cvFile?: string;
   cvText?: string;
   cvSummary?: string;
 }
@@ -11,7 +10,6 @@ export interface MobilizedPerson {
 export interface ParticipatingCompany {
   id: string;
   name: string;
-  presentationFile?: string;
   presentationText?: string;
   presentationSummary?: string;
   mobilizedPeople?: MobilizedPerson[];

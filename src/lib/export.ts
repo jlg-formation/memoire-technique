@@ -1,11 +1,12 @@
 import type { Project } from "../types/project";
+import { stripPdfFields } from "./sanitize";
 
 export function exportProjectJSON(project: Project): string {
-  return JSON.stringify(project, null, 2);
+  return JSON.stringify(stripPdfFields(project), null, 2);
 }
 
 export function importProjectJSON(json: string): Project {
-  return JSON.parse(json) as Project;
+  return stripPdfFields(JSON.parse(json) as Project);
 }
 
 function crc32(data: Uint8Array): number {
