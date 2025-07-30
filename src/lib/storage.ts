@@ -7,13 +7,23 @@ const store = localforage.createInstance({ name: "projects" });
 export async function loadProjects(): Promise<Project[]> {
   const projects: Project[] = [];
   await store.iterate<Project, void>((value) => {
-    projects.push(stripPdfFields(value));
+    const obj = value as unknown as Record<string, string>;
+    const normalized = {
+      ...value,
+      creationDate: obj.creationDate ?? obj.createdAt,
+      lastUpdateDate: obj.lastUpdateDate ?? obj.updatedAt,
+    } as Project;
+    projects.push(stripPdfFields(normalized));
   });
   return projects;
 }
 
 export function saveProject(project: Project): Promise<void> {
-  return store.setItem(project.id, stripPdfFields(project)).then(() => {});
+  const updated = {
+    ...project,
+    lastUpdateDate: new Date().toISOString(),
+  } satisfies Project;
+  return store.setItem(updated.id, stripPdfFields(updated)).then(() => {});
 }
 
 export function deleteProject(id: string): Promise<void> {
