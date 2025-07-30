@@ -34,6 +34,11 @@ export type MissionDays = Record<
   Record<string, Record<string, number>>
 >;
 
+export type MissionJustifications = Record<
+  string,
+  Record<string, Record<string, string>>
+>;
+
 export interface Project {
   id: string;
   /** Titre de la consultation extrait du RC */
@@ -58,4 +63,6 @@ export interface Project {
   missions?: string[];
   /** Jours alloués par mission, entreprise et personne mobilisée */
   missionDays?: MissionDays;
+  /** Justification du nombre de jours par mission, entreprise et personne */
+  missionJustifications?: MissionJustifications;
 }
