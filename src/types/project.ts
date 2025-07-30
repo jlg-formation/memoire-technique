@@ -1,6 +1,8 @@
 export interface MobilizedPerson {
   id: string;
   name: string;
+  /** Taux journalier hors taxes en euros */
+  dailyRate?: number;
   cvFile?: string;
   cvText?: string;
   cvSummary?: string;
