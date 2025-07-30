@@ -1,6 +1,10 @@
 import OpenAI from "openai";
 
 import * as pdfjsLib from "pdfjs-dist";
+import type {
+  TextItem,
+  TextMarkedContent,
+} from "pdfjs-dist/types/src/display/api";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/memoire-technique/pdf.worker.mjs";
 
@@ -16,7 +20,9 @@ export async function extractTextFromPdf(file: File): Promise<string> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    const strings = content.items.map((item: any) => item.str);
+    const strings = (content.items as Array<TextItem | TextMarkedContent>)
+      .filter((item): item is TextItem => "str" in item)
+      .map((item) => item.str);
     text += strings.join(" ") + "\n";
   }
 
@@ -43,7 +49,7 @@ export async function summarize(
     ],
   });
 
-  return completion.choices[0].message.content.trim();
+  return completion.choices[0].message.content?.trim() ?? "";
 }
 
 export async function testKey(apiKey: string): Promise<boolean> {

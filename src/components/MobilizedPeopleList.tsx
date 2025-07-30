@@ -15,6 +15,7 @@ function MobilizedPeopleList({
   onUpdate,
 }: MobilizedPeopleListProps) {
   const [personName, setPersonName] = useState("");
+  const [dailyRate, setDailyRate] = useState(0);
   const people = company.mobilizedPeople ?? [];
 
   const handleAdd = () => {
@@ -22,9 +23,11 @@ function MobilizedPeopleList({
     const newPerson: MobilizedPerson = {
       id: crypto.randomUUID(),
       name: personName,
+      dailyRate,
     };
     onUpdate([...people, newPerson]);
     setPersonName("");
+    setDailyRate(0);
   };
 
   const handleDelete = (id: string) => {
@@ -41,6 +44,13 @@ function MobilizedPeopleList({
           onChange={(e) => setPersonName(e.target.value)}
           placeholder="Nom de la personne"
         />
+        <input
+          type="number"
+          className="w-24 border p-1"
+          value={dailyRate}
+          onChange={(e) => setDailyRate(Number(e.target.value))}
+          placeholder="Taux HT"
+        />
         <button
           type="button"
           onClick={handleAdd}
@@ -54,13 +64,29 @@ function MobilizedPeopleList({
           <li key={person.id} className="space-y-1 rounded border p-2">
             <div className="flex items-center justify-between">
               <span>{person.name}</span>
-              <button
-                type="button"
-                onClick={() => handleDelete(person.id)}
-                className="text-red-500"
-              >
-                Supprimer
-              </button>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="number"
+                  className="w-24 border p-1"
+                  value={person.dailyRate ?? 0}
+                  onChange={(e) =>
+                    onUpdate(
+                      people.map((p) =>
+                        p.id === person.id
+                          ? { ...p, dailyRate: Number(e.target.value) }
+                          : p,
+                      ),
+                    )
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => handleDelete(person.id)}
+                  className="text-red-500"
+                >
+                  Supprimer
+                </button>
+              </div>
             </div>
             <div className="flex space-x-2">
               <input
