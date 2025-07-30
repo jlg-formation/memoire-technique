@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
+import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
+import { extractMethodologyScores } from "../lib/openai";
 import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
   const { currentProject, updateCurrentProject } = useProjectStore();
+  const { apiKey } = useOpenAIKeyStore();
   const [docType, setDocType] = useState<MarketDocumentType>("RC");
 
   if (!currentProject) {
@@ -31,6 +34,14 @@ function MarketDocs() {
       text,
     };
     updateCurrentProject({ marketDocuments: [...docs, doc] });
+    if (docType === "RC" && apiKey) {
+      try {
+        const notation = await extractMethodologyScores(text, apiKey);
+        updateCurrentProject({ notation });
+      } catch (err) {
+        console.error(err);
+      }
+    }
     setDocType("RC");
     e.target.value = "";
   };
