@@ -70,6 +70,14 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
           Missions
         </NavLink>
         <NavLink
+          to="/planning"
+          className={({ isActive }) =>
+            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+          }
+        >
+          Planning
+        </NavLink>
+        <NavLink
           to="/notation"
           className={({ isActive }) =>
             `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`

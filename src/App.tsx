@@ -5,6 +5,7 @@ import Projects from "./pages/Projects";
 import Groupement from "./pages/Groupement";
 import MarketDocs from "./pages/MarketDocs";
 import Missions from "./pages/Missions";
+import Planning from "./pages/Planning";
 import Memoire from "./pages/Memoire";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
@@ -44,6 +45,7 @@ function App() {
             <Route path="/documents" element={<MarketDocs />} />
             <Route path="/memoire" element={<Memoire />} />
             <Route path="/missions" element={<Missions />} />
+            <Route path="/planning" element={<Planning />} />
             <Route path="/notation" element={<Notation />} />
             <Route path="/parametres" element={<Settings />} />
           </Routes>
