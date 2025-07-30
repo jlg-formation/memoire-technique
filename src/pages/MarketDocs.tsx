@@ -73,7 +73,12 @@ function MarketDocs() {
           <option value="AE">AE</option>
           <option value="AUTRE">Autre</option>
         </select>
-        <input type="file" accept=".pdf,.docx" onChange={handleFileChange} />
+        <input
+          type="file"
+          accept=".pdf,.docx"
+          onChange={handleFileChange}
+          className="rounded border border-gray-300 bg-gray-100 p-2"
+        />
       </div>
       <ul className="space-y-2">
         {docs.map((doc) => (

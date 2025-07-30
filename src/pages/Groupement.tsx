@@ -275,6 +275,7 @@ function Groupement() {
                   onChange={(e) =>
                     handlePresentationChange(company.id, e.target.files?.[0])
                   }
+                  className="rounded border border-gray-300 bg-gray-100 p-2"
                 />
                 <button
                   type="button"
