@@ -21,7 +21,7 @@ function App() {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-      <div className="flex-1 md:ml-64">
+      <div className="flex-1">
         <div className="mx-auto max-w-screen-lg p-4">
           <button
             type="button"

@@ -32,7 +32,7 @@ function Memoire() {
   }
 
   return (
-    <div className="prose mx-auto p-4">
+    <div className="space-y-2 p-4">
       <button
         type="button"
         onClick={handleGenerate}
