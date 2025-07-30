@@ -45,6 +45,8 @@ export interface Project {
   groupType?: "solidaire" | "conjoint";
   participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;
+  /** Identifiant de la personne mobilisée responsable pour la mission */
+  mandataireContactId?: string;
   marketDocuments?: MarketDocument[];
   /** Contenu HTML du mémoire technique généré */
   memoHtml?: string;
