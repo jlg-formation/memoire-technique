@@ -81,6 +81,7 @@
 - Implement proper aria attributes
 - Support keyboard navigation
 - Test with screen readers
+- All buttons must have "cursor-pointer"
 
 ## 14. Internationalization
 
