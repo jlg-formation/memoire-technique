@@ -14,22 +14,16 @@ function Projects() {
     useProjectStore();
 
   const [title, setTitle] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     addProject({
       id: crypto.randomUUID(),
       title,
-      startDate,
-      endDate,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      creationDate: new Date().toISOString(),
+      lastUpdateDate: new Date().toISOString(),
     });
     setTitle("");
-    setStartDate("");
-    setEndDate("");
   };
 
   const handleImport = async (
@@ -70,20 +64,6 @@ function Projects() {
           placeholder="Titre"
           required
         />
-        <input
-          type="date"
-          className="w-full border p-2"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
-        <input
-          type="date"
-          className="w-full border p-2"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
         <button
           type="submit"
           className="cursor-pointer bg-blue-500 px-4 py-2 text-white"
@@ -108,7 +88,10 @@ function Projects() {
               >
                 <div className="font-semibold">{project.title}</div>
                 <div className="text-sm text-gray-600">
-                  {project.startDate} – {project.endDate}
+                  Créé le {project.creationDate}
+                </div>
+                <div className="text-sm text-gray-600">
+                  Modifié le {project.lastUpdateDate}
                 </div>
               </button>
               <button

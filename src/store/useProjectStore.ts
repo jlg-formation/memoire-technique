@@ -63,7 +63,7 @@ export const useProjectStore = create<ProjectStore>((set) => {
         const updated = stripPdfFields({
           ...state.currentProject,
           ...data,
-          updatedAt: new Date().toISOString(),
+          lastUpdateDate: new Date().toISOString(),
         });
         void persistProject(updated);
         return {

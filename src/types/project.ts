@@ -32,10 +32,8 @@ export interface NotationItem {
 export interface Project {
   id: string;
   title: string;
-  startDate: string;
-  endDate: string;
-  createdAt: string;
-  updatedAt: string;
+  creationDate: string;
+  lastUpdateDate: string;
   groupType?: "solidaire" | "conjoint";
   participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;
