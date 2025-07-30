@@ -25,4 +25,6 @@ export interface Project {
   groupType?: "solidaire" | "conjoint";
   participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;
+  /** Contenu HTML du mémoire technique généré */
+  memoHtml?: string;
 }

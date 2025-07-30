@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 import Sidebar from "./components/Sidebar";
 import Projects from "./pages/Projects";
 import Groupement from "./pages/Groupement";
+import Memoire from "./pages/Memoire";
 import Settings from "./pages/Settings";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
           />
           <Route path="/projects" element={<Projects />} />
           <Route path="/groupement" element={<Groupement />} />
+          <Route path="/memoire" element={<Memoire />} />
           <Route path="/parametres" element={<Settings />} />
         </Routes>
       </div>
