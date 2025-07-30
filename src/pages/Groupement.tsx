@@ -72,6 +72,36 @@ function Groupement() {
     );
   };
 
+  const handleSummarizePresentation = async (
+    companyId: string,
+  ): Promise<void> => {
+    const company = companies.find((c) => c.id === companyId);
+    if (!company?.presentationFile) return;
+    const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+    if (!key) {
+      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      return;
+    }
+    try {
+      const file = base64ToFile(
+        company.presentationFile,
+        "presentation.pdf",
+        "application/pdf",
+      );
+      const text = await pdfToText(file, key);
+      const summary = await summarize(text, summaryWords, key);
+      updateCompanies(
+        companies.map((c) =>
+          c.id === companyId
+            ? { ...c, presentationText: text, presentationSummary: summary }
+            : c,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleSummarizePerson = async (
     companyId: string,
     personId: string,
@@ -204,6 +234,13 @@ function Groupement() {
                     handlePresentationChange(company.id, e.target.files?.[0])
                   }
                 />
+                <button
+                  type="button"
+                  onClick={() => handleSummarizePresentation(company.id)}
+                  className="bg-green-500 px-2 text-white"
+                >
+                  Résumer
+                </button>
               </div>
               {company.presentationSummary && (
                 <textarea
