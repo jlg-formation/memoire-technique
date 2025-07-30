@@ -1,11 +1,9 @@
+import mammoth from "mammoth";
+
 export async function extractDocxText(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
 
   try {
-    // dynamic import to avoid build errors when mammoth is absent
-    const modName = "mammoth";
-    const mammothModule = await import(modName);
-    const mammoth = mammothModule.default ?? mammothModule;
     const { value } = await mammoth.extractRawText({ arrayBuffer: buffer });
     return value.trim();
   } catch (err) {
