@@ -16,7 +16,16 @@ export default async function extractConsultationInfo(
     messages: [
       {
         role: "system",
-        content: `Tu es un assistant spécialisé en analyse de règlement de consultation. Extrais le titre de la consultation et la date limite de remise des offres au format ISO (AAAA-MM-JJ). Réponds uniquement en JSON.`,
+        content: `Tu es un assistant spécialisé en analyse de règlement de consultation.
+Extrais le titre de la consultation et appelle le consultationTitle,
+et la date limite de remise des offres au format (yyyy-MM-dd) que tu appelles submissionDeadline .
+Réponds uniquement en JSON.
+Le Schema doit etre comme l'exemple. Merci de le respecter et de ne surtout pas le modifier.
+Exemple:
+{
+  "consultationTitle": "Mission de maîtrise d’œuvre",
+  "submissionDeadline": "yyyy-MM-dd"
+}`,
       },
       {
         role: "user",
@@ -27,6 +36,7 @@ export default async function extractConsultationInfo(
   });
 
   const content = chat.choices[0].message.content ?? "{}";
+  console.log("content: ", content);
   try {
     return JSON.parse(content) as ConsultationInfo;
   } catch {

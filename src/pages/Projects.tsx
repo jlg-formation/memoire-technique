@@ -86,6 +86,10 @@ function Projects() {
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Projets</h1>
       <form onSubmit={handleSubmit} className="space-y-2">
+        <span>
+          Telecharge le RC pour retrouver automatiquement le titre et la date
+          limite de soumission.
+        </span>
         <input
           type="file"
           accept=".pdf,.docx"
@@ -115,6 +119,9 @@ function Projects() {
           Ajouter
         </button>
       </form>
+      <span className="font-bold">
+        Importer un projet existant (Format JSON, ou ZIP)
+      </span>
       <input
         type="file"
         accept=".json,.zip"
