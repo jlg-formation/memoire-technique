@@ -46,6 +46,14 @@ function Sidebar() {
         Mémoire
       </NavLink>
       <NavLink
+        to="/notation"
+        className={({ isActive }) =>
+          `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+        }
+      >
+        Notation
+      </NavLink>
+      <NavLink
         to="/parametres"
         className={({ isActive }) =>
           `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`

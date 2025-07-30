@@ -24,6 +24,11 @@ export interface MarketDocument {
   text: string;
 }
 
+export interface NotationItem {
+  label: string;
+  points: number;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -37,4 +42,6 @@ export interface Project {
   marketDocuments?: MarketDocument[];
   /** Contenu HTML du mémoire technique généré */
   memoHtml?: string;
+  /** Barème de la note méthodologique extrait du RC */
+  notation?: NotationItem[];
 }
