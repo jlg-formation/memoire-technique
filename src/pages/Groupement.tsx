@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
-import { pdfToText, summarize } from "../lib/openai";
+import { summarize } from "../lib/openai";
+import { extractPdfText } from "../lib/pdf";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 
@@ -99,7 +100,7 @@ function Groupement() {
       return;
     }
     try {
-      const text = await pdfToText(file, key);
+      const text = await extractPdfText(file);
       const summary = await summarize(text, summaryWords, key);
       updateCompanies(
         companies.map((c) =>
@@ -131,7 +132,7 @@ function Groupement() {
       return;
     }
     try {
-      const text = await pdfToText(file, key);
+      const text = await extractPdfText(file);
       const summary = await summarize(text, summaryWords, key);
       updateCompanies(
         companies.map((c) =>
