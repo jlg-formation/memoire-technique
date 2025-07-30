@@ -1,6 +1,7 @@
 import { useProjectStore } from "../store/useProjectStore";
 import type {
   MissionDays,
+  MissionJustifications,
   ParticipatingCompany,
   MobilizedPerson,
 } from "../types/project";
@@ -32,6 +33,8 @@ function Missions() {
     );
   }
   const missionDays: MissionDays = currentProject.missionDays ?? {};
+  const missionJustifications: MissionJustifications =
+    currentProject.missionJustifications ?? {};
 
   const getDays = (
     mission: string,
@@ -56,6 +59,31 @@ function Missions() {
       },
     };
     updateCurrentProject({ missionDays: updated });
+  };
+
+  const getJustification = (
+    mission: string,
+    companyId: string,
+    personId: string,
+  ): string => missionJustifications[mission]?.[companyId]?.[personId] ?? "";
+
+  const handleJustificationChange = (
+    mission: string,
+    companyId: string,
+    personId: string,
+    text: string,
+  ): void => {
+    const updated: MissionJustifications = {
+      ...missionJustifications,
+      [mission]: {
+        ...(missionJustifications[mission] ?? {}),
+        [companyId]: {
+          ...(missionJustifications[mission]?.[companyId] ?? {}),
+          [personId]: text,
+        },
+      },
+    };
+    updateCurrentProject({ missionJustifications: updated });
   };
 
   const personCost = (
@@ -108,29 +136,49 @@ function Missions() {
                   {people.map((person) => {
                     const days = getDays(mission, company.id, person.id);
                     const cost = personCost(mission, company, person);
+                    const justification = getJustification(
+                      mission,
+                      company.id,
+                      person.id,
+                    );
                     return (
                       <li
                         key={person.id}
-                        className="flex items-center justify-between"
+                        className="space-y-1 rounded border p-2"
                       >
-                        <span className="flex-1">{person.name}</span>
-                        <input
-                          type="number"
-                          className="w-20 border p-1"
-                          value={days}
+                        <div className="flex items-center justify-between">
+                          <span className="flex-1">{person.name}</span>
+                          <input
+                            type="number"
+                            className="w-20 border p-1"
+                            value={days}
+                            onChange={(e) =>
+                              handleChange(
+                                mission,
+                                company.id,
+                                person.id,
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                          <span>{person.dailyRate ?? 0} €/j</span>
+                          <span className="font-semibold">
+                            {cost.toFixed(2)} €
+                          </span>
+                        </div>
+                        <textarea
+                          className="w-full border p-1"
+                          value={justification}
                           onChange={(e) =>
-                            handleChange(
+                            handleJustificationChange(
                               mission,
                               company.id,
                               person.id,
-                              Number(e.target.value),
+                              e.target.value,
                             )
                           }
+                          placeholder="Justification du nombre de jours"
                         />
-                        <span>{person.dailyRate ?? 0} €/j</span>
-                        <span className="font-semibold">
-                          {cost.toFixed(2)} €
-                        </span>
                       </li>
                     );
                   })}
