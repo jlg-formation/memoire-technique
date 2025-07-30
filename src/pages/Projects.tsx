@@ -28,6 +28,7 @@ function Projects() {
       id: crypto.randomUUID(),
       consultationTitle,
       submissionDeadline,
+      worksAmount: undefined,
       creationDate: new Date().toISOString(),
       lastUpdateDate: new Date().toISOString(),
     });

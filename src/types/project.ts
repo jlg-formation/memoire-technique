@@ -40,6 +40,8 @@ export interface Project {
   consultationTitle: string;
   /** Date limite de remise des offres au format ISO */
   submissionDeadline: string;
+  /** Montant global des travaux en euros HT */
+  worksAmount?: number;
   creationDate: string;
   lastUpdateDate: string;
   groupType?: "solidaire" | "conjoint";
