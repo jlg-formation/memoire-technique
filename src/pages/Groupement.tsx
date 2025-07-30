@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 import { pdfToText, summarize } from "../lib/openai";
-import { base64ToFile, fileToBase64 } from "../lib/files";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 
@@ -11,6 +10,10 @@ function Groupement() {
   const { apiKey } = useOpenAIKeyStore();
   const [name, setName] = useState("");
   const [summaryWords, setSummaryWords] = useState(100);
+  const [presentationFiles, setPresentationFiles] = useState<
+    Record<string, File | undefined>
+  >({});
+  const [cvFiles, setCvFiles] = useState<Record<string, File | undefined>>({});
 
   if (!currentProject) {
     return (
@@ -28,14 +31,20 @@ function Groupement() {
     id: string,
     file?: File,
   ): Promise<void> => {
-    if (!file) return;
-    const b64 = await fileToBase64(file);
+    if (!file) {
+      setPresentationFiles((prev) => {
+        const copy = { ...prev };
+        delete copy[id];
+        return copy;
+      });
+      return;
+    }
+    setPresentationFiles((prev) => ({ ...prev, [id]: file }));
     updateCompanies(
       companies.map((c) =>
         c.id === id
           ? {
               ...c,
-              presentationFile: b64,
               presentationText: undefined,
               presentationSummary: undefined,
             }
@@ -49,8 +58,16 @@ function Groupement() {
     personId: string,
     file?: File,
   ): Promise<void> => {
-    if (!file) return;
-    const b64 = await fileToBase64(file);
+    if (!file) {
+      setCvFiles((prev) => {
+        const key = `${companyId}-${personId}`;
+        const copy = { ...prev } as Record<string, File | undefined>;
+        delete copy[key];
+        return copy;
+      });
+      return;
+    }
+    setCvFiles((prev) => ({ ...prev, [`${companyId}-${personId}`]: file }));
     updateCompanies(
       companies.map((c) =>
         c.id === companyId
@@ -60,7 +77,6 @@ function Groupement() {
                 p.id === personId
                   ? {
                       ...p,
-                      cvFile: b64,
                       cvText: undefined,
                       cvSummary: undefined,
                     }
@@ -75,19 +91,14 @@ function Groupement() {
   const handleSummarizePresentation = async (
     companyId: string,
   ): Promise<void> => {
-    const company = companies.find((c) => c.id === companyId);
-    if (!company?.presentationFile) return;
+    const file = presentationFiles[companyId];
+    if (!file) return;
     const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
     if (!key) {
       alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
       return;
     }
     try {
-      const file = base64ToFile(
-        company.presentationFile,
-        "presentation.pdf",
-        "application/pdf",
-      );
       const text = await pdfToText(file, key);
       const summary = await summarize(text, summaryWords, key);
       updateCompanies(
@@ -97,6 +108,11 @@ function Groupement() {
             : c,
         ),
       );
+      setPresentationFiles((prev) => {
+        const copy = { ...prev };
+        delete copy[companyId];
+        return copy;
+      });
     } catch (err) {
       console.error(err);
     }
@@ -106,16 +122,15 @@ function Groupement() {
     companyId: string,
     personId: string,
   ): Promise<void> => {
-    const company = companies.find((c) => c.id === companyId);
-    const person = company?.mobilizedPeople?.find((p) => p.id === personId);
-    if (!person?.cvFile) return;
+    const keyRef = `${companyId}-${personId}`;
+    const file = cvFiles[keyRef];
+    if (!file) return;
     const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
     if (!key) {
       alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
       return;
     }
     try {
-      const file = base64ToFile(person.cvFile, "cv.pdf", "application/pdf");
       const text = await pdfToText(file, key);
       const summary = await summarize(text, summaryWords, key);
       updateCompanies(
@@ -132,6 +147,11 @@ function Groupement() {
             : c,
         ),
       );
+      setCvFiles((prev) => {
+        const copy = { ...prev } as Record<string, File | undefined>;
+        delete copy[keyRef];
+        return copy;
+      });
     } catch (err) {
       console.error(err);
     }

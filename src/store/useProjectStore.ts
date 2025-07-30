@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { Project } from "../types/project";
+import { stripPdfFields } from "../lib/sanitize";
 import {
   loadProjects,
   saveProject as persistProject,
@@ -33,8 +34,9 @@ export const useProjectStore = create<ProjectStore>((set) => {
     projects: [],
     currentProject: null,
     addProject: (project) => {
-      set((state) => ({ projects: [...state.projects, project] }));
-      void persistProject(project);
+      const clean = stripPdfFields(project);
+      set((state) => ({ projects: [...state.projects, clean] }));
+      void persistProject(clean);
     },
     deleteProject: (id) => {
       set((state) => {
@@ -51,17 +53,18 @@ export const useProjectStore = create<ProjectStore>((set) => {
       void removeProject(id);
     },
     setProject: (project) => {
-      localStorage.setItem(CURRENT_PROJECT_KEY, project.id);
-      set({ currentProject: project });
+      const clean = stripPdfFields(project);
+      localStorage.setItem(CURRENT_PROJECT_KEY, clean.id);
+      set({ currentProject: clean });
     },
     updateCurrentProject: (data) => {
       set((state) => {
         if (!state.currentProject) return state;
-        const updated = {
+        const updated = stripPdfFields({
           ...state.currentProject,
           ...data,
           updatedAt: new Date().toISOString(),
-        };
+        });
         void persistProject(updated);
         return {
           projects: state.projects.map((p) =>
