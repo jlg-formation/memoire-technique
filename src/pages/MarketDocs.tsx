@@ -3,7 +3,11 @@ import { useProjectStore } from "../store/useProjectStore";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
-import { extractMethodologyScores, extractMissions } from "../lib/OpenAI";
+import {
+  extractMethodologyScores,
+  extractMissions,
+  extractWorksAmount,
+} from "../lib/OpenAI";
 import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
@@ -37,7 +41,8 @@ function MarketDocs() {
     if (docType === "AE" && apiKey) {
       try {
         const missions = await extractMissions(text, apiKey);
-        updateCurrentProject({ missions });
+        const worksAmount = await extractWorksAmount(text, apiKey);
+        updateCurrentProject({ missions, worksAmount });
       } catch (err) {
         console.error(err);
       }
@@ -94,6 +99,19 @@ function MarketDocs() {
           </li>
         ))}
       </ul>
+      <div className="space-y-1">
+        <label className="font-semibold">Montant global des travaux (€)</label>
+        <input
+          type="number"
+          className="w-full border p-2"
+          value={currentProject.worksAmount ?? ""}
+          onChange={(e) =>
+            updateCurrentProject({
+              worksAmount: e.target.value ? Number(e.target.value) : undefined,
+            })
+          }
+        />
+      </div>
     </div>
   );
 }
