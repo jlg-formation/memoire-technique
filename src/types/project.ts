@@ -15,6 +15,15 @@ export interface ParticipatingCompany {
   mobilizedPeople?: MobilizedPerson[];
 }
 
+export type MarketDocumentType = "RC" | "CCTP" | "CCAP" | "AE" | "AUTRE";
+
+export interface MarketDocument {
+  id: string;
+  name: string;
+  type: MarketDocumentType;
+  text: string;
+}
+
 export interface Project {
   id: string;
   title: string;
@@ -25,6 +34,7 @@ export interface Project {
   groupType?: "solidaire" | "conjoint";
   participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;
+  marketDocuments?: MarketDocument[];
   /** Contenu HTML du mémoire technique généré */
   memoHtml?: string;
 }
