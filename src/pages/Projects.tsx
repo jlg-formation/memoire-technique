@@ -97,7 +97,7 @@ function Projects() {
           type="file"
           accept=".pdf,.docx"
           onChange={handleRCFileChange}
-          className="w-full"
+          className="w-full rounded border border-gray-300 bg-gray-100 p-2"
         />
         <input
           className="w-full border p-2"
@@ -137,7 +137,7 @@ function Projects() {
         type="file"
         accept=".json,.zip"
         onChange={handleImport}
-        className="w-full"
+        className="w-full rounded border border-gray-300 bg-gray-100 p-2"
       />
       <ul className="space-y-2">
         {projects.map((project) => (
