@@ -1,5 +1,26 @@
+let mammoth: typeof import("mammoth") | undefined;
+
+async function loadMammoth() {
+  if (!mammoth) {
+    mammoth = (await import("mammoth")) as typeof import("mammoth");
+  }
+  if (!mammoth) {
+    throw new Error("Cannot load mammoth");
+  }
+  return mammoth;
+}
+
 export async function extractDocxText(file: File): Promise<string> {
+  const mammoth = await loadMammoth();
   const buffer = await file.arrayBuffer();
+
+  try {
+    const { value } = await mammoth.extractRawText({ arrayBuffer: buffer });
+    return value.trim();
+  } catch (err) {
+    console.warn("mammoth.js not available, falling back", err);
+  }
+
   const xmlData = await readFileFromZip(buffer, "word/document.xml");
   if (!xmlData) {
     console.warn("word/document.xml not found in docx", file.name);

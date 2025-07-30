@@ -39,8 +39,6 @@
 
 ## 📎 Téléversement de pièces
 
-- [ ] Intégrer `pdf.js` pour lire les PDF
-- [ ] Intégrer `mammoth.js` pour lire les `.docx`
 - [ ] Extraire texte et injecter dans le contexte IA
 - [ ] Résumer automatiquement + générer checklist
 
