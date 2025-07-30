@@ -66,4 +66,8 @@ export interface Project {
   missionDays?: MissionDays;
   /** Justification du nombre de jours par mission, entreprise et personne */
   missionJustifications?: MissionJustifications;
+  /** Texte résumant les contraintes de planning extraites de l'AE */
+  planningSummary?: string;
+  /** Planning généré par l'IA en Markdown */
+  planningText?: string;
 }
