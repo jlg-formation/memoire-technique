@@ -163,6 +163,26 @@ function Groupement() {
     }
   };
 
+  const handleEquipmentChange = async (
+    id: string,
+    file?: File,
+  ): Promise<void> => {
+    if (!file) {
+      updateCompanies(
+        companies.map((c) =>
+          c.id === id ? { ...c, equipmentText: undefined } : c,
+        ),
+      );
+      return;
+    }
+    const text = file.name.toLowerCase().endsWith(".docx")
+      ? await extractDocxText(file)
+      : await extractPdfText(file);
+    updateCompanies(
+      companies.map((c) => (c.id === id ? { ...c, equipmentText: text } : c)),
+    );
+  };
+
   const handleAddCompany = () => {
     if (!name.trim()) return;
     const newCompany: ParticipatingCompany = { id: crypto.randomUUID(), name };
@@ -292,6 +312,24 @@ function Groupement() {
                   value={company.presentationSummary}
                 />
               )}
+              <div className="space-y-1 pt-2">
+                <label className="font-semibold">Moyens matériels</label>
+                <input
+                  type="file"
+                  accept=".pdf,.docx"
+                  onChange={(e) =>
+                    handleEquipmentChange(company.id, e.target.files?.[0])
+                  }
+                  className="rounded border border-gray-300 bg-gray-100 p-2"
+                />
+                {company.equipmentText && (
+                  <textarea
+                    className="mt-2 w-full border p-2"
+                    readOnly
+                    value={company.equipmentText}
+                  />
+                )}
+              </div>
               <MobilizedPeopleList
                 company={company}
                 onFileChange={handlePersonFileChange}

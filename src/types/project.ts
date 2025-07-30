@@ -12,6 +12,7 @@ export interface ParticipatingCompany {
   name: string;
   presentationText?: string;
   presentationSummary?: string;
+  equipmentText?: string;
   mobilizedPeople?: MobilizedPerson[];
 }
 
