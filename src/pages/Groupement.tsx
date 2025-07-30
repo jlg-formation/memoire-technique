@@ -179,11 +179,22 @@ function Groupement() {
         currentProject.mandataireId === id
           ? undefined
           : currentProject.mandataireId,
+      mandataireContactId:
+        currentProject.mandataireId === id
+          ? undefined
+          : currentProject.mandataireContactId,
     });
   };
 
   const handleMandataire = (id: string) => {
-    updateCurrentProject({ mandataireId: id });
+    const mandataire = companies.find((c) => c.id === id);
+    const people = mandataire?.mobilizedPeople ?? [];
+    const contactId = people.some(
+      (p) => p.id === currentProject.mandataireContactId,
+    )
+      ? currentProject.mandataireContactId
+      : undefined;
+    updateCurrentProject({ mandataireId: id, mandataireContactId: contactId });
   };
 
   return (
@@ -284,16 +295,45 @@ function Groupement() {
                 company={company}
                 onFileChange={handlePersonFileChange}
                 onSummarize={handleSummarizePerson}
-                onUpdate={(updated) =>
+                onUpdate={(updated) => {
+                  if (
+                    currentProject.mandataireId === company.id &&
+                    !updated.some(
+                      (p) => p.id === currentProject.mandataireContactId,
+                    )
+                  ) {
+                    updateCurrentProject({ mandataireContactId: undefined });
+                  }
                   updateCompanies(
                     companies.map((c) =>
                       c.id === company.id
                         ? { ...c, mobilizedPeople: updated }
                         : c,
                     ),
-                  )
-                }
+                  );
+                }}
               />
+              {currentProject.mandataireId === company.id && (
+                <div className="space-y-1">
+                  <label className="font-semibold">Personne responsable</label>
+                  <select
+                    className="w-full border p-2"
+                    value={currentProject.mandataireContactId ?? ""}
+                    onChange={(e) =>
+                      updateCurrentProject({
+                        mandataireContactId: e.target.value || undefined,
+                      })
+                    }
+                  >
+                    <option value="">-- choisir --</option>
+                    {(company.mobilizedPeople ?? []).map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </li>
           ))}
         </ul>
