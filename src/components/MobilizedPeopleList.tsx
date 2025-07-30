@@ -91,7 +91,7 @@ function MobilizedPeopleList({
             <div className="flex space-x-2">
               <input
                 type="file"
-                accept="application/pdf"
+                accept=".pdf,.docx"
                 onChange={(e) =>
                   onFileChange(company.id, person.id, e.target.files?.[0])
                 }

@@ -3,6 +3,7 @@ import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 import { summarize } from "../lib/openai";
 import { extractPdfText } from "../lib/pdf";
+import { extractDocxText } from "../lib/docx";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 
@@ -100,7 +101,9 @@ function Groupement() {
       return;
     }
     try {
-      const text = await extractPdfText(file);
+      const text = file.name.toLowerCase().endsWith(".docx")
+        ? await extractDocxText(file)
+        : await extractPdfText(file);
       const summary = await summarize(text, summaryWords, key);
       updateCompanies(
         companies.map((c) =>
@@ -132,7 +135,9 @@ function Groupement() {
       return;
     }
     try {
-      const text = await extractPdfText(file);
+      const text = file.name.toLowerCase().endsWith(".docx")
+        ? await extractDocxText(file)
+        : await extractPdfText(file);
       const summary = await summarize(text, summaryWords, key);
       updateCompanies(
         companies.map((c) =>
@@ -250,7 +255,7 @@ function Groupement() {
               <div className="flex space-x-2">
                 <input
                   type="file"
-                  accept="application/pdf"
+                  accept=".pdf,.docx"
                   onChange={(e) =>
                     handlePresentationChange(company.id, e.target.files?.[0])
                   }
