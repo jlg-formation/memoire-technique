@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { generatePlanning } from "../lib/OpenAI";
+import PlanningChart from "../components/PlanningChart";
 
 function Planning() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -60,11 +61,14 @@ function Planning() {
       </button>
       {generating && <div>Génération en cours...</div>}
       {currentProject.planningText && (
-        <textarea
-          className="w-full border p-2"
-          readOnly
-          value={currentProject.planningText}
-        />
+        <>
+          <textarea
+            className="w-full border p-2"
+            readOnly
+            value={currentProject.planningText}
+          />
+          <PlanningChart markdown={currentProject.planningText} />
+        </>
       )}
     </div>
   );
