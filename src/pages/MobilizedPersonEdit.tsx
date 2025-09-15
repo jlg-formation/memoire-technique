@@ -78,8 +78,6 @@ function MobilizedPersonEdit({
         <div className="space-y-3">
           <FileAIUpload
             label="Joindre le CV de la personne"
-            accept=".pdf,.docx,.md,.txt"
-            parseLabel="Analyse du CV avec l'IA..."
             onParse={async (text) => {
               setProcessing(true);
               const summary = await summarize(text, 150);

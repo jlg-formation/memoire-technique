@@ -79,7 +79,6 @@ function Company({
           Présentation de l'entreprise
         </label>
         <FileAIUpload
-          accept=".pdf,.docx,.md,.txt"
           onParse={async (text) => {
             const summary = await summarize(text, summaryWords);
             return { text, summary };
@@ -96,7 +95,6 @@ function Company({
               presentationSummary: summary,
             });
           }}
-          parseLabel="Analyse du contenu avec l'IA..."
           className="mb-2"
         />
         {company.presentationSummary && (
@@ -117,8 +115,6 @@ function Company({
           Moyens matériels
         </label>
         <FileAIUpload
-          accept=".pdf,.docx,.md,.txt"
-          parseLabel="Analyse du contenu avec l'IA..."
           onParse={async (text) => {
             // On peut résumer ou juste stocker le texte
             return { text };

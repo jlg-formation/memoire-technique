@@ -174,8 +174,6 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
             <div className="space-y-3">
               <FileAIUpload
                 label="Présentation"
-                accept=".pdf,.docx,.md,.txt"
-                parseLabel="Analyse du contenu avec l'IA..."
                 onParse={async (text) => {
                   setProcessing(true);
                   const summary = await summarize(text, summaryWords);
@@ -215,8 +213,6 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
             <div className="space-y-3">
               <FileAIUpload
                 label="Matériel"
-                accept=".pdf,.docx,.md,.txt"
-                parseLabel="Lecture du fichier de matériel..."
                 onParse={async (text) => {
                   return { text };
                 }}

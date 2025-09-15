@@ -65,8 +65,6 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
                 CV de la personne
               </label>
               <FileAIUpload
-                accept=".pdf,.docx,.md,.txt"
-                parseLabel="Analyse du CV avec l'IA..."
                 onParse={async (text) => {
                   const summary = await summarize(text, 150);
                   // Extraire le nom depuis le résumé (première ligne souvent)
@@ -176,8 +174,6 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
                       CV de la personne
                     </label>
                     <FileAIUpload
-                      accept=".pdf,.docx,.md,.txt"
-                      parseLabel="Analyse du CV avec l'IA..."
                       onParse={async (text) => {
                         const summary = await summarize(text, 150);
                         return { text, summary };
