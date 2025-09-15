@@ -111,9 +111,8 @@ function Equipes() {
             label="Joindre le fichier de présentation de l'entreprise"
             accept=".pdf,.docx,.md,.txt"
             onParse={async (text) => {
-              const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
-              if (!key) throw new Error("Clé OpenAI manquante");
-              const summary = await summarize(text, summaryWords, key);
+              if (!apiKey) throw new Error("Clé OpenAI manquante");
+              const summary = await summarize(text, summaryWords, apiKey);
               return { text, summary };
             }}
             onResult={(result) => {
