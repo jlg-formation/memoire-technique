@@ -9,6 +9,7 @@ import Planning from "./pages/Planning";
 import Memoire from "./pages/Memoire";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
+import { ButtonLink } from "./components/ui";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,13 +25,12 @@ function App() {
       )}
       <div className="flex-1">
         <div className="mx-auto max-w-screen-lg p-4">
-          <button
-            type="button"
+          <ButtonLink
             onClick={() => setSidebarOpen(true)}
-            className="mb-4 cursor-pointer md:hidden"
+            className="mb-4 md:hidden"
           >
             ☰
-          </button>
+          </ButtonLink>
           <Routes>
             <Route
               path="/"

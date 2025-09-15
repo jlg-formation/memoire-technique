@@ -4,6 +4,7 @@ import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import { extractConsultationInfo } from "../lib/OpenAI";
+import { ButtonPrimary, ButtonLink } from "../components/ui";
 
 interface ProjectCreateProps {
   onClose: () => void;
@@ -84,25 +85,27 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between border-b pb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Nouveau projet</h1>
-        <button
-          onClick={onClose}
-          className="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+        <div className="flex items-center gap-4">
+          <ButtonLink onClick={onClose} className="flex items-center gap-2">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Précédent
+          </ButtonLink>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Nouveau projet
+          </h1>
+        </div>
       </div>
 
       {/* RC Import Section */}
@@ -220,22 +223,14 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
           />
         </div>
 
-        <div className="flex gap-3 pt-4">
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={processing}
-            className="flex-1 cursor-pointer rounded-md border border-gray-300 px-4 py-3 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
-          >
-            Annuler
-          </button>
-          <button
+        <div className="flex justify-end pt-4">
+          <ButtonPrimary
             type="submit"
             disabled={processing}
-            className="flex-1 cursor-pointer rounded-md bg-blue-600 px-4 py-3 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
+            className="px-6 py-3"
           >
             Créer le projet
-          </button>
+          </ButtonPrimary>
         </div>
       </form>
     </div>

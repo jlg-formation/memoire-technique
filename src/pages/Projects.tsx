@@ -8,6 +8,7 @@ import {
 import type { Project } from "../types/project";
 import ProjectCreate from "./ProjectCreate";
 import ProjectImport from "./ProjectImport";
+import { ButtonPrimary, Button, ButtonLink } from "../components/ui";
 
 function Projects() {
   const { projects, currentProject, deleteProject, setProject } =
@@ -48,9 +49,9 @@ function Projects() {
       <div className="p-6">
         {/* Action Buttons */}
         <div className="mb-6 flex flex-wrap gap-3">
-          <button
+          <ButtonPrimary
             onClick={() => setCurrentView("create")}
-            className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
+            className="flex items-center gap-2"
           >
             <svg
               className="h-5 w-5"
@@ -66,11 +67,11 @@ function Projects() {
               />
             </svg>
             Nouveau
-          </button>
+          </ButtonPrimary>
 
-          <button
+          <Button
             onClick={() => setCurrentView("import")}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex items-center gap-2"
           >
             <svg
               className="h-5 w-5"
@@ -86,15 +87,15 @@ function Projects() {
               />
             </svg>
             Importer
-          </button>
+          </Button>
 
           {/* Export buttons - visible only when a project is selected */}
           {currentProject && (
             <>
               <div className="mx-3 border-l border-gray-300"></div>
-              <button
+              <Button
                 onClick={() => handleExportJSON(currentProject)}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-white transition-colors hover:bg-green-700"
+                className="flex items-center gap-2 border-green-600 bg-green-600 text-white hover:bg-green-700"
               >
                 <svg
                   className="h-5 w-5"
@@ -110,10 +111,10 @@ function Projects() {
                   />
                 </svg>
                 Export JSON
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleExportZIP(currentProject)}
-                className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-white transition-colors hover:bg-green-700"
+                className="flex items-center gap-2 border-green-600 bg-green-600 text-white hover:bg-green-700"
               >
                 <svg
                   className="h-5 w-5"
@@ -129,7 +130,7 @@ function Projects() {
                   />
                 </svg>
                 Export ZIP
-              </button>
+              </Button>
             </>
           )}
         </div>
@@ -165,9 +166,9 @@ function Projects() {
             <p className="mb-4 text-gray-500">
               Créez votre premier projet pour commencer.
             </p>
-            <button
+            <ButtonPrimary
               onClick={() => setCurrentView("create")}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              className="inline-flex items-center gap-2"
             >
               <svg
                 className="h-4 w-4"
@@ -183,7 +184,7 @@ function Projects() {
                 />
               </svg>
               Nouveau projet
-            </button>
+            </ButtonPrimary>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -250,12 +251,12 @@ function Projects() {
                     Créé le{" "}
                     {new Date(project.creationDate).toLocaleDateString("fr-FR")}
                   </div>
-                  <button
+                  <ButtonLink
                     onClick={(e) => {
                       e.stopPropagation();
                       deleteProject(project.id);
                     }}
-                    className="cursor-pointer rounded p-1 text-red-500 hover:bg-red-50"
+                    className="rounded p-1 text-red-500 hover:bg-red-50"
                   >
                     <svg
                       className="h-4 w-4"
@@ -270,7 +271,7 @@ function Projects() {
                         d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                       />
                     </svg>
-                  </button>
+                  </ButtonLink>
                 </div>
               </div>
             ))}

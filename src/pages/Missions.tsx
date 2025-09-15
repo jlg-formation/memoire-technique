@@ -8,6 +8,7 @@ import type {
   ParticipatingCompany,
   MobilizedPerson,
 } from "../types/project";
+import { ButtonPrimary } from "../components/ui";
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -143,13 +144,14 @@ function Missions() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Missions</h1>
-      <button
+      <ButtonPrimary
         type="button"
         onClick={handleEstimate}
-        className="cursor-pointer rounded bg-green-500 px-4 py-2 text-white"
+        disabled={estimating}
+        className="border-green-600 bg-green-600 hover:bg-green-700"
       >
         Estimer par IA
-      </button>
+      </ButtonPrimary>
       {estimating && <div>Estimation en cours...</div>}
       {missions.map((mission) => (
         <div key={mission} className="space-y-2 border p-2">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import { importProjectJSON, importProjectZIP } from "../lib/export";
 import type { Project } from "../types/project";
+import { ButtonLink } from "../components/ui";
 
 interface ProjectImportProps {
   onClose: () => void;
@@ -71,27 +72,27 @@ function ProjectImport({ onClose }: ProjectImportProps) {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="flex items-center justify-between border-b pb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">
-          Importer un projet
-        </h1>
-        <button
-          onClick={onClose}
-          className="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+        <div className="flex items-center gap-4">
+          <ButtonLink onClick={onClose} className="flex items-center gap-2">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Précédent
+          </ButtonLink>
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Importer un projet
+          </h1>
+        </div>
       </div>
 
       {/* Import Zone */}
@@ -148,16 +149,6 @@ function ProjectImport({ onClose }: ProjectImportProps) {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex justify-end">
-        <button
-          onClick={onClose}
-          className="cursor-pointer rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
-        >
-          Annuler
-        </button>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { useProjectStore } from "../store/useProjectStore";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { generatePlanning } from "../lib/OpenAI";
 import PlanningChart from "../components/PlanningChart";
+import { ButtonPrimary } from "../components/ui";
 
 function Planning() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -52,13 +53,14 @@ function Planning() {
         }
         placeholder="Résumé des contraintes de planning"
       />
-      <button
+      <ButtonPrimary
         type="button"
         onClick={handleGenerate}
-        className="cursor-pointer rounded bg-green-500 px-4 py-2 text-white"
+        disabled={generating}
+        className="border-green-600 bg-green-600 hover:bg-green-700"
       >
         Générer Planning via IA
-      </button>
+      </ButtonPrimary>
       {generating && <div>Génération en cours...</div>}
       {currentProject.planningText && (
         <>

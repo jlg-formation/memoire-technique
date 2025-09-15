@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { generateMemoire } from "../lib/OpenAI";
+import { ButtonPrimary } from "../components/ui";
 
 function Memoire() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -33,13 +34,13 @@ function Memoire() {
 
   return (
     <div className="space-y-2 p-4">
-      <button
+      <ButtonPrimary
         type="button"
         onClick={handleGenerate}
-        className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
+        disabled={generating}
       >
         Générer mémoire par l&apos;IA
-      </button>
+      </ButtonPrimary>
       {generating && <div>Génération en cours...</div>}
       {currentProject.memoHtml ? (
         <div dangerouslySetInnerHTML={{ __html: currentProject.memoHtml }} />

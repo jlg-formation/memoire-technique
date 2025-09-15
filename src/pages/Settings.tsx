@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { testKey } from "../lib/OpenAI";
+import { ButtonPrimary, Button } from "../components/ui";
 
 function Settings() {
   const { apiKey, setApiKey } = useOpenAIKeyStore();
@@ -36,20 +37,16 @@ function Settings() {
         placeholder="sk-..."
       />
       <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={handleSave}
-          className="cursor-pointer rounded bg-blue-500 px-4 py-2 text-white"
-        >
+        <ButtonPrimary type="button" onClick={handleSave}>
           Enregistrer
-        </button>
-        <button
+        </ButtonPrimary>
+        <Button
           type="button"
           onClick={handleTest}
-          className="cursor-pointer rounded bg-green-500 px-4 py-2 text-white"
+          className="border-green-600 bg-green-600 text-white hover:bg-green-700"
         >
           Tester
-        </button>
+        </Button>
       </div>
       {status === "testing" && <div>Test en cours...</div>}
       {status === "success" && <div className="text-green-600">Clé valide</div>}
