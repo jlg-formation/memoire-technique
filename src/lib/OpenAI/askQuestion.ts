@@ -3,9 +3,8 @@ import createClient from "./client";
 export default async function askQuestion(
   text: string,
   question: string,
-  apiKey: string,
 ): Promise<string> {
-  const openai = createClient(apiKey);
+  const openai = createClient();
 
   const truncatedText = text.slice(0, 6000);
 
