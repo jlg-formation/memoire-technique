@@ -9,7 +9,16 @@ import type { Project } from "../types/project";
 import ProjectCreate from "./ProjectCreate";
 import ProjectImport from "./ProjectImport";
 import { ButtonPrimary, Button, ButtonLink } from "../components/ui";
-import { Plus, Upload, Download, Archive, FileText, Calendar, DollarSign, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Upload,
+  Download,
+  Archive,
+  FileText,
+  Calendar,
+  DollarSign,
+  Trash2,
+} from "lucide-react";
 
 function Projects() {
   const { projects, currentProject, deleteProject, setProject } =
