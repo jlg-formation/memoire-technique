@@ -23,16 +23,14 @@ import { extractDocxText } from "../lib/docx";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 import { ButtonPrimary, AccentButton, ButtonLink } from "../components/ui";
-import { Trash2 } from "lucide-react";
+import { Trash2, Check, Info } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   const { apiKey } = useOpenAIKeyStore();
   // On ne demande plus le nom, mais le fichier de présentation
-  const [newCompanyFile, setNewCompanyFile] = useState<File | undefined>(
-    undefined,
-  );
   const [isExtracting, setIsExtracting] = useState(false);
+  const [analysisStep, setAnalysisStep] = useState<string>("");
   const [summaryWords, setSummaryWords] = useState(100);
   const [presentationFiles, setPresentationFiles] = useState<
     Record<string, File | undefined>
@@ -211,22 +209,26 @@ function Equipes() {
     );
   };
 
-  // Ajout d'une entreprise via fichier
-  const handleAddCompanyFromFile = async () => {
-    if (!newCompanyFile) return;
+  // Ajout d'une entreprise via fichier, déclenché à la sélection
+  const handleCompanyFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
     const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
     if (!key) {
-      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      setAnalysisStep("Veuillez saisir votre clé OpenAI dans les paramètres.");
       return;
     }
     setIsExtracting(true);
+    setAnalysisStep("Extraction du contenu du fichier...");
     try {
-      const text = newCompanyFile.name.toLowerCase().endsWith(".docx")
-        ? await extractDocxText(newCompanyFile)
-        : await extractPdfText(newCompanyFile);
-      // Appel OpenAI pour extraire le résumé
+      const text = file.name.toLowerCase().endsWith(".docx")
+        ? await extractDocxText(file)
+        : await extractPdfText(file);
+      setAnalysisStep("Analyse du contenu avec l'IA...");
       const summary = await summarize(text, summaryWords, key);
-      // Extraction du nom pur
+      setAnalysisStep("Préremplissage des champs...");
       const name = extractCompanyName(summary);
       const newCompany: ParticipatingCompany = {
         id: crypto.randomUUID(),
@@ -237,12 +239,15 @@ function Equipes() {
       updateCurrentProject({
         participatingCompanies: [...companies, newCompany],
       });
-      setNewCompanyFile(undefined);
+      setAnalysisStep("Analyse terminée avec succès !");
+      setTimeout(() => setAnalysisStep(""), 2000);
     } catch (err) {
-      alert("Erreur lors de l'extraction du fichier.");
+      setAnalysisStep("Erreur lors de l'analyse du fichier");
+      setTimeout(() => setAnalysisStep(""), 3000);
       console.error(err);
     } finally {
       setIsExtracting(false);
+      e.target.value = "";
     }
   };
 
@@ -317,17 +322,44 @@ function Equipes() {
             <input
               type="file"
               accept=".pdf,.docx,.md,.txt"
-              onChange={(e) => setNewCompanyFile(e.target.files?.[0])}
-              className="flex-1 cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white"
+              onChange={handleCompanyFileChange}
+              disabled={isExtracting}
+              className="flex-1 cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white disabled:cursor-not-allowed disabled:bg-gray-100"
             />
-            <ButtonPrimary
-              type="button"
-              onClick={handleAddCompanyFromFile}
-              className="text-sm sm:text-base"
-              disabled={!newCompanyFile || isExtracting}
-            >
-              {isExtracting ? "Extraction..." : "Ajouter"}
-            </ButtonPrimary>
+          </div>
+          {/* Status message container with fixed height to prevent CLS */}
+          <div className="min-h-[52px] sm:min-h-[60px]">
+            {isExtracting && (
+              <div className="flex items-center gap-2 rounded-md bg-blue-100 p-2 sm:gap-3 sm:p-3">
+                <div className="flex-shrink-0">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent sm:h-5 sm:w-5"></div>
+                </div>
+                <div className="text-xs text-blue-800 sm:text-sm">
+                  {analysisStep || "Traitement en cours..."}
+                </div>
+              </div>
+            )}
+            {!isExtracting && analysisStep && (
+              <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
+                <div className="flex-shrink-0">
+                  <Check className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />
+                </div>
+                <div className="text-xs text-green-800 sm:text-sm">
+                  {analysisStep}
+                </div>
+              </div>
+            )}
+            {!isExtracting && !analysisStep && (
+              <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2 sm:gap-3 sm:p-3">
+                <div className="flex-shrink-0">
+                  <Info className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" />
+                </div>
+                <div className="text-xs text-gray-600 sm:text-sm">
+                  Une fois sélectionné, le fichier sera analysé automatiquement
+                  par l'IA pour extraire les informations.
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
