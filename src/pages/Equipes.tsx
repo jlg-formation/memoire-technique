@@ -1,270 +1,211 @@
 import { useState } from "react";
-import Company from "../components/Company";
-import { ButtonLink, ButtonPrimary, Select } from "../components/ui";
-import FileAIUpload from "../components/ui/FileAIUpload";
-import { summarize } from "../lib/OpenAI";
-import { extractCompanyName } from "../lib/strings/extractCompanyName";
 import { useProjectStore } from "../store/useProjectStore";
+import { executeDeleteAction } from "../lib/critical-actions";
 import type { ParticipatingCompany } from "../types/project";
+import CompanyCreate from "./CompanyCreate";
+import CompanyEdit from "./CompanyEdit";
+import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
+import { Plus, Building2, Edit3, Trash2, Users } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  const [summaryWords, setSummaryWords] = useState(100);
-  const [subcontractorName, setSubcontractorName] = useState("");
-  const [subcontractors, setSubcontractors] = useState<ParticipatingCompany[]>(
-    [],
+
+  const [currentView, setCurrentView] = useState<"list" | "create" | "edit">(
+    "list",
   );
-  const [showAddCompany, setShowAddCompany] = useState(false);
+  const [editingCompany, setEditingCompany] =
+    useState<ParticipatingCompany | null>(null);
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
 
-  const updateCompanies = (newCompanies: ParticipatingCompany[]) => {
-    updateCurrentProject({ participatingCompanies: newCompanies });
+  const handleDeleteCompany = (id: string, companyName: string) => {
+    executeDeleteAction(() => {
+      updateCurrentProject({
+        participatingCompanies: companies.filter((c) => c.id !== id),
+        mandataireId:
+          currentProject && currentProject.mandataireId === id
+            ? undefined
+            : currentProject?.mandataireId,
+        mandataireContactId:
+          currentProject && currentProject.mandataireId === id
+            ? undefined
+            : currentProject?.mandataireContactId,
+      });
+    }, companyName);
   };
 
-  const handleDeleteCompany = (id: string) => {
-    updateCurrentProject({
-      participatingCompanies: companies.filter((c) => c.id !== id),
-      mandataireId:
-        currentProject && currentProject.mandataireId === id
-          ? undefined
-          : currentProject?.mandataireId,
-      mandataireContactId:
-        currentProject && currentProject.mandataireId === id
-          ? undefined
-          : currentProject?.mandataireContactId,
-    });
+  const handleEditCompany = (company: ParticipatingCompany): void => {
+    setEditingCompany(company);
+    setCurrentView("edit");
   };
+
+  const handleCloseEdit = (): void => {
+    setEditingCompany(null);
+    setCurrentView("list");
+  };
+
+  if (currentView === "create") {
+    return <CompanyCreate onClose={() => setCurrentView("list")} />;
+  }
+
+  if (currentView === "edit" && editingCompany) {
+    return <CompanyEdit company={editingCompany} onClose={handleCloseEdit} />;
+  }
 
   return (
-    <div className="min-h-screen space-y-6 p-2 sm:p-6">
+    <div className="h-full bg-gray-50">
       {/* Header */}
-      <div className="border-b pb-4">
-        <h1 className="text-xl font-semibold text-gray-800 sm:text-2xl">
-          Equipes
-        </h1>
+      <div className="bg-white shadow-sm">
+        <div className="px-6 py-4">
+          <h1 className="text-2xl font-semibold text-gray-800">Équipes</h1>
+        </div>
       </div>
 
-      {/* Type d'équipe Section */}
-      <div className="rounded-lg bg-gray-50 p-3 sm:p-4">
-        <Select
-          label="Type d'équipe"
-          placeholder="-- choisir --"
-          options={[
-            { value: "seule", label: "Entreprise seule" },
-            { value: "solidaire", label: "Groupement Solidaire" },
-            { value: "conjoint", label: "Groupement Conjoint" },
-          ]}
-          value={currentProject?.groupType ?? ""}
-          onChange={(e) => {
-            updateCurrentProject({
-              groupType: e.target.value as "solidaire" | "conjoint" | "seule",
-            });
-            setSubcontractors([]);
-          }}
-          className="text-sm sm:text-base"
-        />
-      </div>
+      <div className="p-6">
+        {/* Type d'équipe Section */}
+        <div className="mb-6 rounded-lg bg-gray-50 p-4">
+          <Select
+            label="Type d'équipe"
+            placeholder="-- choisir --"
+            options={[
+              { value: "seule", label: "Entreprise seule" },
+              { value: "solidaire", label: "Groupement Solidaire" },
+              { value: "conjoint", label: "Groupement Conjoint" },
+            ]}
+            value={currentProject?.groupType ?? ""}
+            onChange={(e) => {
+              updateCurrentProject({
+                groupType: e.target.value as "solidaire" | "conjoint" | "seule",
+              });
+            }}
+            className="text-sm sm:text-base"
+          />
+        </div>
 
-      {/* Entreprises participantes Section */}
-      <div className="rounded-lg bg-blue-50 p-3 sm:p-4">
-        <div className="space-y-4">
-          <label className="block text-sm font-medium text-blue-900 sm:text-base">
-            {currentProject?.groupType === "seule"
-              ? "Entreprise principale"
-              : "Entreprises participantes"}
-          </label>
+        {/* Action Buttons */}
+        <div className="mb-6 flex flex-wrap gap-3">
+          <ButtonPrimary
+            onClick={() => setCurrentView("create")}
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-5 w-5" />
+            Nouvelle entreprise
+          </ButtonPrimary>
+        </div>
 
-          {(currentProject?.groupType !== "seule" || companies.length === 0) &&
-            !showAddCompany && (
-              <div className="flex justify-center">
-                <ButtonPrimary
-                  type="button"
-                  onClick={() => setShowAddCompany(true)}
-                  className="px-6 py-3 text-sm font-medium sm:text-base"
-                >
-                  + Ajouter Entreprise
-                </ButtonPrimary>
-              </div>
-            )}
-
-          {showAddCompany && (
-            <div className="rounded-lg border border-blue-200 bg-white p-4 shadow-sm">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-900 sm:text-base">
-                  Nouvelle entreprise
-                </h3>
-                <ButtonLink
-                  type="button"
-                  onClick={() => setShowAddCompany(false)}
-                  className="text-sm text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </ButtonLink>
-              </div>
-              <FileAIUpload
-                label="Joindre le fichier de présentation de l'entreprise"
-                accept=".pdf,.docx,.md,.txt"
-                onParse={async (text) => {
-                  const summary = await summarize(text, summaryWords);
-                  return { text, summary };
-                }}
-                onResult={(result) => {
-                  // Cast result to expected shape
-                  const { text, summary } = result as {
-                    text: string;
-                    summary: string;
-                  };
-                  const name = extractCompanyName(summary);
-                  const newCompany: ParticipatingCompany = {
-                    id: crypto.randomUUID(),
-                    name,
-                    presentationText: text,
-                    presentationSummary: summary,
-                  };
-                  if (currentProject?.groupType === "seule") {
-                    // Remplace l'entreprise principale
-                    updateCurrentProject({
-                      participatingCompanies: [newCompany],
-                    });
-                  } else {
-                    // Ajoute à la liste
-                    updateCurrentProject({
-                      participatingCompanies: [...companies, newCompany],
-                    });
-                  }
-                  setShowAddCompany(false);
-                }}
-                parseLabel="Analyse du contenu avec l'IA..."
-                className="mb-0"
-              />
+        {/* Entreprises List */}
+        {companies.length === 0 ? (
+          <div className="py-12 text-center">
+            <div className="mx-auto mb-4 h-24 w-24 text-gray-400">
+              <Building2 className="h-full w-full" />
             </div>
-          )}
-
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="text-sm font-medium text-blue-800 sm:text-base">
-              Résumé en
-            </label>
-            <input
-              type="number"
-              className="w-20 rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-              value={summaryWords}
-              onChange={(e) => setSummaryWords(Number(e.target.value))}
-            />
-            <span className="text-sm text-blue-700 sm:text-base">mots</span>
+            <h3 className="mb-2 text-lg font-medium text-gray-900">
+              Aucune entreprise
+            </h3>
+            <p className="mb-4 text-gray-500">
+              Ajoutez votre première entreprise pour commencer.
+            </p>
+            <ButtonPrimary
+              onClick={() => setCurrentView("create")}
+              className="inline-flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Nouvelle entreprise
+            </ButtonPrimary>
           </div>
-
-          {/* Mandataire uniquement si groupement */}
-          {companies.length > 1 &&
-            currentProject?.groupType !== undefined &&
-            currentProject?.groupType !== "seule" && (
-              <p className="text-sm font-medium text-blue-900 sm:text-base">
-                Sélectionnez le mandataire
-              </p>
-            )}
-          <ul className="space-y-4">
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {companies.map((company) => (
-              <Company
+              <div
                 key={company.id}
-                company={company}
-                companies={companies}
-                currentProject={currentProject}
-                summaryWords={summaryWords}
-                onUpdate={(updatedCompany) => {
-                  updateCompanies(
-                    companies.map((c) =>
-                      c.id === company.id ? updatedCompany : c,
-                    ),
-                  );
-                }}
-                onDelete={handleDeleteCompany}
-                onMandataireChange={(companyId) => {
+                className="cursor-pointer rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
+              >
+                <div className="mb-4">
+                  <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
+                    {company.name}
+                  </h3>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    {company.mobilizedPeople &&
+                      company.mobilizedPeople.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <Users className="h-4 w-4" />
+                          {company.mobilizedPeople.length} personne
+                          {company.mobilizedPeople.length > 1 ? "s" : ""}{" "}
+                          mobilisée
+                          {company.mobilizedPeople.length > 1 ? "s" : ""}
+                        </div>
+                      )}
+                    {currentProject?.mandataireId === company.id && (
+                      <div className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                        Mandataire
+                      </div>
+                    )}
+                  </div>
+                  {company.presentationSummary && (
+                    <p className="mt-2 line-clamp-3 text-sm text-gray-600">
+                      {company.presentationSummary}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-end text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <ButtonLink
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditCompany(company);
+                      }}
+                      className="rounded p-1 text-blue-500 hover:bg-blue-50"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </ButtonLink>
+                    <ButtonLink
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteCompany(company.id, company.name);
+                      }}
+                      className="rounded p-1 text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </ButtonLink>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Mandataire Selection - Only for groupments */}
+        {companies.length > 1 &&
+          currentProject?.groupType !== undefined &&
+          currentProject?.groupType !== "seule" && (
+            <div className="mt-6 rounded-lg bg-blue-50 p-4">
+              <h3 className="mb-3 text-sm font-medium text-blue-900">
+                Sélection du mandataire
+              </h3>
+              <p className="mb-3 text-xs text-blue-700">
+                Pour un groupement, vous devez désigner une entreprise
+                mandataire qui sera responsable de la coordination.
+              </p>
+              <Select
+                label=""
+                placeholder="-- Sélectionnez le mandataire --"
+                options={companies.map((company) => ({
+                  value: company.id,
+                  label: company.name,
+                }))}
+                value={currentProject?.mandataireId ?? ""}
+                onChange={(e) => {
                   updateCurrentProject({
-                    mandataireId: companyId,
+                    mandataireId: e.target.value,
                     mandataireContactId: undefined,
                   });
                 }}
-                onMandataireContactChange={(contactId) => {
-                  updateCurrentProject({
-                    mandataireContactId: contactId,
-                  });
-                }}
-                onMobilizedPeopleUpdate={(updated) => {
-                  if (
-                    currentProject?.mandataireId === company.id &&
-                    !updated?.some(
-                      (p) => p.id === currentProject?.mandataireContactId,
-                    )
-                  ) {
-                    updateCurrentProject({ mandataireContactId: undefined });
-                  }
-                  updateCompanies(
-                    companies.map((c) =>
-                      c.id === company.id
-                        ? { ...c, mobilizedPeople: updated }
-                        : c,
-                    ),
-                  );
-                }}
+                className="text-sm"
               />
-            ))}
-          </ul>
-
-          {/* Sous-traitants si entreprise seule */}
-          {currentProject?.groupType === "seule" && companies.length === 1 && (
-            <div className="mt-6 rounded-lg bg-gray-100 p-4">
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Sous-traitants
-              </label>
-              <div className="mb-2 flex flex-wrap items-center gap-2">
-                <input
-                  className="flex-1 rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
-                  value={subcontractorName}
-                  onChange={(e) => setSubcontractorName(e.target.value)}
-                  placeholder="Nom du sous-traitant"
-                />
-                <ButtonPrimary
-                  type="button"
-                  onClick={() => {
-                    if (!subcontractorName.trim()) return;
-                    setSubcontractors([
-                      ...subcontractors,
-                      { id: crypto.randomUUID(), name: subcontractorName },
-                    ]);
-                    setSubcontractorName("");
-                  }}
-                  className="text-sm sm:text-base"
-                >
-                  Ajouter
-                </ButtonPrimary>
-              </div>
-              <ul className="space-y-2">
-                {subcontractors.map((sc) => (
-                  <li
-                    key={sc.id}
-                    className="flex items-center justify-between rounded border bg-white p-2"
-                  >
-                    <span className="text-sm font-medium text-gray-900">
-                      {sc.name}
-                    </span>
-                    <ButtonLink
-                      type="button"
-                      onClick={() =>
-                        setSubcontractors(
-                          subcontractors.filter((s) => s.id !== sc.id),
-                        )
-                      }
-                      className="text-sm text-red-600 hover:text-red-700"
-                    >
-                      Supprimer
-                    </ButtonLink>
-                  </li>
-                ))}
-              </ul>
             </div>
           )}
-        </div>
       </div>
     </div>
   );
