@@ -1,25 +1,19 @@
 import { useState, useRef } from "react";
-import { Check, Info } from "lucide-react";
+import { Check } from "lucide-react";
 
 interface FileAIUploadProps {
-  label?: string;
-  accept?: string;
   disabled?: boolean;
   onParse: (text: string) => Promise<unknown>;
   onResult: (result: unknown) => void;
-  parseLabel?: string;
   className?: string;
   status?: string;
   setStatus?: (msg: string) => void;
 }
 
 export default function FileAIUpload({
-  label = "",
-  accept = ".pdf,.docx",
   disabled = false,
   onParse,
   onResult,
-  parseLabel = "Analyse du contenu avec l'IA...",
   className = "",
   status,
   setStatus,
@@ -57,7 +51,7 @@ export default function FileAIUpload({
         text = await window.extractPdfText(file);
       }
       if (cancelled) return;
-      setStep(parseLabel);
+      setStep("Analyse du contenu avec l'IA...");
       const result = await onParse(text);
       if (cancelled) return;
       setStep("Analyse terminée avec succès !");
@@ -76,59 +70,67 @@ export default function FileAIUpload({
   };
 
   return (
-    <div className={className}>
-      {label && (
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          {label}
-        </label>
-      )}
+    <div
+      className={`flex items-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2 transition-all duration-300 hover:border-gray-400 ${className}`}
+      style={{ minHeight: 48, maxWidth: 360 }}
+    >
+      <span className="font-mono text-xl text-gray-700">&gt;</span>
+
       <input
         ref={fileInputRef}
         type="file"
-        accept={accept}
+        accept={".pdf,.docx,.md,.txt"}
         onChange={handleFileChange}
         disabled={disabled || isExtracting}
-        className="w-full cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white disabled:cursor-not-allowed disabled:bg-gray-100"
+        className="hidden"
+        id="file-ai-upload-input"
       />
-      <div className="mt-2 min-h-[52px] sm:min-h-[60px]">
-        {isExtracting && (
-          <div className="flex items-center gap-2 rounded-md bg-blue-100 p-2 sm:gap-3 sm:p-3">
-            <div className="flex-shrink-0">
-              <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent sm:h-5 sm:w-5"></div>
-            </div>
-            <div className="text-xs text-blue-800 sm:text-sm">
-              {analysisStep || "Traitement en cours..."}
-            </div>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="ml-auto rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600"
-            >
-              Annuler
-            </button>
-          </div>
-        )}
-        {!isExtracting && analysisStep && (
-          <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
-            <div className="flex-shrink-0">
-              <Check className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />
-            </div>
-            <div className="text-xs text-green-800 sm:text-sm">
-              {analysisStep}
-            </div>
-          </div>
-        )}
-        {!isExtracting && !analysisStep && (
-          <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2 sm:gap-3 sm:p-3">
-            <div className="flex-shrink-0">
-              <Info className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" />
-            </div>
-            <div className="text-xs text-gray-600 sm:text-sm">
-              Extraction des données du fichier par IA
-            </div>
-          </div>
-        )}
+
+      <label
+        htmlFor="file-ai-upload-input"
+        className="flex-1 cursor-pointer px-2 py-1 text-lg font-medium text-gray-700 transition-colors duration-200 select-none hover:text-gray-900"
+      >
+        fichier
+      </label>
+
+      <style>{`
+        @keyframes breathing-dots {
+          0% { opacity: 0.3; }
+          25% { opacity: 0.8; }
+          50% { opacity: 1; }
+          75% { opacity: 0.8; }
+          100% { opacity: 0.3; }
+        }
+      `}</style>
+
+      <div className="flex items-center gap-2">
+        {isExtracting ? (
+          <span
+            className="text-2xl font-bold text-gray-600"
+            style={{
+              letterSpacing: 3,
+              animation: "breathing-dots 1.8s infinite ease-in-out",
+            }}
+          >
+            ...
+          </span>
+        ) : analysisStep && analysisStep.startsWith("Erreur") ? (
+          <span className="text-sm font-medium text-gray-800">✗</span>
+        ) : analysisStep && analysisStep.startsWith("Analyse terminée") ? (
+          <Check className="h-6 w-6 text-gray-700" />
+        ) : null}
       </div>
+
+      {isExtracting && (
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="ml-2 rounded border border-gray-400 bg-gray-200 px-3 py-1 text-xs font-medium text-gray-800 transition-all duration-200 hover:bg-gray-300"
+          style={{ minWidth: 65 }}
+        >
+          annuler
+        </button>
+      )}
     </div>
   );
 }
