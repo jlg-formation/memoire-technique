@@ -41,7 +41,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
   };
 
   return (
-    <div className="min-h-screen space-y-6 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 p-2 sm:p-6">
       {/* Header */}
       <div className="border-b pb-4">
         <div className="mb-2 flex items-center gap-3">

@@ -24,7 +24,7 @@ function App() {
         />
       )}
       <div className="flex-1">
-        <div className="mx-auto max-w-screen-lg p-4">
+        <div className="mx-auto max-w-screen-lg p-0 sm:p-4">
           <ButtonLink
             onClick={() => setSidebarOpen(true)}
             className="mb-4 md:hidden"

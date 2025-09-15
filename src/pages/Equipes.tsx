@@ -1,55 +1,27 @@
-// Extraction du nom pur de l'entreprise
-// Extraction du nom pur de l'entreprise
-function extractCompanyName(text: string): string {
-  // Prend la première ligne et coupe avant les mots-clés
-  const firstLine = text.split("\n")[0];
-  // Regex pour couper avant "fondé", "créé", "situé", etc.
-  const match = firstLine.match(
-    /^(.*?)(\s*(fond[ée]|cré[ée]|situ[ée]|install[ée]|depuis|depuis le|depuis l'année|création|établi|établie|établie à|établi à|basé|basée|basée à|basé à|localisé|localisée|localisé à|localisée à|en activité|depuis\s+\d{4}|\d{4}))/i,
-  );
-  if (match && match[1]) {
-    return match[1].trim();
-  }
-  // Sinon, retourne la première phrase jusqu'au premier point
-  const dotIdx = firstLine.indexOf(".");
-  if (dotIdx > 0) return firstLine.slice(0, dotIdx).trim();
-  return firstLine.trim();
-}
+import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import MobilizedPeopleList from "../components/MobilizedPeopleList";
+import { ButtonLink, ButtonPrimary } from "../components/ui";
+import FileAIUpload from "../components/ui/FileAIUpload";
+import { summarize } from "../lib/OpenAI";
+import { extractCompanyName } from "../lib/strings/extractCompanyName";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
-import { summarize } from "../lib/OpenAI";
-// import supprimé, la clé est gérée par la fonction utilitaire
-import MobilizedPeopleList from "../components/MobilizedPeopleList";
-import { ButtonPrimary, ButtonLink } from "../components/ui";
-import FileAIUpload from "../components/ui/FileAIUpload";
-import { Trash2 } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  // apiKey est maintenant géré par la fonction utilitaire
-
-  // On ne demande plus le nom, mais le fichier de présentation
-  // Supprimé : extraction et statut gérés par FileAIUpload
   const [summaryWords, setSummaryWords] = useState(100);
-
-  // Ajout de l'état pour les sous-traitants si entreprise seule (déclaré une seule fois, avant tout return)
   const [subcontractorName, setSubcontractorName] = useState("");
   const [subcontractors, setSubcontractors] = useState<ParticipatingCompany[]>(
     [],
   );
 
-  // Liste des entreprises participantes
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
 
-  // Fonction utilitaire pour mettre à jour la liste des entreprises
   const updateCompanies = (newCompanies: ParticipatingCompany[]) => {
     updateCurrentProject({ participatingCompanies: newCompanies });
   };
-
-  // Nouvelle logique : suppression des anciennes fonctions d'upload, résumé et parsing, tout est géré par FileAIUpload et MobilizedPeopleList.
-  // Seules les fonctions métier utiles sont conservées : suppression d'entreprise, sélection du mandataire, etc.
 
   const handleDeleteCompany = (id: string) => {
     updateCurrentProject({
@@ -65,11 +37,8 @@ function Equipes() {
     });
   };
 
-  // ...existing code...
-
-  // Ajout d'une option "seule" dans le select
   return (
-    <div className="min-h-screen space-y-6 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 p-2 sm:p-6">
       {/* Header */}
       <div className="border-b pb-4">
         <h1 className="text-xl font-semibold text-gray-800 sm:text-2xl">
@@ -127,9 +96,17 @@ function Equipes() {
                 presentationText: text,
                 presentationSummary: summary,
               };
-              updateCurrentProject({
-                participatingCompanies: [...companies, newCompany],
-              });
+              if (currentProject?.groupType === "seule") {
+                // Remplace l'entreprise principale
+                updateCurrentProject({
+                  participatingCompanies: [newCompany],
+                });
+              } else {
+                // Ajoute à la liste
+                updateCurrentProject({
+                  participatingCompanies: [...companies, newCompany],
+                });
+              }
             }}
             parseLabel="Analyse du contenu avec l'IA..."
             className="mb-4"
@@ -232,11 +209,25 @@ function Equipes() {
                   <label className="block text-sm font-medium text-gray-700">
                     Moyens matériels
                   </label>
-                  <input
-                    type="file"
-                    accept=".pdf,.docx"
-                    // TODO: Ajout de la logique d'import des moyens matériels si besoin
-                    className="w-full cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white"
+                  <FileAIUpload
+                    label="Joindre le fichier des moyens matériels"
+                    accept=".pdf,.docx,.md,.txt"
+                    parseLabel="Analyse du contenu avec l'IA..."
+                    onParse={async (text) => {
+                      // On peut résumer ou juste stocker le texte
+                      return { text };
+                    }}
+                    onResult={(result) => {
+                      const { text } = result as { text: string };
+                      updateCompanies(
+                        companies.map((c) =>
+                          c.id === company.id
+                            ? { ...c, equipmentText: text }
+                            : c,
+                        ),
+                      );
+                    }}
+                    className="mb-2"
                   />
                   {company.equipmentText && (
                     <textarea
@@ -250,8 +241,6 @@ function Equipes() {
 
                 <MobilizedPeopleList
                   company={company}
-                  onFileChange={() => {}}
-                  onSummarize={() => {}}
                   onUpdate={(updated) => {
                     if (
                       currentProject?.mandataireId === company.id &&
