@@ -12,13 +12,9 @@ function Memoire() {
   const handleGenerate = async () => {
     if (!currentProject) return;
     // apiKey est maintenant géré par la fonction utilitaire
-    if (!key) {
-      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
-      return;
-    }
     setGenerating(true);
     try {
-      const html = await generateMemoire(currentProject, key);
+      const html = await generateMemoire(currentProject);
       updateCurrentProject({ memoHtml: html });
     } catch (err) {
       console.error(err);

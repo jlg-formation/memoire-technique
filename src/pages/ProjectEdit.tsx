@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useProjectStore } from "../store/useProjectStore";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import { extractConsultationInfo } from "../lib/OpenAI";
@@ -15,7 +14,6 @@ interface ProjectEditProps {
 
 function ProjectEdit({ project, onClose }: ProjectEditProps) {
   const { updateProject } = useProjectStore();
-  const { apiKey } = useOpenAIKeyStore();
 
   const [consultationTitle, setConsultationTitle] = useState("");
   const [submissionDeadline, setSubmissionDeadline] = useState("");
@@ -50,12 +48,7 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
     e: React.ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
     const file = e.target.files?.[0];
-    if (!file || !apiKey) {
-      if (!apiKey) {
-        alert(
-          "Veuillez configurer votre clé API OpenAI dans les paramètres avant d'analyser un fichier.",
-        );
-      }
+    if (!file) {
       return;
     }
 
@@ -70,7 +63,7 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
 
       // Étape 2: Analyse avec OpenAI
       setAnalysisStep("Analyse du contenu avec l'IA...");
-      const info = await extractConsultationInfo(text, apiKey);
+      const info = await extractConsultationInfo(text);
 
       // Étape 3: Préremplissage des champs
       setAnalysisStep("Préremplissage des champs...");

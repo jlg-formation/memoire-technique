@@ -24,16 +24,11 @@ function Planning() {
       return;
     }
     // apiKey est maintenant géré par la fonction utilitaire
-    if (!key) {
-      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
-      return;
-    }
     setGenerating(true);
     try {
       const text = await generatePlanning(
         missions,
         currentProject.planningSummary ?? "",
-        key,
       );
       updateCurrentProject({ planningText: text });
     } catch (err) {
