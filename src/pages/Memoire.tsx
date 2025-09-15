@@ -11,7 +11,7 @@ function Memoire() {
 
   const handleGenerate = async () => {
     if (!currentProject) return;
-    const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+    const key = apiKey;
     if (!key) {
       alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
       return;

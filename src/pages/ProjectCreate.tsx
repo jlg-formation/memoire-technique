@@ -75,7 +75,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             parseLabel="Analyse du contenu avec l'IA..."
             onParse={async (text) => {
               setProcessing(true);
-              const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+              const key = apiKey;
               if (!key) throw new Error("Clé OpenAI manquante");
               const info = await extractConsultationInfo(text, key);
               return info;
