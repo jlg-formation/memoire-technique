@@ -22,11 +22,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
           </button>
           <h2 className="p-4 text-lg font-bold">Menu</h2>
         </div>
-        {currentProject?.nomCourt && (
-          <div className="rounded bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
-            Projet : {currentProject.nomCourt}
-          </div>
-        )}
       </div>
       <nav className="flex flex-col">
         <NavLink
@@ -44,7 +39,9 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
-          Projets
+          {currentProject?.nomCourt
+            ? `Projet : ${currentProject.nomCourt}`
+            : "Projets"}
         </NavLink>
         <NavLink
           to="/groupement"
