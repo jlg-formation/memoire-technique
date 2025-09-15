@@ -1,3 +1,13 @@
+export const getStrictApiKey = (): string => {
+  const key = localStorage.getItem(STORAGE_KEY);
+  if (!key || key.trim().length < 10) {
+    alert(
+      "Clé OpenAI manquante ou invalide. Veuillez la renseigner dans les paramètres.",
+    );
+    throw new Error("Clé OpenAI manquante ou invalide");
+  }
+  return key;
+};
 import { create } from "zustand";
 
 interface OpenAIKeyStore {

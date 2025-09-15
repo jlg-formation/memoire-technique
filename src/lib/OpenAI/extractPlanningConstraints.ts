@@ -2,9 +2,8 @@ import createClient from "./client";
 
 export default async function extractPlanningConstraints(
   text: string,
-  apiKey: string,
 ): Promise<string> {
-  const openai = createClient(apiKey);
+  const openai = createClient();
   const truncated = text.slice(0, 100000);
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",

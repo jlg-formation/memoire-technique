@@ -19,7 +19,7 @@ import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 import { summarize } from "../lib/OpenAI";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+// import supprimé, la clé est gérée par la fonction utilitaire
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 import { ButtonPrimary, ButtonLink } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
@@ -27,7 +27,7 @@ import { Trash2 } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  const { apiKey } = useOpenAIKeyStore();
+  // apiKey est maintenant géré par la fonction utilitaire
 
   // On ne demande plus le nom, mais le fichier de présentation
   // Supprimé : extraction et statut gérés par FileAIUpload
@@ -111,8 +111,7 @@ function Equipes() {
             label="Joindre le fichier de présentation de l'entreprise"
             accept=".pdf,.docx,.md,.txt"
             onParse={async (text) => {
-              if (!apiKey) throw new Error("Clé OpenAI manquante");
-              const summary = await summarize(text, summaryWords, apiKey);
+              const summary = await summarize(text, summaryWords);
               return { text, summary };
             }}
             onResult={(result) => {

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+// import supprimé, la clé est gérée par la fonction utilitaire
 import { generatePlanning } from "../lib/OpenAI";
 import PlanningChart from "../components/PlanningChart";
 import { ButtonPrimary } from "../components/ui";
 
 function Planning() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  const { apiKey } = useOpenAIKeyStore();
+  // apiKey est maintenant géré par la fonction utilitaire
   const [generating, setGenerating] = useState(false);
 
   if (!currentProject) {
@@ -23,7 +23,7 @@ function Planning() {
       alert("Aucune mission détectée");
       return;
     }
-    const key = apiKey;
+    // apiKey est maintenant géré par la fonction utilitaire
     if (!key) {
       alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
       return;

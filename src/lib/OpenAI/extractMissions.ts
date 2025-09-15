@@ -1,10 +1,7 @@
 import createClient from "./client";
 
-export default async function extractMissions(
-  text: string,
-  apiKey: string,
-): Promise<string[]> {
-  const openai = createClient(apiKey);
+export default async function extractMissions(text: string): Promise<string[]> {
+  const openai = createClient();
   const truncated = text.slice(0, 100000);
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",

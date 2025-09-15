@@ -3,9 +3,8 @@ import createClient from "./client";
 export default async function generatePlanning(
   missions: string[],
   constraints: string,
-  apiKey: string,
 ): Promise<string> {
-  const openai = createClient(apiKey);
+  const openai = createClient();
   const list = missions.map((m, i) => `${i + 1}. ${m}`).join("\n");
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",

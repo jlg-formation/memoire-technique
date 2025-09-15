@@ -1,7 +1,7 @@
 import createClient from "./client";
 
-export default async function testKey(apiKey: string): Promise<boolean> {
-  const openai = createClient(apiKey);
+export default async function testKey(): Promise<boolean> {
+  const openai = createClient();
   try {
     await openai.models.list();
     return true;

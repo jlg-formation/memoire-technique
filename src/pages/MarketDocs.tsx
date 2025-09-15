@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+// import supprimé, la clé est gérée par la fonction utilitaire
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import {
@@ -12,7 +12,7 @@ import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  const { apiKey } = useOpenAIKeyStore();
+  // apiKey est maintenant géré par la fonction utilitaire
   const [docType, setDocType] = useState<MarketDocumentType>("RC");
 
   if (!currentProject) {
@@ -38,18 +38,18 @@ function MarketDocs() {
       text,
     };
     updateCurrentProject({ marketDocuments: [...docs, doc] });
-    if (docType === "AE" && apiKey) {
+    if (docType === "AE") {
       try {
-        const missions = await extractMissions(text, apiKey);
-        const planningSummary = await extractPlanningConstraints(text, apiKey);
+        const missions = await extractMissions(text);
+        const planningSummary = await extractPlanningConstraints(text);
         updateCurrentProject({ missions, planningSummary });
       } catch (err) {
         console.error(err);
       }
     }
-    if (docType === "RC" && apiKey) {
+    if (docType === "RC") {
       try {
-        const notation = await extractMethodologyScores(text, apiKey);
+        const notation = await extractMethodologyScores(text);
         updateCurrentProject({ notation });
       } catch (err) {
         console.error(err);

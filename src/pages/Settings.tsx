@@ -4,7 +4,7 @@ import { testKey } from "../lib/OpenAI";
 import { ButtonPrimary, AccentButton } from "../components/ui";
 
 function Settings() {
-  const { apiKey, setApiKey } = useOpenAIKeyStore();
+  const { apiKey, setApiKey } = useOpenAIKeyStore(); // gestion locale uniquement
   const [tempKey, setTempKey] = useState(apiKey);
   const [status, setStatus] = useState<
     "idle" | "testing" | "success" | "error"
@@ -18,7 +18,7 @@ function Settings() {
   const handleTest = async () => {
     setStatus("testing");
     try {
-      const ok = await testKey(tempKey.trim());
+      const ok = await testKey();
       setStatus(ok ? "success" : "error");
     } catch {
       setStatus("error");

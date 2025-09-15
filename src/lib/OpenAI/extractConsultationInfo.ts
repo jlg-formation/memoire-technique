@@ -10,9 +10,8 @@ export interface ConsultationInfo {
 
 export default async function extractConsultationInfo(
   text: string,
-  apiKey: string,
 ): Promise<ConsultationInfo> {
-  const openai = createClient(apiKey);
+  const openai = createClient();
   const truncated = text.slice(0, 100000);
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+// import supprimé, la clé est gérée par la fonction utilitaire
 import { estimateMissionDays } from "../lib/OpenAI";
 import type {
   MissionDays,
@@ -12,7 +12,7 @@ import { ButtonPrimary } from "../components/ui";
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  const { apiKey } = useOpenAIKeyStore();
+  // apiKey est maintenant géré par la fonction utilitaire
   const [estimating, setEstimating] = useState(false);
 
   if (!currentProject) {
@@ -115,13 +115,9 @@ function Missions() {
   );
 
   const handleEstimate = async (): Promise<void> => {
-    if (!apiKey) {
-      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
-      return;
-    }
     setEstimating(true);
     try {
-      const result = await estimateMissionDays(missions, companies, apiKey);
+      const result = await estimateMissionDays(missions, companies);
       updateCurrentProject({
         missionDays: result.missionDays,
         missionJustifications: result.missionJustifications,

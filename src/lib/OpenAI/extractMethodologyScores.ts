@@ -7,10 +7,9 @@ export interface MethodologyScore {
 
 export default async function extractMethodologyScores(
   text: string,
-  apiKey: string,
 ): Promise<MethodologyScore[]> {
   console.log("start extractMethodologyScores");
-  const openai = createClient(apiKey);
+  const openai = createClient();
   const truncated = text.slice(0, 100000);
   console.log("truncated: ", truncated.length);
   const chat = await openai.chat.completions.create({

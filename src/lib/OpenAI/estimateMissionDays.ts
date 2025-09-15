@@ -12,9 +12,8 @@ export interface MissionDayEstimation {
 export default async function estimateMissionDays(
   missions: string[],
   companies: ParticipatingCompany[],
-  apiKey: string,
 ): Promise<MissionDayEstimation> {
-  const openai = createClient(apiKey);
+  const openai = createClient();
   const missionsList = missions.map((m) => `- ${m}`).join("\n");
   const companiesList = companies
     .map((c) => {

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { ButtonLink, ButtonPrimary } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { extractConsultationInfo } from "../lib/OpenAI";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+// import supprimé, la clé est gérée par la fonction utilitaire
 import { useProjectStore } from "../store/useProjectStore";
 
 interface ProjectCreateProps {
@@ -12,7 +12,7 @@ interface ProjectCreateProps {
 
 function ProjectCreate({ onClose }: ProjectCreateProps) {
   const { addProject, setProject } = useProjectStore();
-  const { apiKey } = useOpenAIKeyStore();
+  // apiKey est maintenant géré par la fonction utilitaire
 
   const [consultationTitle, setConsultationTitle] = useState("");
   const [nomCourt, setNomCourt] = useState("");
@@ -75,9 +75,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             parseLabel="Analyse du contenu avec l'IA..."
             onParse={async (text) => {
               setProcessing(true);
-              const key = apiKey;
-              if (!key) throw new Error("Clé OpenAI manquante");
-              const info = await extractConsultationInfo(text, key);
+              const info = await extractConsultationInfo(text);
               return info;
             }}
             onResult={(result) => {

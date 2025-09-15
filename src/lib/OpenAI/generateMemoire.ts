@@ -4,9 +4,8 @@ import type { Project } from "../../types/project";
 
 export default async function generateMemoire(
   project: Project,
-  apiKey: string,
 ): Promise<string> {
-  const openai = createClient(apiKey);
+  const openai = createClient();
   const cleaned = stripPdfFields(project);
   const { memoHtml, ...projectData } = cleaned;
   void memoHtml;
