@@ -5,6 +5,7 @@ import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import { extractConsultationInfo } from "../lib/OpenAI";
 import { ButtonPrimary, ButtonLink } from "../components/ui";
+import { ArrowLeft, Check, Info } from "lucide-react";
 
 interface ProjectCreateProps {
   onClose: () => void;
@@ -90,19 +91,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             onClick={onClose}
             className="flex shrink-0 items-center gap-1"
           >
-            <svg
-              className="h-4 w-4 sm:h-5 sm:w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-sm sm:text-base">Précédent</span>
           </ButtonLink>
         </div>
@@ -151,19 +140,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             {!processing && analysisStep && (
               <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
                 <div className="flex-shrink-0">
-                  <svg
-                    className="h-4 w-4 text-green-600 sm:h-5 sm:w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+                  <Check className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />
                 </div>
                 <div className="text-xs text-green-800 sm:text-sm">
                   {analysisStep}
@@ -174,19 +151,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             {!processing && !analysisStep && (
               <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2 sm:gap-3 sm:p-3">
                 <div className="flex-shrink-0">
-                  <svg
-                    className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Info className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" />
                 </div>
                 <div className="text-xs text-gray-600 sm:text-sm">
                   Une fois sélectionné, le fichier sera analysé automatiquement

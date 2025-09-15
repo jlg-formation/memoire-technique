@@ -3,6 +3,7 @@ import { useProjectStore } from "../store/useProjectStore";
 import { importProjectJSON, importProjectZIP } from "../lib/export";
 import type { Project } from "../types/project";
 import { ButtonLink } from "../components/ui";
+import { ArrowLeft, Upload } from "lucide-react";
 
 interface ProjectImportProps {
   onClose: () => void;
@@ -77,19 +78,7 @@ function ProjectImport({ onClose }: ProjectImportProps) {
             onClick={onClose}
             className="flex shrink-0 items-center gap-1"
           >
-            <svg
-              className="h-4 w-4 sm:h-5 sm:w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="text-sm sm:text-base">Précédent</span>
           </ButtonLink>
         </div>
@@ -125,14 +114,7 @@ function ProjectImport({ onClose }: ProjectImportProps) {
 
           <div className="space-y-3 sm:space-y-4">
             <div className="mx-auto h-10 w-10 text-gray-400 sm:h-12 sm:w-12">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
+              <Upload className="h-full w-full" />
             </div>
 
             {importing ? (
