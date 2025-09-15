@@ -81,20 +81,31 @@ async function readFileFromZip(
 }
 
 async function inflate(data: Uint8Array): Promise<Uint8Array> {
-  const { readable, writable } = new DecompressionStream("deflate");
-  const writer = writable.getWriter();
-  await writer.write(data);
+  // Utilise DecompressionStream pour décompresser les données deflate
+  const ds = new DecompressionStream("deflate");
+  const writer = ds.writable.getWriter();
+  // Copie dans un ArrayBuffer standard si besoin
+  let arrayBuffer: ArrayBuffer;
+  if (
+    data.buffer instanceof ArrayBuffer &&
+    !(data.buffer instanceof SharedArrayBuffer)
+  ) {
+    arrayBuffer = data.buffer;
+  } else {
+    arrayBuffer = new Uint8Array(data).buffer;
+  }
+  await writer.write(arrayBuffer);
   await writer.close();
-  const reader = readable.getReader();
+  const reader = ds.readable.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
   while (true) {
     const { value, done } = await reader.read();
-    if (done || !value) {
-      break;
+    if (done) break;
+    if (value) {
+      chunks.push(value);
+      total += value.byteLength;
     }
-    chunks.push(value);
-    total += value.byteLength;
   }
   const result = new Uint8Array(total);
   let offset = 0;

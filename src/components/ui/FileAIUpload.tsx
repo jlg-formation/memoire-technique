@@ -5,8 +5,8 @@ interface FileAIUploadProps {
   label?: string;
   accept?: string;
   disabled?: boolean;
-  onParse: (text: string) => Promise<any>;
-  onResult: (result: any) => void;
+  onParse: (text: string) => Promise<unknown>;
+  onResult: (result: unknown) => void;
   parseLabel?: string;
   className?: string;
   status?: string;
@@ -50,10 +50,10 @@ export default function FileAIUpload({
     try {
       let text = "";
       if (file.name.toLowerCase().endsWith(".docx")) {
-        // @ts-ignore
+        // @ts-expect-error: window.extractDocxText est injecté dynamiquement
         text = await window.extractDocxText(file);
       } else {
-        // @ts-ignore
+        // @ts-expect-error: window.extractPdfText est injecté dynamiquement
         text = await window.extractPdfText(file);
       }
       if (cancelled) return;
@@ -63,7 +63,7 @@ export default function FileAIUpload({
       setStep("Analyse terminée avec succès !");
       onResult(result);
       setTimeout(() => setStep(""), 2000);
-    } catch (err) {
+    } catch {
       if (!cancelled) {
         setStep("Erreur lors de l'analyse du fichier");
         setTimeout(() => setStep(""), 3000);

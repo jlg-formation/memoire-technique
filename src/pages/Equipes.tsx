@@ -116,7 +116,12 @@ function Equipes() {
               const summary = await summarize(text, summaryWords, key);
               return { text, summary };
             }}
-            onResult={({ text, summary }) => {
+            onResult={(result) => {
+              // Cast result to expected shape
+              const { text, summary } = result as {
+                text: string;
+                summary: string;
+              };
               const name = extractCompanyName(summary);
               const newCompany: ParticipatingCompany = {
                 id: crypto.randomUUID(),

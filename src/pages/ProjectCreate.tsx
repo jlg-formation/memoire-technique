@@ -1,10 +1,10 @@
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { useProjectStore } from "../store/useProjectStore";
-import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+import { ButtonLink, ButtonPrimary } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { extractConsultationInfo } from "../lib/OpenAI";
-import { ButtonPrimary, ButtonLink } from "../components/ui";
-import { ArrowLeft, Check, Info } from "lucide-react";
+import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
+import { useProjectStore } from "../store/useProjectStore";
 
 interface ProjectCreateProps {
   onClose: () => void;
@@ -19,6 +19,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
   const [submissionDeadline, setSubmissionDeadline] = useState("");
   const [submissionTime, setSubmissionTime] = useState("");
   const [worksAmount, setWorksAmount] = useState("");
+  // Synchronise l'état de traitement avec FileAIUpload
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
 
@@ -73,17 +74,26 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             accept=".pdf,.docx,.md,.txt"
             parseLabel="Analyse du contenu avec l'IA..."
             onParse={async (text) => {
+              setProcessing(true);
               const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
               if (!key) throw new Error("Clé OpenAI manquante");
               const info = await extractConsultationInfo(text, key);
               return info;
             }}
-            onResult={(info) => {
+            onResult={(result) => {
+              const info = result as {
+                consultationTitle?: string;
+                nomCourt?: string;
+                submissionDeadline?: string;
+                submissionTime?: string;
+                worksAmount?: number;
+              };
               setConsultationTitle(info.consultationTitle ?? "");
               setNomCourt(info.nomCourt ?? "");
               setSubmissionDeadline(info.submissionDeadline ?? "");
               setSubmissionTime(info.submissionTime ?? "");
               setWorksAmount(info.worksAmount?.toString() ?? "");
+              setProcessing(false);
             }}
             status={analysisStep}
             setStatus={setAnalysisStep}
@@ -92,7 +102,11 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-4 sm:space-y-5"
+        aria-disabled={processing}
+      >
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
             Nom court du projet
