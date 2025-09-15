@@ -69,13 +69,16 @@ function ProjectImport({ onClose }: ProjectImportProps) {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="min-h-screen space-y-6 p-4 sm:p-6">
       {/* Header */}
-      <div className="flex items-center justify-between border-b pb-4">
-        <div className="flex items-center gap-4">
-          <ButtonLink onClick={onClose} className="flex items-center gap-2">
+      <div className="border-b pb-4">
+        <div className="mb-2 flex items-center gap-3">
+          <ButtonLink
+            onClick={onClose}
+            className="flex shrink-0 items-center gap-1"
+          >
             <svg
-              className="h-5 w-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -87,22 +90,22 @@ function ProjectImport({ onClose }: ProjectImportProps) {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Précédent
+            <span className="text-sm sm:text-base">Précédent</span>
           </ButtonLink>
-          <h1 className="text-2xl font-semibold text-gray-800">
-            Importer un projet
-          </h1>
         </div>
+        <h1 className="text-xl font-semibold text-gray-800 sm:text-2xl">
+          Importer un projet
+        </h1>
       </div>
 
       {/* Import Zone */}
       <div className="space-y-4">
-        <div className="text-sm text-gray-600">
+        <div className="text-xs text-gray-600 sm:text-sm">
           Importez un projet existant au format JSON ou ZIP.
         </div>
 
         <div
-          className={`relative rounded-lg border-2 border-dashed p-8 text-center transition-colors ${
+          className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors sm:p-8 ${
             dragActive
               ? "border-blue-400 bg-blue-50"
               : "border-gray-300 hover:border-gray-400"
@@ -120,8 +123,8 @@ function ProjectImport({ onClose }: ProjectImportProps) {
             disabled={importing}
           />
 
-          <div className="space-y-4">
-            <div className="mx-auto h-12 w-12 text-gray-400">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="mx-auto h-10 w-10 text-gray-400 sm:h-12 sm:w-12">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -133,13 +136,15 @@ function ProjectImport({ onClose }: ProjectImportProps) {
             </div>
 
             {importing ? (
-              <div className="text-blue-600">Import en cours...</div>
+              <div className="text-sm text-blue-600 sm:text-base">
+                Import en cours...
+              </div>
             ) : (
               <>
-                <div className="text-lg font-medium text-gray-700">
+                <div className="text-base font-medium text-gray-700 sm:text-lg">
                   Glissez-déposez votre fichier ici
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-xs text-gray-500 sm:text-sm">
                   ou cliquez pour sélectionner un fichier
                 </div>
                 <div className="text-xs text-gray-400">
