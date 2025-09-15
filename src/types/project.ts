@@ -46,6 +46,8 @@ export interface Project {
   consultationTitle: string;
   /** Date limite de remise des offres au format ISO */
   submissionDeadline: string;
+  /** Heure limite de remise des offres au format HH:mm */
+  submissionTime?: string;
   /** Montant global des travaux en euros HT */
   worksAmount?: number;
   creationDate: string;

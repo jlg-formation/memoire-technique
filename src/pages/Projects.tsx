@@ -220,6 +220,11 @@ function Projects() {
                       {new Date(project.submissionDeadline).toLocaleDateString(
                         "fr-FR",
                       )}
+                      {project.submissionTime && (
+                        <span className="ml-1 text-gray-500">
+                          à {project.submissionTime}
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-1">
                       <svg
