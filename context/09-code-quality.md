@@ -82,6 +82,7 @@
 - Support keyboard navigation
 - Test with screen readers
 - All buttons must have "cursor-pointer"
+- All buttons should use the button component of the project.
 
 ## 14. Internationalization
 
