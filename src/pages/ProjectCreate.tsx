@@ -71,8 +71,6 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
         <div className="space-y-3">
           <FileAIUpload
             label="Joindre le RC (Règlement de Consultation)"
-            accept=".pdf,.docx,.md,.txt"
-            parseLabel="Analyse du contenu avec l'IA..."
             onParse={async (text) => {
               setProcessing(true);
               const info = await extractConsultationInfo(text);
