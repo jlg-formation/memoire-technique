@@ -12,7 +12,9 @@ import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
   const { currentProject, updateCurrentProject } = useProjectStore();
-  const [processingSteps, setProcessingSteps] = useState<Record<string, string>>({});
+  const [processingSteps, setProcessingSteps] = useState<
+    Record<string, string>
+  >({});
 
   if (!currentProject) {
     return (
@@ -25,7 +27,7 @@ function MarketDocs() {
   const handleDocumentParsed = async (
     text: string,
     fileName: string,
-    docType: MarketDocumentType
+    docType: MarketDocumentType,
   ) => {
     const doc: MarketDocument = {
       id: crypto.randomUUID(),
@@ -33,9 +35,9 @@ function MarketDocs() {
       type: docType,
       text,
     };
-    
+
     updateCurrentProject({ marketDocuments: [...docs, doc] });
-    
+
     // Traitement spécifique selon le type de document
     if (docType === "AE") {
       try {
@@ -46,7 +48,7 @@ function MarketDocs() {
         console.error(err);
       }
     }
-    
+
     if (docType === "RC") {
       try {
         const notation = await extractMethodologyScores(text);
@@ -64,7 +66,9 @@ function MarketDocs() {
   return (
     <div className="min-h-screen space-y-6 p-4">
       <div className="border-b pb-4">
-        <h1 className="text-2xl font-semibold text-gray-800">Pièces de marché</h1>
+        <h1 className="text-2xl font-semibold text-gray-800">
+          Pièces de marché
+        </h1>
         <p className="mt-1 text-sm text-gray-600">
           Téléchargez et analysez les documents du marché
         </p>
@@ -84,7 +88,9 @@ function MarketDocs() {
                 handleDocumentParsed(text, "CCAP", "CCAP");
               }}
               status={processingSteps.ccap || ""}
-              setStatus={(step) => setProcessingSteps(prev => ({ ...prev, ccap: step }))}
+              setStatus={(step) =>
+                setProcessingSteps((prev) => ({ ...prev, ccap: step }))
+              }
             />
           </div>
         </div>
@@ -101,14 +107,18 @@ function MarketDocs() {
                 handleDocumentParsed(text, "CCTP", "CCTP");
               }}
               status={processingSteps.cctp || ""}
-              setStatus={(step) => setProcessingSteps(prev => ({ ...prev, cctp: step }))}
+              setStatus={(step) =>
+                setProcessingSteps((prev) => ({ ...prev, cctp: step }))
+              }
             />
           </div>
         </div>
 
         {/* Acte d'Engagement */}
         <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">Acte d'Engagement</h3>
+          <h3 className="text-lg font-medium text-gray-800">
+            Acte d'Engagement
+          </h3>
           <div className="rounded-lg bg-purple-50 p-4">
             <FileAIUpload
               label="AE"
@@ -118,14 +128,18 @@ function MarketDocs() {
                 handleDocumentParsed(text, "Acte d'Engagement", "AE");
               }}
               status={processingSteps.ae || ""}
-              setStatus={(step) => setProcessingSteps(prev => ({ ...prev, ae: step }))}
+              setStatus={(step) =>
+                setProcessingSteps((prev) => ({ ...prev, ae: step }))
+              }
             />
           </div>
         </div>
 
         {/* Règlement de Consultation */}
         <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">Règlement de Consultation</h3>
+          <h3 className="text-lg font-medium text-gray-800">
+            Règlement de Consultation
+          </h3>
           <div className="rounded-lg bg-yellow-50 p-4">
             <FileAIUpload
               label="RC"
@@ -135,7 +149,9 @@ function MarketDocs() {
                 handleDocumentParsed(text, "Règlement de Consultation", "RC");
               }}
               status={processingSteps.rc || ""}
-              setStatus={(step) => setProcessingSteps(prev => ({ ...prev, rc: step }))}
+              setStatus={(step) =>
+                setProcessingSteps((prev) => ({ ...prev, rc: step }))
+              }
             />
           </div>
         </div>
@@ -152,7 +168,9 @@ function MarketDocs() {
                 handleDocumentParsed(text, "Autre document", "AUTRE");
               }}
               status={processingSteps.autre || ""}
-              setStatus={(step) => setProcessingSteps(prev => ({ ...prev, autre: step }))}
+              setStatus={(step) =>
+                setProcessingSteps((prev) => ({ ...prev, autre: step }))
+              }
             />
           </div>
         </div>
@@ -161,10 +179,15 @@ function MarketDocs() {
       {/* Documents list */}
       {docs.length > 0 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">Documents chargés</h2>
+          <h2 className="text-xl font-semibold text-gray-800">
+            Documents chargés
+          </h2>
           <div className="space-y-4">
             {docs.map((doc) => (
-              <div key={doc.id} className="rounded-lg border border-gray-200 bg-white p-4">
+              <div
+                key={doc.id}
+                className="rounded-lg border border-gray-200 bg-white p-4"
+              >
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
@@ -209,7 +232,9 @@ function MarketDocs() {
             value={currentProject.worksAmount ?? ""}
             onChange={(e) =>
               updateCurrentProject({
-                worksAmount: e.target.value ? Number(e.target.value) : undefined,
+                worksAmount: e.target.value
+                  ? Number(e.target.value)
+                  : undefined,
               })
             }
             placeholder="Saisissez le montant des travaux"
