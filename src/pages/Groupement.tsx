@@ -222,7 +222,7 @@ function Groupement() {
       <h1 className="text-xl font-bold">Groupement</h1>
       <label className="block font-semibold">Type de groupement</label>
       <select
-        className="w-full border p-2"
+        className="w-full cursor-pointer border p-2"
         value={currentProject.groupType ?? ""}
         onChange={(e) =>
           updateCurrentProject({
@@ -276,6 +276,7 @@ function Groupement() {
                       name="mandataire"
                       checked={currentProject.mandataireId === company.id}
                       onChange={() => handleMandataire(company.id)}
+                      className="cursor-pointer"
                     />
                   )}
                   <span>{company.name}</span>
@@ -295,7 +296,7 @@ function Groupement() {
                   onChange={(e) =>
                     handlePresentationChange(company.id, e.target.files?.[0])
                   }
-                  className="rounded border border-gray-300 bg-gray-100 p-2"
+                  className="cursor-pointer rounded border border-gray-300 bg-gray-100 p-2"
                 />
                 <button
                   type="button"
@@ -320,7 +321,7 @@ function Groupement() {
                   onChange={(e) =>
                     handleEquipmentChange(company.id, e.target.files?.[0])
                   }
-                  className="rounded border border-gray-300 bg-gray-100 p-2"
+                  className="cursor-pointer rounded border border-gray-300 bg-gray-100 p-2"
                 />
                 {company.equipmentText && (
                   <textarea
@@ -356,7 +357,7 @@ function Groupement() {
                 <div className="space-y-1">
                   <label className="font-semibold">Personne responsable</label>
                   <select
-                    className="w-full border p-2"
+                    className="w-full cursor-pointer border p-2"
                     value={currentProject.mandataireContactId ?? ""}
                     onChange={(e) =>
                       updateCurrentProject({

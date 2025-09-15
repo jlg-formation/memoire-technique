@@ -24,7 +24,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
           to="/"
           end
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Accueil
@@ -32,7 +32,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/projects"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Projets
@@ -40,7 +40,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/groupement"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Groupement
@@ -48,7 +48,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/documents"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Pièces marché
@@ -56,7 +56,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/memoire"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Mémoire
@@ -64,7 +64,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/missions"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Missions
@@ -72,7 +72,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/planning"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Planning
@@ -80,7 +80,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/notation"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Notation
@@ -88,7 +88,7 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         <NavLink
           to="/parametres"
           className={({ isActive }) =>
-            `mb-2 rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
           Paramètres

@@ -50,7 +50,7 @@ function Projects() {
         <div className="mb-6 flex flex-wrap gap-3">
           <button
             onClick={() => setCurrentView("create")}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
+            className="flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
           >
             <svg
               className="h-5 w-5"
@@ -70,7 +70,7 @@ function Projects() {
 
           <button
             onClick={() => setCurrentView("import")}
-            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
           >
             <svg
               className="h-5 w-5"
@@ -94,7 +94,7 @@ function Projects() {
               <div className="mx-3 border-l border-gray-300"></div>
               <button
                 onClick={() => handleExportJSON(currentProject)}
-                className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-white transition-colors hover:bg-green-700"
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-white transition-colors hover:bg-green-700"
               >
                 <svg
                   className="h-5 w-5"
@@ -113,7 +113,7 @@ function Projects() {
               </button>
               <button
                 onClick={() => handleExportZIP(currentProject)}
-                className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-white transition-colors hover:bg-green-700"
+                className="flex cursor-pointer items-center gap-2 rounded-lg bg-green-600 px-4 py-3 text-white transition-colors hover:bg-green-700"
               >
                 <svg
                   className="h-5 w-5"
@@ -167,7 +167,7 @@ function Projects() {
             </p>
             <button
               onClick={() => setCurrentView("create")}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             >
               <svg
                 className="h-4 w-4"
@@ -255,7 +255,7 @@ function Projects() {
                       e.stopPropagation();
                       deleteProject(project.id);
                     }}
-                    className="rounded p-1 text-red-500 hover:bg-red-50"
+                    className="cursor-pointer rounded p-1 text-red-500 hover:bg-red-50"
                   >
                     <svg
                       className="h-4 w-4"

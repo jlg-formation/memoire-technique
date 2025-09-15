@@ -87,7 +87,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
         <h1 className="text-2xl font-semibold text-gray-800">Nouveau projet</h1>
         <button
           onClick={onClose}
-          className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+          className="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
         >
           <svg
             className="h-6 w-6"
@@ -121,7 +121,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             accept=".pdf,.docx"
             onChange={handleRCFileChange}
             disabled={processing}
-            className="w-full rounded-md border border-blue-200 bg-white p-3 text-sm disabled:cursor-not-allowed disabled:bg-gray-100"
+            className="w-full cursor-pointer rounded-md border border-blue-200 bg-white p-3 text-sm disabled:cursor-not-allowed disabled:bg-gray-100"
           />
 
           {processing && (
@@ -225,14 +225,14 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             type="button"
             onClick={onClose}
             disabled={processing}
-            className="flex-1 rounded-md border border-gray-300 px-4 py-3 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
+            className="flex-1 cursor-pointer rounded-md border border-gray-300 px-4 py-3 text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500"
           >
             Annuler
           </button>
           <button
             type="submit"
             disabled={processing}
-            className="flex-1 rounded-md bg-blue-600 px-4 py-3 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
+            className="flex-1 cursor-pointer rounded-md bg-blue-600 px-4 py-3 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
           >
             Créer le projet
           </button>

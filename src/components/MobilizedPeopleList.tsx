@@ -95,7 +95,7 @@ function MobilizedPeopleList({
                 onChange={(e) =>
                   onFileChange(company.id, person.id, e.target.files?.[0])
                 }
-                className="rounded border border-gray-300 bg-gray-100 p-2"
+                className="cursor-pointer rounded border border-gray-300 bg-gray-100 p-2"
               />
               <button
                 type="button"

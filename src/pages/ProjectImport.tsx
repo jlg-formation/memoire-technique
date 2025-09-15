@@ -76,7 +76,7 @@ function ProjectImport({ onClose }: ProjectImportProps) {
         </h1>
         <button
           onClick={onClose}
-          className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+          className="cursor-pointer rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
         >
           <svg
             className="h-6 w-6"
@@ -154,7 +154,7 @@ function ProjectImport({ onClose }: ProjectImportProps) {
       <div className="flex justify-end">
         <button
           onClick={onClose}
-          className="rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
+          className="cursor-pointer rounded-md border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50"
         >
           Annuler
         </button>

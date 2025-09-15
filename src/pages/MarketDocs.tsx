@@ -68,7 +68,7 @@ function MarketDocs() {
       <h1 className="text-xl font-bold">Pièces de marché</h1>
       <div className="flex flex-wrap gap-2">
         <select
-          className="border p-2"
+          className="cursor-pointer border p-2"
           value={docType}
           onChange={(e) => setDocType(e.target.value as MarketDocumentType)}
         >
@@ -82,7 +82,7 @@ function MarketDocs() {
           type="file"
           accept=".pdf,.docx"
           onChange={handleFileChange}
-          className="rounded border border-gray-300 bg-gray-100 p-2"
+          className="cursor-pointer rounded border border-gray-300 bg-gray-100 p-2"
         />
       </div>
       <ul className="space-y-2">

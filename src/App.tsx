@@ -18,7 +18,7 @@ function App() {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 cursor-pointer bg-black/50 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
