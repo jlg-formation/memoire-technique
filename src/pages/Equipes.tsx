@@ -1,3 +1,19 @@
+// Extraction du nom pur de l'entreprise
+function extractCompanyName(text: string): string {
+  // Prend la première ligne et coupe avant les mots-clés
+  const firstLine = text.split("\n")[0];
+  // Regex pour couper avant "fondé", "créé", "situé", etc.
+  const match = firstLine.match(
+    /^(.*?)(\s*(fond[ée]|cré[ée]|situ[ée]|install[ée]|depuis|depuis le|depuis l'année|création|établi|établie|établie à|établi à|basé|basée|basée à|basé à|localisé|localisée|localisé à|localisée à|en activité|depuis\s+\d{4}|\d{4}))/i,
+  );
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  // Sinon, retourne la première phrase jusqu'au premier point
+  const dotIdx = firstLine.indexOf(".");
+  if (dotIdx > 0) return firstLine.slice(0, dotIdx).trim();
+  return firstLine.trim();
+}
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
@@ -7,11 +23,16 @@ import { extractDocxText } from "../lib/docx";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 import { ButtonPrimary, AccentButton, ButtonLink } from "../components/ui";
+import { Trash2 } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   const { apiKey } = useOpenAIKeyStore();
-  const [name, setName] = useState("");
+  // On ne demande plus le nom, mais le fichier de présentation
+  const [newCompanyFile, setNewCompanyFile] = useState<File | undefined>(
+    undefined,
+  );
+  const [isExtracting, setIsExtracting] = useState(false);
   const [summaryWords, setSummaryWords] = useState(100);
   const [presentationFiles, setPresentationFiles] = useState<
     Record<string, File | undefined>
@@ -190,13 +211,39 @@ function Equipes() {
     );
   };
 
-  const handleAddCompany = () => {
-    if (!name.trim()) return;
-    const newCompany: ParticipatingCompany = { id: crypto.randomUUID(), name };
-    updateCurrentProject({
-      participatingCompanies: [...companies, newCompany],
-    });
-    setName("");
+  // Ajout d'une entreprise via fichier
+  const handleAddCompanyFromFile = async () => {
+    if (!newCompanyFile) return;
+    const key = apiKey || import.meta.env.VITE_OPENAI_KEY;
+    if (!key) {
+      alert("Veuillez saisir votre clé OpenAI dans les paramètres.");
+      return;
+    }
+    setIsExtracting(true);
+    try {
+      const text = newCompanyFile.name.toLowerCase().endsWith(".docx")
+        ? await extractDocxText(newCompanyFile)
+        : await extractPdfText(newCompanyFile);
+      // Appel OpenAI pour extraire le résumé
+      const summary = await summarize(text, summaryWords, key);
+      // Extraction du nom pur
+      const name = extractCompanyName(summary);
+      const newCompany: ParticipatingCompany = {
+        id: crypto.randomUUID(),
+        name,
+        presentationText: text,
+        presentationSummary: summary,
+      };
+      updateCurrentProject({
+        participatingCompanies: [...companies, newCompany],
+      });
+      setNewCompanyFile(undefined);
+    } catch (err) {
+      alert("Erreur lors de l'extraction du fichier.");
+      console.error(err);
+    } finally {
+      setIsExtracting(false);
+    }
   };
 
   const handleDeleteCompany = (id: string) => {
@@ -268,21 +315,18 @@ function Equipes() {
           </label>
           <div className="flex flex-wrap items-center gap-2">
             <input
-              className="flex-1 rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={
-                currentProject.groupType === "seule"
-                  ? "Nom de l'entreprise principale"
-                  : "Nom de l'entreprise"
-              }
+              type="file"
+              accept=".pdf,.docx,.md,.txt"
+              onChange={(e) => setNewCompanyFile(e.target.files?.[0])}
+              className="flex-1 cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white"
             />
             <ButtonPrimary
               type="button"
-              onClick={handleAddCompany}
+              onClick={handleAddCompanyFromFile}
               className="text-sm sm:text-base"
+              disabled={!newCompanyFile || isExtracting}
             >
-              Ajouter
+              {isExtracting ? "Extraction..." : "Ajouter"}
             </ButtonPrimary>
           </div>
 
@@ -313,29 +357,39 @@ function Equipes() {
                 key={company.id}
                 className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <label className="flex items-center gap-3">
-                    {companies.length > 1 &&
-                      currentProject.groupType !== undefined &&
-                      currentProject.groupType !== "seule" && (
-                        <input
-                          type="radio"
-                          name="mandataire"
-                          checked={currentProject.mandataireId === company.id}
-                          onChange={() => handleMandataire(company.id)}
-                          className="h-4 w-4 cursor-pointer text-blue-600 focus:ring-blue-500"
-                        />
-                      )}
-                    <span className="text-sm font-medium text-gray-900 sm:text-base">
-                      {company.name}
-                    </span>
-                  </label>
+                <div className="flex items-center gap-2">
+                  {companies.length > 1 &&
+                    currentProject.groupType !== undefined &&
+                    currentProject.groupType !== "seule" && (
+                      <input
+                        type="radio"
+                        name="mandataire"
+                        checked={currentProject.mandataireId === company.id}
+                        onChange={() => handleMandataire(company.id)}
+                        className="h-4 w-4 cursor-pointer text-blue-600 focus:ring-blue-500"
+                      />
+                    )}
+                  <input
+                    type="text"
+                    className="w-full rounded border px-2 py-1 text-sm font-medium text-gray-900 sm:text-base"
+                    value={company.name}
+                    onChange={(e) => {
+                      updateCompanies(
+                        companies.map((c) =>
+                          c.id === company.id
+                            ? { ...c, name: e.target.value }
+                            : c,
+                        ),
+                      );
+                    }}
+                  />
                   <ButtonLink
                     type="button"
                     onClick={() => handleDeleteCompany(company.id)}
-                    className="text-sm text-red-600 hover:text-red-700"
+                    className="rounded p-1 text-red-500 hover:bg-red-50"
+                    aria-label="Supprimer l'entreprise"
                   >
-                    Supprimer
+                    <Trash2 className="h-5 w-5" />
                   </ButtonLink>
                 </div>
 
@@ -367,9 +421,17 @@ function Equipes() {
                   {company.presentationSummary && (
                     <textarea
                       className="mt-2 w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                      readOnly
                       value={company.presentationSummary}
                       rows={4}
+                      onChange={(e) => {
+                        updateCompanies(
+                          companies.map((c) =>
+                            c.id === company.id
+                              ? { ...c, presentationSummary: e.target.value }
+                              : c,
+                          ),
+                        );
+                      }}
                     />
                   )}
                 </div>
