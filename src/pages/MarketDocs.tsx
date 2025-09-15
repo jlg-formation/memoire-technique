@@ -7,6 +7,7 @@ import {
   extractMethodologyScores,
   extractMissions,
   extractPlanningConstraints,
+  generateDocumentTitle,
 } from "../lib/OpenAI";
 import type { MarketDocument, MarketDocumentType } from "../types/project";
 
@@ -29,9 +30,22 @@ function MarketDocs() {
     fileName: string,
     docType: MarketDocumentType,
   ) => {
+    let finalFileName = fileName;
+
+    // Générer automatiquement un titre pour les documents "AUTRE"
+    if (docType === "AUTRE") {
+      try {
+        const generatedTitle = await generateDocumentTitle(text);
+        finalFileName = generatedTitle;
+      } catch (err) {
+        console.error("Erreur lors de la génération du titre:", err);
+        // Garder le nom de fichier original en cas d'erreur
+      }
+    }
+
     const doc: MarketDocument = {
       id: crypto.randomUUID(),
-      name: fileName,
+      name: finalFileName,
       type: docType,
       text,
     };
@@ -194,7 +208,17 @@ function MarketDocs() {
                   ) as HTMLInputElement;
                   const fileName =
                     fileInput?.files?.[0]?.name || "Document sans nom";
-                  handleDocumentParsed(text, fileName, "AUTRE");
+
+                  // Mettre à jour le statut pour indiquer la génération du titre
+                  setProcessingSteps((prev) => ({
+                    ...prev,
+                    autre: "Génération du titre automatique...",
+                  }));
+
+                  handleDocumentParsed(text, fileName, "AUTRE").finally(() => {
+                    // Réinitialiser le statut après traitement
+                    setProcessingSteps((prev) => ({ ...prev, autre: "" }));
+                  });
                 }}
                 status={processingSteps.autre || ""}
                 setStatus={(step) =>
