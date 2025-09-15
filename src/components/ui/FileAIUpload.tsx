@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Check, Info } from "lucide-react";
 
 interface FileAIUploadProps {
@@ -26,14 +26,26 @@ export default function FileAIUpload({
 }: FileAIUploadProps) {
   const [isExtracting, setIsExtracting] = useState(false);
   const [internalStep, setInternalStep] = useState<string>("");
+  const [cancelled, setCancelled] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   // Utilise le status externe si fourni, sinon l'interne
   const analysisStep = status !== undefined ? status : internalStep;
 
   const setStep = setStatus ?? setInternalStep;
+
+  // Permet d'annuler le traitement IA
+  const handleCancel = () => {
+    setCancelled(true);
+    setIsExtracting(false);
+    setStep("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsExtracting(true);
+    setCancelled(false);
     setStep("Extraction du contenu du fichier...");
     try {
       let text = "";
@@ -44,15 +56,19 @@ export default function FileAIUpload({
         // @ts-ignore
         text = await window.extractPdfText(file);
       }
+      if (cancelled) return;
       setStep(parseLabel);
       const result = await onParse(text);
+      if (cancelled) return;
       setStep("Analyse terminée avec succès !");
       onResult(result);
       setTimeout(() => setStep(""), 2000);
     } catch (err) {
-      setStep("Erreur lors de l'analyse du fichier");
-      setTimeout(() => setStep(""), 3000);
-      // Optionally: onResult(null)
+      if (!cancelled) {
+        setStep("Erreur lors de l'analyse du fichier");
+        setTimeout(() => setStep(""), 3000);
+        // Optionally: onResult(null)
+      }
     } finally {
       setIsExtracting(false);
       e.target.value = "";
@@ -67,6 +83,7 @@ export default function FileAIUpload({
         </label>
       )}
       <input
+        ref={fileInputRef}
         type="file"
         accept={accept}
         onChange={handleFileChange}
@@ -82,6 +99,13 @@ export default function FileAIUpload({
             <div className="text-xs text-blue-800 sm:text-sm">
               {analysisStep || "Traitement en cours..."}
             </div>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="ml-auto rounded bg-red-500 px-3 py-1 text-xs text-white hover:bg-red-600"
+            >
+              Annuler
+            </button>
           </div>
         )}
         {!isExtracting && analysisStep && (
