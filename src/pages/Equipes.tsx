@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Company from "../components/Company";
-import { ButtonLink, ButtonPrimary } from "../components/ui";
+import { ButtonLink, ButtonPrimary, Select } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
@@ -48,11 +48,14 @@ function Equipes() {
 
       {/* Type d'équipe Section */}
       <div className="rounded-lg bg-gray-50 p-3 sm:p-4">
-        <label className="mb-2 block text-sm font-medium text-gray-700 sm:text-base">
-          Type d'équipe
-        </label>
-        <select
-          className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
+        <Select
+          label="Type d'équipe"
+          placeholder="-- choisir --"
+          options={[
+            { value: "seule", label: "Entreprise seule" },
+            { value: "solidaire", label: "Solidaire" },
+            { value: "conjoint", label: "Conjoint" },
+          ]}
           value={currentProject?.groupType ?? ""}
           onChange={(e) => {
             updateCurrentProject({
@@ -60,12 +63,8 @@ function Equipes() {
             });
             setSubcontractors([]);
           }}
-        >
-          <option value="">-- choisir --</option>
-          <option value="seule">Entreprise seule</option>
-          <option value="solidaire">Solidaire</option>
-          <option value="conjoint">Conjoint</option>
-        </select>
+          className="text-sm sm:text-base"
+        />
       </div>
 
       {/* Entreprises participantes Section */}
