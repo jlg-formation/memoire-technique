@@ -14,7 +14,7 @@ interface FileAIUploadProps {
 }
 
 export default function FileAIUpload({
-  label = "Joindre un fichier",
+  label = "",
   accept = ".pdf,.docx",
   disabled = false,
   onParse,

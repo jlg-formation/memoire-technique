@@ -65,7 +65,6 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
                 CV de la personne
               </label>
               <FileAIUpload
-                label="Joindre le CV pour extraire les informations"
                 accept=".pdf,.docx,.md,.txt"
                 parseLabel="Analyse du CV avec l'IA..."
                 onParse={async (text) => {
@@ -177,7 +176,6 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
                       CV de la personne
                     </label>
                     <FileAIUpload
-                      label="Joindre le CV"
                       accept=".pdf,.docx,.md,.txt"
                       parseLabel="Analyse du CV avec l'IA..."
                       onParse={async (text) => {

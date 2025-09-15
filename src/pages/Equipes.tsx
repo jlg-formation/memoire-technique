@@ -15,6 +15,7 @@ function Equipes() {
   const [subcontractors, setSubcontractors] = useState<ParticipatingCompany[]>(
     [],
   );
+  const [showAddCompany, setShowAddCompany] = useState(false);
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
@@ -76,41 +77,72 @@ function Equipes() {
               ? "Entreprise principale"
               : "Entreprises participantes"}
           </label>
-          <FileAIUpload
-            label="Joindre le fichier de présentation de l'entreprise"
-            accept=".pdf,.docx,.md,.txt"
-            onParse={async (text) => {
-              const summary = await summarize(text, summaryWords);
-              return { text, summary };
-            }}
-            onResult={(result) => {
-              // Cast result to expected shape
-              const { text, summary } = result as {
-                text: string;
-                summary: string;
-              };
-              const name = extractCompanyName(summary);
-              const newCompany: ParticipatingCompany = {
-                id: crypto.randomUUID(),
-                name,
-                presentationText: text,
-                presentationSummary: summary,
-              };
-              if (currentProject?.groupType === "seule") {
-                // Remplace l'entreprise principale
-                updateCurrentProject({
-                  participatingCompanies: [newCompany],
-                });
-              } else {
-                // Ajoute à la liste
-                updateCurrentProject({
-                  participatingCompanies: [...companies, newCompany],
-                });
-              }
-            }}
-            parseLabel="Analyse du contenu avec l'IA..."
-            className="mb-4"
-          />
+
+          {(currentProject?.groupType !== "seule" || companies.length === 0) &&
+            !showAddCompany && (
+              <div className="flex justify-center">
+                <ButtonPrimary
+                  type="button"
+                  onClick={() => setShowAddCompany(true)}
+                  className="px-6 py-3 text-sm font-medium sm:text-base"
+                >
+                  + Ajouter Entreprise
+                </ButtonPrimary>
+              </div>
+            )}
+
+          {showAddCompany && (
+            <div className="rounded-lg border border-blue-200 bg-white p-4 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-900 sm:text-base">
+                  Nouvelle entreprise
+                </h3>
+                <ButtonLink
+                  type="button"
+                  onClick={() => setShowAddCompany(false)}
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </ButtonLink>
+              </div>
+              <FileAIUpload
+                label="Joindre le fichier de présentation de l'entreprise"
+                accept=".pdf,.docx,.md,.txt"
+                onParse={async (text) => {
+                  const summary = await summarize(text, summaryWords);
+                  return { text, summary };
+                }}
+                onResult={(result) => {
+                  // Cast result to expected shape
+                  const { text, summary } = result as {
+                    text: string;
+                    summary: string;
+                  };
+                  const name = extractCompanyName(summary);
+                  const newCompany: ParticipatingCompany = {
+                    id: crypto.randomUUID(),
+                    name,
+                    presentationText: text,
+                    presentationSummary: summary,
+                  };
+                  if (currentProject?.groupType === "seule") {
+                    // Remplace l'entreprise principale
+                    updateCurrentProject({
+                      participatingCompanies: [newCompany],
+                    });
+                  } else {
+                    // Ajoute à la liste
+                    updateCurrentProject({
+                      participatingCompanies: [...companies, newCompany],
+                    });
+                  }
+                  setShowAddCompany(false);
+                }}
+                parseLabel="Analyse du contenu avec l'IA..."
+                className="mb-0"
+              />
+            </div>
+          )}
 
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-sm font-medium text-blue-800 sm:text-base">
@@ -182,11 +214,39 @@ function Equipes() {
                 </div>
 
                 {/* Présentation de l'entreprise : désormais gérée par FileAIUpload, résumé éditable */}
-                {company.presentationSummary && (
-                  <div className="space-y-3 rounded-md bg-gray-50 p-3">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Présentation de l'entreprise
-                    </label>
+                <div className="space-y-3 rounded-md bg-gray-50 p-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Présentation de l'entreprise
+                  </label>
+                  <FileAIUpload
+                    accept=".pdf,.docx,.md,.txt"
+                    onParse={async (text) => {
+                      const summary = await summarize(text, summaryWords);
+                      return { text, summary };
+                    }}
+                    onResult={(result) => {
+                      const { text, summary } = result as {
+                        text: string;
+                        summary: string;
+                      };
+                      const name = extractCompanyName(summary);
+                      updateCompanies(
+                        companies.map((c) =>
+                          c.id === company.id
+                            ? {
+                                ...c,
+                                name: name || c.name, // Garde le nom actuel si extraction échoue
+                                presentationText: text,
+                                presentationSummary: summary,
+                              }
+                            : c,
+                        ),
+                      );
+                    }}
+                    parseLabel="Analyse du contenu avec l'IA..."
+                    className="mb-2"
+                  />
+                  {company.presentationSummary && (
                     <textarea
                       className="mt-2 w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                       value={company.presentationSummary}
@@ -201,8 +261,8 @@ function Equipes() {
                         );
                       }}
                     />
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {/* Moyens matériels */}
                 <div className="space-y-3 rounded-md bg-gray-50 p-3">
@@ -210,7 +270,6 @@ function Equipes() {
                     Moyens matériels
                   </label>
                   <FileAIUpload
-                    label="Joindre le fichier des moyens matériels"
                     accept=".pdf,.docx,.md,.txt"
                     parseLabel="Analyse du contenu avec l'IA..."
                     onParse={async (text) => {
