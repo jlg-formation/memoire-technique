@@ -5,7 +5,7 @@ import type { ParticipatingCompany } from "../types/project";
 import CompanyCreate from "./CompanyCreate";
 import CompanyEdit from "./CompanyEdit";
 import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
-import { Plus, Building2, Edit3, Trash2, Users } from "lucide-react";
+import { Plus, Building2, Trash2, Users } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -119,9 +119,10 @@ function Equipes() {
             {companies.map((company) => (
               <div
                 key={company.id}
-                className="cursor-pointer rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
+                className="flex cursor-pointer flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
+                onClick={() => handleEditCompany(company)}
               >
-                <div className="mb-4">
+                <div className="flex-1">
                   <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
                     {company.name}
                   </h3>
@@ -149,17 +150,8 @@ function Equipes() {
                   )}
                 </div>
 
-                <div className="flex items-center justify-end text-xs text-gray-500">
+                <div className="mt-4 flex items-center justify-end border-t border-gray-100 pt-3">
                   <div className="flex items-center gap-1">
-                    <ButtonLink
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditCompany(company);
-                      }}
-                      className="rounded p-1 text-blue-500 hover:bg-blue-50"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </ButtonLink>
                     <ButtonLink
                       onClick={(e) => {
                         e.stopPropagation();
