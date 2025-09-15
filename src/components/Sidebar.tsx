@@ -63,6 +63,14 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
         >
           Accueil
         </NavLink>
+        <NavLink
+          to="/parametres"
+          className={({ isActive }) =>
+            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+          }
+        >
+          Paramètres
+        </NavLink>
         {apiKeyTested && apiKeyIsValid && (
           <>
             <NavLink
@@ -76,14 +84,6 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 : "Projets"}
             </NavLink>
             <NavLink
-              to="/equipes"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Equipes
-            </NavLink>
-            <NavLink
               to="/documents"
               className={({ isActive }) =>
                 `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
@@ -92,13 +92,22 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
               Pièces marché
             </NavLink>
             <NavLink
-              to="/memoire"
+              to="/notation"
               className={({ isActive }) =>
                 `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
               }
             >
-              Mémoire
+              Notation
             </NavLink>
+            <NavLink
+              to="/equipes"
+              className={({ isActive }) =>
+                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+              }
+            >
+              Equipes
+            </NavLink>
+
             <NavLink
               to="/missions"
               className={({ isActive }) =>
@@ -115,24 +124,17 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
               Planning
             </NavLink>
+
             <NavLink
-              to="/notation"
+              to="/memoire"
               className={({ isActive }) =>
                 `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
               }
             >
-              Notation
+              Mémoire
             </NavLink>
           </>
         )}
-        <NavLink
-          to="/parametres"
-          className={({ isActive }) =>
-            `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-          }
-        >
-          Paramètres
-        </NavLink>
       </nav>
     </div>
   );
