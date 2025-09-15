@@ -6,6 +6,7 @@ import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
+import { ButtonPrimary, AccentButton, ButtonLink } from "../components/ui";
 
 function Groupement() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -218,165 +219,212 @@ function Groupement() {
   };
 
   return (
-    <div className="space-y-4 p-4">
-      <h1 className="text-xl font-bold">Groupement</h1>
-      <label className="block font-semibold">Type de groupement</label>
-      <select
-        className="w-full cursor-pointer border p-2"
-        value={currentProject.groupType ?? ""}
-        onChange={(e) =>
-          updateCurrentProject({
-            groupType: e.target.value as "solidaire" | "conjoint",
-          })
-        }
-      >
-        <option value="">-- choisir --</option>
-        <option value="solidaire">Solidaire</option>
-        <option value="conjoint">Conjoint</option>
-      </select>
+    <div className="min-h-screen space-y-6 p-4 sm:p-6">
+      {/* Header */}
+      <div className="border-b pb-4">
+        <h1 className="text-xl font-semibold text-gray-800 sm:text-2xl">
+          Groupement
+        </h1>
+      </div>
 
-      <div className="space-y-2">
-        <label className="block font-semibold">Entreprises participantes</label>
-        <div className="flex flex-wrap items-center gap-2">
-          <input
-            className="flex-1 border p-2"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Nom de l'entreprise"
-          />
-          <button
-            type="button"
-            onClick={handleAddCompany}
-            className="cursor-pointer bg-blue-500 px-4 py-2 text-white"
-          >
-            Ajouter
-          </button>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="font-semibold">Résumé en</label>
-          <input
-            type="number"
-            className="w-20 border p-1"
-            value={summaryWords}
-            onChange={(e) => setSummaryWords(Number(e.target.value))}
-          />
-          <span>mots</span>
-        </div>
-        {companies.length > 1 && (
-          <p className="font-semibold">Sélectionnez le mandataire</p>
-        )}
-        <ul className="space-y-1">
-          {companies.map((company) => (
-            <li key={company.id} className="space-y-2 rounded border p-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <label className="flex items-center gap-2">
-                  {companies.length > 1 && (
+      {/* Type de groupement Section */}
+      <div className="rounded-lg bg-gray-50 p-3 sm:p-4">
+        <label className="mb-2 block text-sm font-medium text-gray-700 sm:text-base">
+          Type de groupement
+        </label>
+        <select
+          className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
+          value={currentProject.groupType ?? ""}
+          onChange={(e) =>
+            updateCurrentProject({
+              groupType: e.target.value as "solidaire" | "conjoint",
+            })
+          }
+        >
+          <option value="">-- choisir --</option>
+          <option value="solidaire">Solidaire</option>
+          <option value="conjoint">Conjoint</option>
+        </select>
+      </div>
+
+      {/* Entreprises participantes Section */}
+      <div className="rounded-lg bg-blue-50 p-3 sm:p-4">
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-blue-900 sm:text-base">
+            Entreprises participantes
+          </label>
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              className="flex-1 rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nom de l'entreprise"
+            />
+            <ButtonPrimary
+              type="button"
+              onClick={handleAddCompany}
+              className="text-sm sm:text-base"
+            >
+              Ajouter
+            </ButtonPrimary>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="text-sm font-medium text-blue-800 sm:text-base">
+              Résumé en
+            </label>
+            <input
+              type="number"
+              className="w-20 rounded-md border border-gray-300 p-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              value={summaryWords}
+              onChange={(e) => setSummaryWords(Number(e.target.value))}
+            />
+            <span className="text-sm text-blue-700 sm:text-base">mots</span>
+          </div>
+
+          {companies.length > 1 && (
+            <p className="text-sm font-medium text-blue-900 sm:text-base">
+              Sélectionnez le mandataire
+            </p>
+          )}
+          <ul className="space-y-4">
+            {companies.map((company) => (
+              <li
+                key={company.id}
+                className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <label className="flex items-center gap-3">
+                    {companies.length > 1 && (
+                      <input
+                        type="radio"
+                        name="mandataire"
+                        checked={currentProject.mandataireId === company.id}
+                        onChange={() => handleMandataire(company.id)}
+                        className="h-4 w-4 cursor-pointer text-blue-600 focus:ring-blue-500"
+                      />
+                    )}
+                    <span className="text-sm font-medium text-gray-900 sm:text-base">
+                      {company.name}
+                    </span>
+                  </label>
+                  <ButtonLink
+                    type="button"
+                    onClick={() => handleDeleteCompany(company.id)}
+                    className="text-sm text-red-600 hover:text-red-700"
+                  >
+                    Supprimer
+                  </ButtonLink>
+                </div>
+
+                {/* Présentation de l'entreprise */}
+                <div className="space-y-3 rounded-md bg-gray-50 p-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Présentation de l'entreprise
+                  </label>
+                  <div className="flex flex-wrap gap-2">
                     <input
-                      type="radio"
-                      name="mandataire"
-                      checked={currentProject.mandataireId === company.id}
-                      onChange={() => handleMandataire(company.id)}
-                      className="cursor-pointer"
+                      type="file"
+                      accept=".pdf,.docx"
+                      onChange={(e) =>
+                        handlePresentationChange(
+                          company.id,
+                          e.target.files?.[0],
+                        )
+                      }
+                      className="flex-1 cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white"
+                    />
+                    <AccentButton
+                      type="button"
+                      onClick={() => handleSummarizePresentation(company.id)}
+                      className="text-sm"
+                    >
+                      Résumer
+                    </AccentButton>
+                  </div>
+                  {company.presentationSummary && (
+                    <textarea
+                      className="mt-2 w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      readOnly
+                      value={company.presentationSummary}
+                      rows={4}
                     />
                   )}
-                  <span>{company.name}</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => handleDeleteCompany(company.id)}
-                  className="cursor-pointer text-red-500"
-                >
-                  Supprimer
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  onChange={(e) =>
-                    handlePresentationChange(company.id, e.target.files?.[0])
-                  }
-                  className="cursor-pointer rounded border border-gray-300 bg-gray-100 p-2"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleSummarizePresentation(company.id)}
-                  className="cursor-pointer bg-green-500 px-2 text-white"
-                >
-                  Résumer
-                </button>
-              </div>
-              {company.presentationSummary && (
-                <textarea
-                  className="mt-2 w-full border p-2"
-                  readOnly
-                  value={company.presentationSummary}
-                />
-              )}
-              <div className="space-y-1 pt-2">
-                <label className="font-semibold">Moyens matériels</label>
-                <input
-                  type="file"
-                  accept=".pdf,.docx"
-                  onChange={(e) =>
-                    handleEquipmentChange(company.id, e.target.files?.[0])
-                  }
-                  className="cursor-pointer rounded border border-gray-300 bg-gray-100 p-2"
-                />
-                {company.equipmentText && (
-                  <textarea
-                    className="mt-2 w-full border p-2"
-                    readOnly
-                    value={company.equipmentText}
-                  />
-                )}
-              </div>
-              <MobilizedPeopleList
-                company={company}
-                onFileChange={handlePersonFileChange}
-                onSummarize={handleSummarizePerson}
-                onUpdate={(updated) => {
-                  if (
-                    currentProject.mandataireId === company.id &&
-                    !updated.some(
-                      (p) => p.id === currentProject.mandataireContactId,
-                    )
-                  ) {
-                    updateCurrentProject({ mandataireContactId: undefined });
-                  }
-                  updateCompanies(
-                    companies.map((c) =>
-                      c.id === company.id
-                        ? { ...c, mobilizedPeople: updated }
-                        : c,
-                    ),
-                  );
-                }}
-              />
-              {currentProject.mandataireId === company.id && (
-                <div className="space-y-1">
-                  <label className="font-semibold">Personne responsable</label>
-                  <select
-                    className="w-full cursor-pointer border p-2"
-                    value={currentProject.mandataireContactId ?? ""}
-                    onChange={(e) =>
-                      updateCurrentProject({
-                        mandataireContactId: e.target.value || undefined,
-                      })
-                    }
-                  >
-                    <option value="">-- choisir --</option>
-                    {(company.mobilizedPeople ?? []).map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
+
+                {/* Moyens matériels */}
+                <div className="space-y-3 rounded-md bg-gray-50 p-3">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Moyens matériels
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.docx"
+                    onChange={(e) =>
+                      handleEquipmentChange(company.id, e.target.files?.[0])
+                    }
+                    className="w-full cursor-pointer rounded-md border border-gray-300 bg-white p-2 text-sm file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-white"
+                  />
+                  {company.equipmentText && (
+                    <textarea
+                      className="mt-2 w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                      readOnly
+                      value={company.equipmentText}
+                      rows={4}
+                    />
+                  )}
+                </div>
+
+                <MobilizedPeopleList
+                  company={company}
+                  onFileChange={handlePersonFileChange}
+                  onSummarize={handleSummarizePerson}
+                  onUpdate={(updated) => {
+                    if (
+                      currentProject.mandataireId === company.id &&
+                      !updated.some(
+                        (p) => p.id === currentProject.mandataireContactId,
+                      )
+                    ) {
+                      updateCurrentProject({ mandataireContactId: undefined });
+                    }
+                    updateCompanies(
+                      companies.map((c) =>
+                        c.id === company.id
+                          ? { ...c, mobilizedPeople: updated }
+                          : c,
+                      ),
+                    );
+                  }}
+                />
+
+                {currentProject.mandataireId === company.id && (
+                  <div className="space-y-3 rounded-md bg-blue-50 p-3">
+                    <label className="block text-sm font-medium text-blue-900">
+                      Personne responsable
+                    </label>
+                    <select
+                      className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
+                      value={currentProject.mandataireContactId ?? ""}
+                      onChange={(e) =>
+                        updateCurrentProject({
+                          mandataireContactId: e.target.value || undefined,
+                        })
+                      }
+                    >
+                      <option value="">-- choisir --</option>
+                      {(company.mobilizedPeople ?? []).map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
