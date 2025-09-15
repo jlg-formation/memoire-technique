@@ -159,19 +159,49 @@ function MarketDocs() {
         {/* Autres documents */}
         <div className="space-y-3 md:col-span-2">
           <h3 className="text-lg font-medium text-gray-800">Autres pièces</h3>
-          <div className="rounded-lg bg-gray-50 p-4">
-            <FileAIUpload
-              label="Autre document"
-              onParse={async (text) => ({ text })}
-              onResult={(result) => {
-                const { text } = result as { text: string };
-                handleDocumentParsed(text, "Autre document", "AUTRE");
-              }}
-              status={processingSteps.autre || ""}
-              setStatus={(step) =>
-                setProcessingSteps((prev) => ({ ...prev, autre: step }))
-              }
-            />
+          <div className="space-y-4">
+            {/* Afficher les FileAIUpload existants pour les "AUTRE" documents */}
+            {docs
+              .filter((doc) => doc.type === "AUTRE")
+              .map((doc, index) => (
+                <div
+                  key={`autre-${index}`}
+                  className="rounded-lg bg-gray-50 p-4"
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">
+                      Document #{index + 1}: {doc.name}
+                    </span>
+                    <ButtonLink
+                      onClick={() => handleDelete(doc.id)}
+                      className="rounded p-1 text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </ButtonLink>
+                  </div>
+                </div>
+              ))}
+
+            {/* Nouveau FileAIUpload pour ajouter un autre document */}
+            <div className="rounded-lg bg-gray-50 p-4">
+              <FileAIUpload
+                label="Ajouter un autre document"
+                onParse={async (text) => ({ text })}
+                onResult={(result) => {
+                  const { text } = result as { text: string };
+                  const fileInput = document.querySelector(
+                    'input[type="file"]:last-of-type',
+                  ) as HTMLInputElement;
+                  const fileName =
+                    fileInput?.files?.[0]?.name || "Document sans nom";
+                  handleDocumentParsed(text, fileName, "AUTRE");
+                }}
+                status={processingSteps.autre || ""}
+                setStatus={(step) =>
+                  setProcessingSteps((prev) => ({ ...prev, autre: step }))
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
