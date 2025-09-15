@@ -10,7 +10,7 @@ interface ProjectImportProps {
 }
 
 function ProjectImport({ onClose }: ProjectImportProps) {
-  const { addProject } = useProjectStore();
+  const { addProject, setProject } = useProjectStore();
   const [dragActive, setDragActive] = useState(false);
   const [importing, setImporting] = useState(false);
 
@@ -27,6 +27,7 @@ function ProjectImport({ onClose }: ProjectImportProps) {
         project = importProjectJSON(json);
       }
       addProject(project);
+      setProject(project);
       onClose();
     } catch (error) {
       console.error("Erreur lors de l'import:", error);

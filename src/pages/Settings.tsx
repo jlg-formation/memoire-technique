@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { testKey } from "../lib/OpenAI";
-import { ButtonPrimary, Button } from "../components/ui";
+import { ButtonPrimary, AccentButton } from "../components/ui";
 
 function Settings() {
   const { apiKey, setApiKey } = useOpenAIKeyStore();
@@ -69,14 +69,13 @@ function Settings() {
             <ButtonPrimary type="button" onClick={handleSave}>
               Enregistrer
             </ButtonPrimary>
-            <Button
+            <AccentButton
               type="button"
               onClick={handleTest}
               disabled={status === "testing" || !tempKey.trim()}
-              className="!border-green-600 !bg-green-600 !text-white hover:!border-green-700 hover:!bg-green-700 disabled:!border-gray-300 disabled:!bg-gray-100 disabled:!text-gray-400"
             >
               {status === "testing" ? "Test en cours..." : "Tester"}
-            </Button>
+            </AccentButton>
           </div>
         </div>
       </div>

@@ -5,10 +5,16 @@ import {
   exportProjectZIP,
   downloadBlob,
 } from "../lib/export";
+import { executeDeleteAction } from "../lib/critical-actions";
 import type { Project } from "../types/project";
 import ProjectCreate from "./ProjectCreate";
 import ProjectImport from "./ProjectImport";
-import { ButtonPrimary, Button, ButtonLink } from "../components/ui";
+import {
+  ButtonPrimary,
+  Button,
+  ButtonLink,
+  AccentButton,
+} from "../components/ui";
 import {
   Plus,
   Upload,
@@ -79,35 +85,44 @@ function Projects() {
           {currentProject && (
             <>
               <div className="mx-3 border-l border-gray-300"></div>
-              <Button
+              <AccentButton
                 onClick={() => handleExportJSON(currentProject)}
-                className="flex items-center gap-2 border-green-600 bg-green-600 text-white hover:bg-green-700"
+                className="flex items-center gap-2"
               >
                 <Download className="h-5 w-5" />
                 Export JSON
-              </Button>
-              <Button
+              </AccentButton>
+              <AccentButton
                 onClick={() => handleExportZIP(currentProject)}
-                className="flex items-center gap-2 border-green-600 bg-green-600 text-white hover:bg-green-700"
+                className="flex items-center gap-2"
               >
                 <Archive className="h-5 w-5" />
                 Export ZIP
-              </Button>
+              </AccentButton>
             </>
           )}
         </div>
 
         {/* Selected Project Info */}
-        {currentProject && (
-          <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-            <div className="text-sm font-medium text-blue-900">
-              Projet sélectionné :
+        <div className="mb-6 flex h-28 flex-col rounded-lg border border-blue-200 bg-blue-50 p-4">
+          {currentProject ? (
+            <>
+              <div className="mb-1 flex-shrink-0 text-sm font-medium text-blue-900">
+                Projet sélectionné :
+              </div>
+              <div
+                className="line-clamp-3 flex-1 overflow-hidden text-sm leading-tight text-blue-800"
+                title={currentProject.consultationTitle}
+              >
+                {currentProject.consultationTitle}
+              </div>
+            </>
+          ) : (
+            <div className="flex h-full items-center justify-center text-sm text-blue-700 opacity-60">
+              Aucun projet sélectionné
             </div>
-            <div className="text-blue-800">
-              {currentProject.consultationTitle}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Projects List */}
         {projects.length === 0 ? (
@@ -173,7 +188,10 @@ function Projects() {
                   <ButtonLink
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteProject(project.id);
+                      executeDeleteAction(
+                        () => deleteProject(project.id),
+                        project.consultationTitle,
+                      );
                     }}
                     className="rounded p-1 text-red-500 hover:bg-red-50"
                   >

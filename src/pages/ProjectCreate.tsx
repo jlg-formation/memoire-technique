@@ -12,7 +12,7 @@ interface ProjectCreateProps {
 }
 
 function ProjectCreate({ onClose }: ProjectCreateProps) {
-  const { addProject } = useProjectStore();
+  const { addProject, setProject } = useProjectStore();
   const { apiKey } = useOpenAIKeyStore();
 
   const [consultationTitle, setConsultationTitle] = useState("");
@@ -24,7 +24,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    addProject({
+    const newProject = {
       id: crypto.randomUUID(),
       consultationTitle,
       submissionDeadline,
@@ -32,7 +32,9 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
       worksAmount: +worksAmount,
       creationDate: new Date().toISOString(),
       lastUpdateDate: new Date().toISOString(),
-    });
+    };
+    addProject(newProject);
+    setProject(newProject);
     onClose();
   };
 
