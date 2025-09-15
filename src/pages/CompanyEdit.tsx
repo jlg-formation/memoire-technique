@@ -171,17 +171,9 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
 
           {/* Upload Section */}
           <div className="rounded-lg bg-blue-50 p-3 sm:p-4">
-            <h3 className="mb-2 text-sm font-medium text-blue-900 sm:text-base">
-              Télécharger un nouveau fichier de présentation
-            </h3>
-            <p className="mb-3 text-xs text-blue-700 sm:text-sm">
-              Importez un nouveau fichier de présentation pour mettre à jour
-              automatiquement les informations de l'entreprise.
-            </p>
-
             <div className="space-y-3">
               <FileAIUpload
-                label="Joindre le fichier de présentation de l'entreprise"
+                label="Présentation"
                 accept=".pdf,.docx,.md,.txt"
                 parseLabel="Analyse du contenu avec l'IA..."
                 onParse={async (text) => {
@@ -220,17 +212,9 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
 
           {/* Equipment Upload Section */}
           <div className="rounded-lg bg-green-50 p-3 sm:p-4">
-            <h3 className="mb-2 text-sm font-medium text-green-900 sm:text-base">
-              Télécharger un nouveau fichier de matériel
-            </h3>
-            <p className="mb-3 text-xs text-green-700 sm:text-sm">
-              Importez un nouveau fichier décrivant le matériel et les
-              équipements de l'entreprise (optionnel).
-            </p>
-
             <div className="space-y-3">
               <FileAIUpload
-                label="Joindre le fichier de matériel de l'entreprise"
+                label="Matériel"
                 accept=".pdf,.docx,.md,.txt"
                 parseLabel="Lecture du fichier de matériel..."
                 onParse={async (text) => {
