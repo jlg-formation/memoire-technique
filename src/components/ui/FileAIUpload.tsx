@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Check } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 
 interface FileAIUploadProps {
   disabled?: boolean;
@@ -8,6 +8,7 @@ interface FileAIUploadProps {
   className?: string;
   status?: string;
   setStatus?: (msg: string) => void;
+  label?: string;
 }
 
 export default function FileAIUpload({
@@ -17,13 +18,20 @@ export default function FileAIUpload({
   className = "",
   status,
   setStatus,
+  label = "fichier",
 }: FileAIUploadProps) {
   const [isExtracting, setIsExtracting] = useState(false);
   const [internalStep, setInternalStep] = useState<string>("");
   const [cancelled, setCancelled] = useState(false);
+  const [fileName, setFileName] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   // Utilise le status externe si fourni, sinon l'interne
   const analysisStep = status !== undefined ? status : internalStep;
+
+  // Générer un ID unique pour chaque instance
+  const inputId = useRef(
+    `file-ai-upload-input-${Math.random().toString(36).substr(2, 9)}`,
+  );
 
   const setStep = setStatus ?? setInternalStep;
 
@@ -32,6 +40,7 @@ export default function FileAIUpload({
     setCancelled(true);
     setIsExtracting(false);
     setStep("");
+    setFileName("");
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -40,6 +49,7 @@ export default function FileAIUpload({
     if (!file) return;
     setIsExtracting(true);
     setCancelled(false);
+    setFileName(file.name);
     setStep("Extraction du contenu du fichier...");
     try {
       let text = "";
@@ -74,7 +84,7 @@ export default function FileAIUpload({
       className={`flex items-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-2 transition-all duration-300 hover:border-gray-400 ${className}`}
       style={{ minHeight: 48, maxWidth: 360 }}
     >
-      <span className="font-mono text-xl text-gray-700">&gt;</span>
+      <Sparkles className="h-4 w-4 text-gray-700" />
 
       <input
         ref={fileInputRef}
@@ -83,14 +93,14 @@ export default function FileAIUpload({
         onChange={handleFileChange}
         disabled={disabled || isExtracting}
         className="hidden"
-        id="file-ai-upload-input"
+        id={inputId.current}
       />
 
       <label
-        htmlFor="file-ai-upload-input"
-        className="flex-1 cursor-pointer px-2 py-1 text-lg font-medium text-gray-700 transition-colors duration-200 select-none hover:text-gray-900"
+        htmlFor={inputId.current}
+        className="flex-1 cursor-pointer px-2 py-1 text-sm font-normal text-gray-500 transition-colors duration-200 select-none hover:text-gray-700"
       >
-        fichier
+        {fileName || label}
       </label>
 
       <style>{`
