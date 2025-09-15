@@ -53,8 +53,8 @@ function Equipes() {
           placeholder="-- choisir --"
           options={[
             { value: "seule", label: "Entreprise seule" },
-            { value: "solidaire", label: "Solidaire" },
-            { value: "conjoint", label: "Conjoint" },
+            { value: "solidaire", label: "Groupement Solidaire" },
+            { value: "conjoint", label: "Groupement Conjoint" },
           ]}
           value={currentProject?.groupType ?? ""}
           onChange={(e) => {
