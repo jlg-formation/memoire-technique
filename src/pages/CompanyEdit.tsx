@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, Check, Info } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { ButtonLink, ButtonPrimary } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
@@ -140,46 +140,6 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
               disabled={processing}
             />
             <span className="text-sm text-blue-700 sm:text-base">mots</span>
-          </div>
-
-          {/* Status message container with fixed height to prevent CLS */}
-          <div className="min-h-[52px] sm:min-h-[60px]">
-            {processing && (
-              <div className="flex items-center gap-2 rounded-md bg-blue-100 p-2 sm:gap-3 sm:p-3">
-                {/* Spinner */}
-                <div className="flex-shrink-0">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent sm:h-5 sm:w-5"></div>
-                </div>
-
-                {/* Message d'étape */}
-                <div className="text-xs text-blue-800 sm:text-sm">
-                  {analysisStep || "Traitement en cours..."}
-                </div>
-              </div>
-            )}
-
-            {!processing && analysisStep && (
-              <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
-                <div className="flex-shrink-0">
-                  <Check className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-xs text-green-800 sm:text-sm">
-                  {analysisStep}
-                </div>
-              </div>
-            )}
-
-            {!processing && !analysisStep && (
-              <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2 sm:gap-3 sm:p-3">
-                <div className="flex-shrink-0">
-                  <Info className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-xs text-gray-600 sm:text-sm">
-                  Une fois sélectionné, le fichier sera analysé automatiquement
-                  par l'IA pour extraire les informations.
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
