@@ -109,8 +109,9 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Toujours prendre la version la plus à jour de mobilizedPeople
     const updatedCompany: ParticipatingCompany = {
-      ...company,
+      ...currentCompany,
       name: companyName,
       presentationSummary,
       equipmentText,
