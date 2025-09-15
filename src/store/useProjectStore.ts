@@ -15,6 +15,7 @@ type ProjectStore = {
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   setProject: (project: Project) => void;
+  updateProject: (project: Project) => void;
   updateCurrentProject: (data: Partial<Project>) => void;
 };
 
@@ -56,6 +57,18 @@ export const useProjectStore = create<ProjectStore>((set) => {
       const clean = stripPdfFields(project);
       localStorage.setItem(CURRENT_PROJECT_KEY, clean.id);
       set({ currentProject: clean });
+    },
+    updateProject: (project) => {
+      const clean = stripPdfFields({
+        ...project,
+        lastUpdateDate: new Date().toISOString(),
+      });
+      void persistProject(clean);
+      set((state) => ({
+        projects: state.projects.map((p) => (p.id === clean.id ? clean : p)),
+        currentProject:
+          state.currentProject?.id === clean.id ? clean : state.currentProject,
+      }));
     },
     updateCurrentProject: (data) => {
       set((state) => {

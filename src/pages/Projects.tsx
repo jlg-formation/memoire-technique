@@ -8,6 +8,7 @@ import {
 import { executeDeleteAction } from "../lib/critical-actions";
 import type { Project } from "../types/project";
 import ProjectCreate from "./ProjectCreate";
+import ProjectEdit from "./ProjectEdit";
 import ProjectImport from "./ProjectImport";
 import {
   ButtonPrimary,
@@ -24,15 +25,17 @@ import {
   Calendar,
   DollarSign,
   Trash2,
+  Edit3,
 } from "lucide-react";
 
 function Projects() {
   const { projects, currentProject, deleteProject, setProject } =
     useProjectStore();
 
-  const [currentView, setCurrentView] = useState<"list" | "create" | "import">(
-    "list",
-  );
+  const [currentView, setCurrentView] = useState<
+    "list" | "create" | "import" | "edit"
+  >("list");
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const handleExportJSON = (project: Project): void => {
     const json = exportProjectJSON(project);
@@ -45,8 +48,22 @@ function Projects() {
     downloadBlob(blob, `${project.consultationTitle}.zip`);
   };
 
+  const handleEditProject = (project: Project): void => {
+    setEditingProject(project);
+    setCurrentView("edit");
+  };
+
+  const handleCloseEdit = (): void => {
+    setEditingProject(null);
+    setCurrentView("list");
+  };
+
   if (currentView === "create") {
     return <ProjectCreate onClose={() => setCurrentView("list")} />;
+  }
+
+  if (currentView === "edit" && editingProject) {
+    return <ProjectEdit project={editingProject} onClose={handleCloseEdit} />;
   }
 
   if (currentView === "import") {
@@ -185,18 +202,29 @@ function Projects() {
                     Créé le{" "}
                     {new Date(project.creationDate).toLocaleDateString("fr-FR")}
                   </div>
-                  <ButtonLink
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      executeDeleteAction(
-                        () => deleteProject(project.id),
-                        project.consultationTitle,
-                      );
-                    }}
-                    className="rounded p-1 text-red-500 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </ButtonLink>
+                  <div className="flex items-center gap-1">
+                    <ButtonLink
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditProject(project);
+                      }}
+                      className="rounded p-1 text-blue-500 hover:bg-blue-50"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </ButtonLink>
+                    <ButtonLink
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        executeDeleteAction(
+                          () => deleteProject(project.id),
+                          project.consultationTitle,
+                        );
+                      }}
+                      className="rounded p-1 text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </ButtonLink>
+                  </div>
                 </div>
               </div>
             ))}
