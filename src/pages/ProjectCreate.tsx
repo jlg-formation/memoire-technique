@@ -132,42 +132,68 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             />
           </div>
 
-          {processing && (
-            <div className="flex items-center gap-2 rounded-md bg-blue-100 p-2 sm:gap-3 sm:p-3">
-              {/* Spinner */}
-              <div className="flex-shrink-0">
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent sm:h-5 sm:w-5"></div>
-              </div>
+          {/* Status message container with fixed height to prevent CLS */}
+          <div className="min-h-[52px] sm:min-h-[60px]">
+            {processing && (
+              <div className="flex items-center gap-2 rounded-md bg-blue-100 p-2 sm:gap-3 sm:p-3">
+                {/* Spinner */}
+                <div className="flex-shrink-0">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent sm:h-5 sm:w-5"></div>
+                </div>
 
-              {/* Message d'étape */}
-              <div className="text-xs text-blue-800 sm:text-sm">
-                {analysisStep || "Traitement en cours..."}
+                {/* Message d'étape */}
+                <div className="text-xs text-blue-800 sm:text-sm">
+                  {analysisStep || "Traitement en cours..."}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {!processing && analysisStep && (
-            <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-4 w-4 text-green-600 sm:h-5 sm:w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+            {!processing && analysisStep && (
+              <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-4 w-4 text-green-600 sm:h-5 sm:w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                </div>
+                <div className="text-xs text-green-800 sm:text-sm">
+                  {analysisStep}
+                </div>
               </div>
-              <div className="text-xs text-green-800 sm:text-sm">
-                {analysisStep}
+            )}
+
+            {!processing && !analysisStep && (
+              <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2 sm:gap-3 sm:p-3">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="text-xs text-gray-600 sm:text-sm">
+                  Une fois sélectionné, le fichier sera analysé automatiquement par l'IA pour extraire les informations.
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
