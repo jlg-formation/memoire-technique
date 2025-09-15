@@ -202,29 +202,31 @@ function Projects() {
                     Créé le{" "}
                     {new Date(project.creationDate).toLocaleDateString("fr-FR")}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <ButtonLink
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEditProject(project);
-                      }}
-                      className="rounded p-1 text-blue-500 hover:bg-blue-50"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </ButtonLink>
-                    <ButtonLink
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        executeDeleteAction(
-                          () => deleteProject(project.id),
-                          project.consultationTitle,
-                        );
-                      }}
-                      className="rounded p-1 text-red-500 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </ButtonLink>
-                  </div>
+                  {currentProject?.id === project.id && (
+                    <div className="flex items-center gap-1">
+                      <ButtonLink
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditProject(project);
+                        }}
+                        className="rounded p-1 text-blue-500 hover:bg-blue-50"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </ButtonLink>
+                      <ButtonLink
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          executeDeleteAction(
+                            () => deleteProject(project.id),
+                            project.consultationTitle,
+                          );
+                        }}
+                        className="rounded p-1 text-red-500 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </ButtonLink>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

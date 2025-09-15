@@ -1,23 +1,32 @@
 import { NavLink } from "react-router";
+import { useProjectStore } from "../store/useProjectStore";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const { currentProject } = useProjectStore();
   return (
     <div
       className={`fixed inset-y-0 left-0 z-40 w-64 transform bg-gray-100 transition-transform md:static md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
     >
-      <div className="mb-4 flex items-center justify-between">
-        <button
-          type="button"
-          onClick={onClose}
-          className="cursor-pointer p-4 hover:bg-gray-300 md:hidden"
-        >
-          ✕
-        </button>
-        <h2 className="p-4 text-lg font-bold">Menu</h2>
+      <div className="mb-4 flex flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer p-4 hover:bg-gray-300 md:hidden"
+          >
+            ✕
+          </button>
+          <h2 className="p-4 text-lg font-bold">Menu</h2>
+        </div>
+        {currentProject?.nomCourt && (
+          <div className="rounded bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-700">
+            Projet : {currentProject.nomCourt}
+          </div>
+        )}
       </div>
       <nav className="flex flex-col">
         <NavLink

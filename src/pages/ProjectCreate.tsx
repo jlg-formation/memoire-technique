@@ -16,6 +16,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
   const { apiKey } = useOpenAIKeyStore();
 
   const [consultationTitle, setConsultationTitle] = useState("");
+  const [nomCourt, setNomCourt] = useState("");
   const [submissionDeadline, setSubmissionDeadline] = useState("");
   const [submissionTime, setSubmissionTime] = useState("");
   const [worksAmount, setWorksAmount] = useState("");
@@ -27,6 +28,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
     const newProject = {
       id: crypto.randomUUID(),
       consultationTitle,
+      nomCourt,
       submissionDeadline,
       submissionTime: submissionTime || undefined,
       worksAmount: +worksAmount,
@@ -67,6 +69,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
       // Étape 3: Préremplissage des champs
       setAnalysisStep("Préremplissage des champs...");
       setConsultationTitle(info.consultationTitle ?? "");
+      setNomCourt(info.nomCourt ?? "");
       setSubmissionDeadline(info.submissionDeadline ?? "");
       setSubmissionTime(info.submissionTime ?? "");
       setWorksAmount(info.worksAmount?.toString() ?? "");
@@ -167,6 +170,20 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">
+            Nom court du projet
+          </label>
+          <input
+            className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
+            value={nomCourt}
+            onChange={(e) => setNomCourt(e.target.value)}
+            placeholder="Nom court généré par l'IA"
+            disabled={processing}
+            maxLength={20}
+            required
+          />
+        </div>
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
             Titre de la consultation

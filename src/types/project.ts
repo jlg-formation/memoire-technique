@@ -44,6 +44,8 @@ export interface Project {
   id: string;
   /** Titre de la consultation extrait du RC */
   consultationTitle: string;
+  /** Nom court du projet généré par l'IA */
+  nomCourt?: string;
   /** Date limite de remise des offres au format ISO */
   submissionDeadline: string;
   /** Heure limite de remise des offres au format HH:mm */

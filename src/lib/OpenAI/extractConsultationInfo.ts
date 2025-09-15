@@ -5,6 +5,7 @@ export interface ConsultationInfo {
   submissionDeadline: string;
   submissionTime: string;
   worksAmount: number;
+  nomCourt?: string;
 }
 
 export default async function extractConsultationInfo(
@@ -19,8 +20,9 @@ export default async function extractConsultationInfo(
       {
         role: "system",
         content: `Tu es un assistant spécialisé en analyse de règlement de consultation.
-Extrais le titre de la consultation et appelle le consultationTitle,
-et la date limite de remise des offres au format (yyyy-MM-dd) que tu appelles submissionDeadline.
+Extrais le titre de la consultation et appelle le consultationTitle.
+Génère aussi un nom court (max 20 caractères, unique, explicite, sans caractères spéciaux inutiles) pour ce projet et appelle le nomCourt.
+Extrais la date limite de remise des offres au format (yyyy-MM-dd) que tu appelles submissionDeadline.
 Extrais aussi l'heure limite de remise des offres au format (HH:mm) que tu appelles submissionTime.
 Identifie et extrais le montant global des travaux HT prevu au format number que tu appelles worksAmount.
 Si tu ne trouves pas le montant global des travaux HT indique 0.
@@ -30,6 +32,7 @@ Le Schema doit etre comme l'exemple. Merci de le respecter et de ne surtout pas 
 Exemple:
 {
   "consultationTitle": "Mission de maîtrise d’œuvre",
+  "nomCourt": "MOE Lycée",
   "submissionDeadline": "yyyy-MM-dd",
   "submissionTime": "HH:mm",
   "worksAmount": 10000000
