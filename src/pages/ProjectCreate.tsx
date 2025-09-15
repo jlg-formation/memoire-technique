@@ -189,7 +189,8 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
                   </svg>
                 </div>
                 <div className="text-xs text-gray-600 sm:text-sm">
-                  Une fois sélectionné, le fichier sera analysé automatiquement par l'IA pour extraire les informations.
+                  Une fois sélectionné, le fichier sera analysé automatiquement
+                  par l'IA pour extraire les informations.
                 </div>
               </div>
             )}
