@@ -15,8 +15,8 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
   const { currentProject, updateCurrentProject } = useProjectStore();
 
   const [companyName, setCompanyName] = useState("");
-  const [presentationText, setPresentationText] = useState("");
   const [presentationSummary, setPresentationSummary] = useState("");
+  const [equipmentText, setEquipmentText] = useState("");
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
   const [summaryWords, setSummaryWords] = useState(100);
@@ -30,8 +30,8 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
     const newCompany: ParticipatingCompany = {
       id: crypto.randomUUID(),
       name: companyName,
-      presentationText,
       presentationSummary,
+      equipmentText,
     };
 
     let updatedProject = {};
@@ -103,13 +103,11 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
               return { text, summary };
             }}
             onResult={(result) => {
-              const { text, summary } = result as {
-                text: string;
+              const { summary } = result as {
                 summary: string;
               };
               const name = extractCompanyName(summary);
               setCompanyName(name);
-              setPresentationText(text);
               setPresentationSummary(summary);
               setProcessing(false);
             }}
@@ -130,6 +128,34 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
             />
             <span className="text-sm text-blue-700 sm:text-base">mots</span>
           </div>
+        </div>
+      </div>
+
+      {/* Equipment Upload Section */}
+      <div className="rounded-lg bg-green-50 p-3 sm:p-4">
+        <h3 className="mb-2 text-sm font-medium text-green-900 sm:text-base">
+          Télécharger le fichier de matériel de l'entreprise
+        </h3>
+        <p className="mb-3 text-xs text-green-700 sm:text-sm">
+          Importez un fichier décrivant le matériel et les équipements de
+          l'entreprise (optionnel).
+        </p>
+
+        <div className="space-y-3">
+          <FileAIUpload
+            label="Joindre le fichier de matériel de l'entreprise"
+            accept=".pdf,.docx,.md,.txt"
+            parseLabel="Lecture du fichier de matériel..."
+            onParse={async (text) => {
+              return { text };
+            }}
+            onResult={(result) => {
+              const { text } = result as { text: string };
+              setEquipmentText(text);
+            }}
+            status=""
+            setStatus={() => {}}
+          />
         </div>
       </div>
 
@@ -181,20 +207,6 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
 
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            Texte de présentation
-          </label>
-          <textarea
-            className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
-            value={presentationText}
-            onChange={(e) => setPresentationText(e.target.value)}
-            placeholder="Texte complet de présentation de l'entreprise"
-            disabled={processing}
-            rows={10}
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
             Résumé de présentation
           </label>
           <textarea
@@ -204,6 +216,20 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
             placeholder="Résumé de la présentation"
             disabled={processing}
             rows={5}
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">
+            Description du matériel
+          </label>
+          <textarea
+            className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
+            value={equipmentText}
+            onChange={(e) => setEquipmentText(e.target.value)}
+            placeholder="Description du matériel et des équipements de l'entreprise"
+            disabled={processing}
+            rows={8}
           />
         </div>
 
