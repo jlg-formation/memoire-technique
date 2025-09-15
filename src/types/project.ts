@@ -54,7 +54,7 @@ export interface Project {
   worksAmount?: number;
   creationDate: string;
   lastUpdateDate: string;
-  groupType?: "solidaire" | "conjoint";
+  groupType?: "solidaire" | "conjoint" | "seule";
   participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;
   /** Identifiant de la personne mobilisée responsable pour la mission */

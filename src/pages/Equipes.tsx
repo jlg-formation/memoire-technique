@@ -8,7 +8,7 @@ import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import MobilizedPeopleList from "../components/MobilizedPeopleList";
 import { ButtonPrimary, AccentButton, ButtonLink } from "../components/ui";
 
-function Groupement() {
+function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   const { apiKey } = useOpenAIKeyStore();
   const [name, setName] = useState("");
@@ -17,6 +17,12 @@ function Groupement() {
     Record<string, File | undefined>
   >({});
   const [cvFiles, setCvFiles] = useState<Record<string, File | undefined>>({});
+
+  // Ajout de l'état pour les sous-traitants si entreprise seule (déclaré une seule fois, avant tout return)
+  const [subcontractorName, setSubcontractorName] = useState("");
+  const [subcontractors, setSubcontractors] = useState<ParticipatingCompany[]>(
+    [],
+  );
 
   if (!currentProject) {
     return (
@@ -218,30 +224,35 @@ function Groupement() {
     updateCurrentProject({ mandataireId: id, mandataireContactId: contactId });
   };
 
+  // ...existing code...
+
+  // Ajout d'une option "seule" dans le select
   return (
     <div className="min-h-screen space-y-6 p-4 sm:p-6">
       {/* Header */}
       <div className="border-b pb-4">
         <h1 className="text-xl font-semibold text-gray-800 sm:text-2xl">
-          Groupement
+          Equipes
         </h1>
       </div>
 
-      {/* Type de groupement Section */}
+      {/* Type d'équipe Section */}
       <div className="rounded-lg bg-gray-50 p-3 sm:p-4">
         <label className="mb-2 block text-sm font-medium text-gray-700 sm:text-base">
-          Type de groupement
+          Type d'équipe
         </label>
         <select
           className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
           value={currentProject.groupType ?? ""}
-          onChange={(e) =>
+          onChange={(e) => {
             updateCurrentProject({
-              groupType: e.target.value as "solidaire" | "conjoint",
-            })
-          }
+              groupType: e.target.value as "solidaire" | "conjoint" | "seule",
+            });
+            setSubcontractors([]);
+          }}
         >
           <option value="">-- choisir --</option>
+          <option value="seule">Entreprise seule</option>
           <option value="solidaire">Solidaire</option>
           <option value="conjoint">Conjoint</option>
         </select>
@@ -251,14 +262,20 @@ function Groupement() {
       <div className="rounded-lg bg-blue-50 p-3 sm:p-4">
         <div className="space-y-4">
           <label className="block text-sm font-medium text-blue-900 sm:text-base">
-            Entreprises participantes
+            {currentProject.groupType === "seule"
+              ? "Entreprise principale"
+              : "Entreprises participantes"}
           </label>
           <div className="flex flex-wrap items-center gap-2">
             <input
               className="flex-1 rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nom de l'entreprise"
+              placeholder={
+                currentProject.groupType === "seule"
+                  ? "Nom de l'entreprise principale"
+                  : "Nom de l'entreprise"
+              }
             />
             <ButtonPrimary
               type="button"
@@ -282,11 +299,14 @@ function Groupement() {
             <span className="text-sm text-blue-700 sm:text-base">mots</span>
           </div>
 
-          {companies.length > 1 && (
-            <p className="text-sm font-medium text-blue-900 sm:text-base">
-              Sélectionnez le mandataire
-            </p>
-          )}
+          {/* Mandataire uniquement si groupement */}
+          {companies.length > 1 &&
+            currentProject.groupType !== undefined &&
+            currentProject.groupType !== "seule" && (
+              <p className="text-sm font-medium text-blue-900 sm:text-base">
+                Sélectionnez le mandataire
+              </p>
+            )}
           <ul className="space-y-4">
             {companies.map((company) => (
               <li
@@ -295,15 +315,17 @@ function Groupement() {
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <label className="flex items-center gap-3">
-                    {companies.length > 1 && (
-                      <input
-                        type="radio"
-                        name="mandataire"
-                        checked={currentProject.mandataireId === company.id}
-                        onChange={() => handleMandataire(company.id)}
-                        className="h-4 w-4 cursor-pointer text-blue-600 focus:ring-blue-500"
-                      />
-                    )}
+                    {companies.length > 1 &&
+                      currentProject.groupType !== undefined &&
+                      currentProject.groupType !== "seule" && (
+                        <input
+                          type="radio"
+                          name="mandataire"
+                          checked={currentProject.mandataireId === company.id}
+                          onChange={() => handleMandataire(company.id)}
+                          className="h-4 w-4 cursor-pointer text-blue-600 focus:ring-blue-500"
+                        />
+                      )}
                     <span className="text-sm font-medium text-gray-900 sm:text-base">
                       {company.name}
                     </span>
@@ -398,36 +420,92 @@ function Groupement() {
                   }}
                 />
 
-                {currentProject.mandataireId === company.id && (
-                  <div className="space-y-3 rounded-md bg-blue-50 p-3">
-                    <label className="block text-sm font-medium text-blue-900">
-                      Personne responsable
-                    </label>
-                    <select
-                      className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
-                      value={currentProject.mandataireContactId ?? ""}
-                      onChange={(e) =>
-                        updateCurrentProject({
-                          mandataireContactId: e.target.value || undefined,
-                        })
-                      }
-                    >
-                      <option value="">-- choisir --</option>
-                      {(company.mobilizedPeople ?? []).map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+                {currentProject.mandataireId === company.id &&
+                  currentProject.groupType !== undefined &&
+                  currentProject.groupType !== "seule" && (
+                    <div className="space-y-3 rounded-md bg-blue-50 p-3">
+                      <label className="block text-sm font-medium text-blue-900">
+                        Personne responsable
+                      </label>
+                      <select
+                        className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
+                        value={currentProject.mandataireContactId ?? ""}
+                        onChange={(e) =>
+                          updateCurrentProject({
+                            mandataireContactId: e.target.value || undefined,
+                          })
+                        }
+                      >
+                        <option value="">-- choisir --</option>
+                        {(company.mobilizedPeople ?? []).map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
               </li>
             ))}
           </ul>
+
+          {/* Sous-traitants si entreprise seule */}
+          {currentProject.groupType === "seule" && companies.length === 1 && (
+            <div className="mt-6 rounded-lg bg-gray-100 p-4">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
+                Sous-traitants
+              </label>
+              <div className="mb-2 flex flex-wrap items-center gap-2">
+                <input
+                  className="flex-1 rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
+                  value={subcontractorName}
+                  onChange={(e) => setSubcontractorName(e.target.value)}
+                  placeholder="Nom du sous-traitant"
+                />
+                <ButtonPrimary
+                  type="button"
+                  onClick={() => {
+                    if (!subcontractorName.trim()) return;
+                    setSubcontractors([
+                      ...subcontractors,
+                      { id: crypto.randomUUID(), name: subcontractorName },
+                    ]);
+                    setSubcontractorName("");
+                  }}
+                  className="text-sm sm:text-base"
+                >
+                  Ajouter
+                </ButtonPrimary>
+              </div>
+              <ul className="space-y-2">
+                {subcontractors.map((sc) => (
+                  <li
+                    key={sc.id}
+                    className="flex items-center justify-between rounded border bg-white p-2"
+                  >
+                    <span className="text-sm font-medium text-gray-900">
+                      {sc.name}
+                    </span>
+                    <ButtonLink
+                      type="button"
+                      onClick={() =>
+                        setSubcontractors(
+                          subcontractors.filter((s) => s.id !== sc.id),
+                        )
+                      }
+                      className="text-sm text-red-600 hover:text-red-700"
+                    >
+                      Supprimer
+                    </ButtonLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default Groupement;
+export default Equipes;

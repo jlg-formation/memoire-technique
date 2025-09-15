@@ -21,7 +21,7 @@
 ### 2. 📝 Saisie des données clés
 
 - Téléverser les autres pièces (CCTP, CCAP, AE, etc.)
-- Renseigner les informations sur l’agence ou le groupement
+- Renseigner les informations sur l'équipe (seul, groupement conjoint, groupement solidaire)
 - Ajouter les intervenants (nom, rôle, diplôme, missions, expérience…)
 - Lister les moyens matériels et humains
 - Mentionner les particularités du site (contraintes, accessibilité, environnement…)

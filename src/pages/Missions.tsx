@@ -32,7 +32,7 @@ function Missions() {
       <div className="space-y-2 p-4 text-red-500">
         {missingRates.map((p) => (
           <div key={p.id}>
-            Aller dans la page Groupement pour indiquer un TUJ pour {p.name}
+            Aller dans la page Equipes pour indiquer un TUJ pour {p.name}
           </div>
         ))}
       </div>

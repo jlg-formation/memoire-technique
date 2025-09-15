@@ -44,12 +44,12 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             : "Projets"}
         </NavLink>
         <NavLink
-          to="/groupement"
+          to="/equipes"
           className={({ isActive }) =>
             `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
           }
         >
-          Groupement
+          Equipes
         </NavLink>
         <NavLink
           to="/documents"

@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Projects from "./pages/Projects";
-import Groupement from "./pages/Groupement";
+import Equipes from "./pages/Equipes";
 import MarketDocs from "./pages/MarketDocs";
 import Missions from "./pages/Missions";
 import Planning from "./pages/Planning";
@@ -41,7 +41,7 @@ function App() {
               }
             />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/groupement" element={<Groupement />} />
+            <Route path="/equipes" element={<Equipes />} />
             <Route path="/documents" element={<MarketDocs />} />
             <Route path="/memoire" element={<Memoire />} />
             <Route path="/missions" element={<Missions />} />
