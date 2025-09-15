@@ -124,8 +124,7 @@ export default function FileAIUpload({
               <Info className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" />
             </div>
             <div className="text-xs text-gray-600 sm:text-sm">
-              Une fois sélectionné, le fichier sera analysé automatiquement par
-              l'IA pour extraire les informations.
+              Extraction des données du fichier par IA
             </div>
           </div>
         )}

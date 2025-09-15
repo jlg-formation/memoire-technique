@@ -20,7 +20,7 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
   const [summaryWords, setSummaryWords] = useState(100);
-  const [isMandataire, setIsMandataire] = useState(false);
+  // Suppression de la gestion du mandataire ici
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
@@ -46,15 +46,6 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
       updatedProject = {
         participatingCompanies: [...companies, newCompany],
       };
-
-      // Si cette entreprise est désignée comme mandataire
-      if (isMandataire) {
-        updatedProject = {
-          ...updatedProject,
-          mandataireId: newCompany.id,
-          mandataireContactId: undefined, // Reset contact si nouveau mandataire
-        };
-      }
     }
 
     updateCurrentProject(updatedProject);
@@ -84,17 +75,9 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
 
       {/* Upload Section */}
       <div className="rounded-lg bg-blue-50 p-3 sm:p-4">
-        <h3 className="mb-2 text-sm font-medium text-blue-900 sm:text-base">
-          Télécharger le fichier de présentation de l'entreprise
-        </h3>
-        <p className="mb-3 text-xs text-blue-700 sm:text-sm">
-          Importez un fichier de présentation pour extraire automatiquement les
-          informations de l'entreprise.
-        </p>
-
         <div className="space-y-3">
           <FileAIUpload
-            label="Joindre le fichier de présentation de l'entreprise"
+            label="Présentation"
             accept=".pdf,.docx,.md,.txt"
             parseLabel="Analyse du contenu avec l'IA..."
             onParse={async (text) => {
@@ -133,17 +116,9 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
 
       {/* Equipment Upload Section */}
       <div className="rounded-lg bg-green-50 p-3 sm:p-4">
-        <h3 className="mb-2 text-sm font-medium text-green-900 sm:text-base">
-          Télécharger le fichier de matériel de l'entreprise
-        </h3>
-        <p className="mb-3 text-xs text-green-700 sm:text-sm">
-          Importez un fichier décrivant le matériel et les équipements de
-          l'entreprise (optionnel).
-        </p>
-
         <div className="space-y-3">
           <FileAIUpload
-            label="Joindre le fichier de matériel de l'entreprise"
+            label="Matériel"
             accept=".pdf,.docx,.md,.txt"
             parseLabel="Lecture du fichier de matériel..."
             onParse={async (text) => {
@@ -179,31 +154,7 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
           />
         </div>
 
-        {/* Checkbox Mandataire - uniquement pour les groupements */}
-        {currentProject?.groupType && currentProject.groupType !== "seule" && (
-          <div className="rounded-lg bg-blue-50 p-4">
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="mandataire"
-                checked={isMandataire}
-                onChange={(e) => setIsMandataire(e.target.checked)}
-                disabled={processing}
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label
-                htmlFor="mandataire"
-                className="text-sm font-medium text-blue-900 sm:text-base"
-              >
-                Cette entreprise est le mandataire du groupement
-              </label>
-            </div>
-            <p className="mt-2 text-xs text-blue-700 sm:text-sm">
-              Le mandataire est l'entreprise responsable de la coordination du
-              groupement et des relations avec le maître d'ouvrage.
-            </p>
-          </div>
-        )}
+        {/* La sélection du mandataire se fait désormais dans Equipes.tsx */}
 
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-700">

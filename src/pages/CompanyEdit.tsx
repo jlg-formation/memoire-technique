@@ -24,7 +24,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
   const [summaryWords, setSummaryWords] = useState(100);
-  const [isMandataire, setIsMandataire] = useState(false);
+  // Suppression de la gestion du mandataire ici
 
   // États pour la gestion des personnes mobilisées
   const [currentView, setCurrentView] = useState<
@@ -45,7 +45,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
     setCompanyName(company.name || "");
     setPresentationSummary(company.presentationSummary || "");
     setEquipmentText(company.equipmentText || "");
-    setIsMandataire(currentProject?.mandataireId === company.id);
+    // La gestion du mandataire est déplacée dans Equipes.tsx
   }, [company, currentProject]);
 
   // Fonctions de gestion des personnes mobilisées
@@ -124,24 +124,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
       participatingCompanies: updatedCompanies,
     };
 
-    // Gestion du mandataire pour les groupements
-    if (currentProject?.groupType && currentProject.groupType !== "seule") {
-      if (isMandataire) {
-        // Cette entreprise devient mandataire
-        Object.assign(updatedProject, {
-          mandataireId: company.id,
-          ...(currentProject.mandataireId !== company.id && {
-            mandataireContactId: undefined,
-          }),
-        });
-      } else if (currentProject.mandataireId === company.id) {
-        // Cette entreprise n'est plus mandataire
-        Object.assign(updatedProject, {
-          mandataireId: undefined,
-          mandataireContactId: undefined,
-        });
-      }
-    }
+    // La gestion du mandataire est déplacée dans Equipes.tsx
 
     updateCurrentProject(updatedProject);
     onClose();
@@ -282,33 +265,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
               />
             </div>
 
-            {/* Checkbox Mandataire - uniquement pour les groupements */}
-            {currentProject?.groupType &&
-              currentProject.groupType !== "seule" && (
-                <div className="rounded-lg bg-blue-50 p-4">
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      id="mandataire-edit"
-                      checked={isMandataire}
-                      onChange={(e) => setIsMandataire(e.target.checked)}
-                      disabled={processing}
-                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <label
-                      htmlFor="mandataire-edit"
-                      className="text-sm font-medium text-blue-900 sm:text-base"
-                    >
-                      Cette entreprise est le mandataire du groupement
-                    </label>
-                  </div>
-                  <p className="mt-2 text-xs text-blue-700 sm:text-sm">
-                    Le mandataire est l'entreprise responsable de la
-                    coordination du groupement et des relations avec le maître
-                    d'ouvrage.
-                  </p>
-                </div>
-              )}
+            {/* La sélection du mandataire se fait désormais dans Equipes.tsx */}
 
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
