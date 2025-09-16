@@ -1,20 +1,27 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import { executeDeleteAction } from "../lib/critical-actions";
-import type { ParticipatingCompany } from "../types/project";
+import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
 import CompanyCreate from "./CompanyCreate";
 import CompanyEdit from "./CompanyEdit";
+import MobilizedPersonCreate from "./MobilizedPersonCreate";
+import MobilizedPersonEdit from "./MobilizedPersonEdit";
 import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
-import { Plus, Building2, Trash2, Users } from "lucide-react";
+import { Plus, Building2, Trash2, Users, Edit, UserPlus } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
 
-  const [currentView, setCurrentView] = useState<"list" | "create" | "edit">(
-    "list",
-  );
+  const [currentView, setCurrentView] = useState<
+    "list" | "create" | "edit" | "person-create" | "person-edit"
+  >("list");
   const [editingCompany, setEditingCompany] =
     useState<ParticipatingCompany | null>(null);
+  const [selectedCompany, setSelectedCompany] =
+    useState<ParticipatingCompany | null>(null);
+  const [editingPerson, setEditingPerson] = useState<MobilizedPerson | null>(
+    null,
+  );
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
@@ -45,12 +52,97 @@ function Equipes() {
     setCurrentView("list");
   };
 
+  // Fonctions de gestion des personnes mobilisées
+  const handleAddPerson = (company: ParticipatingCompany): void => {
+    setSelectedCompany(company);
+    setCurrentView("person-create");
+  };
+
+  const handleEditPerson = (
+    company: ParticipatingCompany,
+    person: MobilizedPerson,
+  ): void => {
+    setSelectedCompany(company);
+    setEditingPerson(person);
+    setCurrentView("person-edit");
+  };
+
+  const handleDeletePerson = (
+    company: ParticipatingCompany,
+    personId: string,
+    personName: string,
+  ): void => {
+    executeDeleteAction(() => {
+      const updatedPeople = (company.mobilizedPeople ?? []).filter(
+        (p) => p.id !== personId,
+      );
+      const updatedCompanies = companies.map((c) =>
+        c.id === company.id ? { ...c, mobilizedPeople: updatedPeople } : c,
+      );
+      updateCurrentProject({ participatingCompanies: updatedCompanies });
+    }, `la personne ${personName}`);
+  };
+
+  const handleSavePerson = (person: MobilizedPerson): void => {
+    if (!selectedCompany) return;
+
+    const existingPeople = selectedCompany.mobilizedPeople ?? [];
+    let updatedPeople: MobilizedPerson[];
+
+    if (currentView === "person-edit" && editingPerson) {
+      // Mise à jour d'une personne existante
+      updatedPeople = existingPeople.map((p) =>
+        p.id === editingPerson.id ? person : p,
+      );
+    } else {
+      // Ajout d'une nouvelle personne
+      updatedPeople = [...existingPeople, person];
+    }
+
+    const updatedCompanies = companies.map((c) =>
+      c.id === selectedCompany.id
+        ? { ...c, mobilizedPeople: updatedPeople }
+        : c,
+    );
+
+    updateCurrentProject({ participatingCompanies: updatedCompanies });
+    setSelectedCompany(null);
+    setEditingPerson(null);
+    setCurrentView("list");
+  };
+
+  const handleClosePerson = (): void => {
+    setSelectedCompany(null);
+    setEditingPerson(null);
+    setCurrentView("list");
+  };
+
   if (currentView === "create") {
     return <CompanyCreate onClose={() => setCurrentView("list")} />;
   }
 
   if (currentView === "edit" && editingCompany) {
     return <CompanyEdit company={editingCompany} onClose={handleCloseEdit} />;
+  }
+
+  if (currentView === "person-create" && selectedCompany) {
+    return (
+      <MobilizedPersonCreate
+        company={selectedCompany}
+        onClose={handleClosePerson}
+        onSave={handleSavePerson}
+      />
+    );
+  }
+
+  if (currentView === "person-edit" && selectedCompany && editingPerson) {
+    return (
+      <MobilizedPersonEdit
+        person={editingPerson}
+        onClose={handleClosePerson}
+        onSave={handleSavePerson}
+      />
+    );
   }
 
   return (
@@ -119,8 +211,7 @@ function Equipes() {
             {companies.map((company) => (
               <div
                 key={company.id}
-                className="flex cursor-pointer flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
-                onClick={() => handleEditCompany(company)}
+                className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
               >
                 <div className="flex-1">
                   <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
@@ -150,18 +241,98 @@ function Equipes() {
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center justify-end border-t border-gray-100 pt-3">
-                  <div className="flex items-center gap-1">
+                {/* Section Personnes mobilisées */}
+                <div className="mt-4 border-t border-gray-100 pt-3">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h4 className="text-sm font-medium text-gray-700">
+                      Personnes mobilisées
+                    </h4>
                     <ButtonLink
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteCompany(company.id, company.name);
+                        handleAddPerson(company);
                       }}
-                      className="rounded p-1 text-red-500 hover:bg-red-50"
+                      className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <UserPlus className="h-3 w-3" />
+                      Ajouter
                     </ButtonLink>
                   </div>
+
+                  {/* Liste des personnes */}
+                  {company.mobilizedPeople &&
+                  company.mobilizedPeople.length > 0 ? (
+                    <div className="space-y-2">
+                      {company.mobilizedPeople.map((person) => (
+                        <div
+                          key={person.id}
+                          className="flex items-center justify-between rounded-md bg-gray-50 p-2"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-xs font-medium text-gray-900">
+                              {person.name}
+                            </p>
+                            {person.dailyRate && (
+                              <p className="text-xs text-gray-500">
+                                {person.dailyRate}€/jour
+                              </p>
+                            )}
+                          </div>
+                          <div className="ml-2 flex items-center gap-1">
+                            <ButtonLink
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEditPerson(company, person);
+                              }}
+                              className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                            >
+                              <Edit className="h-3 w-3" />
+                            </ButtonLink>
+                            <ButtonLink
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeletePerson(
+                                  company,
+                                  person.id,
+                                  person.name,
+                                );
+                              }}
+                              className="rounded p-1 text-gray-500 hover:bg-red-50 hover:text-red-600"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </ButtonLink>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500 italic">
+                      Aucune personne mobilisée
+                    </p>
+                  )}
+                </div>
+
+                {/* Actions entreprise */}
+                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+                  <ButtonLink
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditCompany(company);
+                    }}
+                    className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-50"
+                  >
+                    <Edit className="h-3 w-3" />
+                    Éditer
+                  </ButtonLink>
+                  <ButtonLink
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteCompany(company.id, company.name);
+                    }}
+                    className="rounded p-1 text-red-500 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </ButtonLink>
                 </div>
               </div>
             ))}
