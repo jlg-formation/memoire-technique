@@ -3,14 +3,16 @@ import { useState } from "react";
 import { ButtonLink, ButtonPrimary } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
-import type { MobilizedPerson } from "../types/project";
+import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 interface MobilizedPersonCreateProps {
+  company: ParticipatingCompany;
   onClose: () => void;
   onSave: (person: MobilizedPerson) => void;
 }
 
 function MobilizedPersonCreate({
+  company,
   onClose,
   onSave,
 }: MobilizedPersonCreateProps) {
@@ -47,6 +49,13 @@ function MobilizedPersonCreate({
             <span className="text-sm sm:text-base">Précédent</span>
           </ButtonLink>
         </div>
+
+        {/* Badge entreprise */}
+        <div className="mb-3 inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
+          <span className="mr-1">📢</span>
+          {company.name}
+        </div>
+
         <h1 className="text-xl font-semibold text-gray-800 sm:text-2xl">
           Nouvelle personne mobilisée
         </h1>

@@ -77,6 +77,94 @@ function MarketDocs() {
     updateCurrentProject({ marketDocuments: docs.filter((d) => d.id !== id) });
   };
 
+  const documentTypes = [
+    {
+      type: "CCAP",
+      label: "CCAP",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
+    },
+    {
+      type: "CCTP",
+      label: "CCTP",
+      bgColor: "bg-green-50",
+      borderColor: "border-green-200",
+    },
+    {
+      type: "AE",
+      label: "Acte d'Engagement",
+      bgColor: "bg-purple-50",
+      borderColor: "border-purple-200",
+    },
+    {
+      type: "RC",
+      label: "Règlement de Consultation",
+      bgColor: "bg-yellow-50",
+      borderColor: "border-yellow-200",
+    },
+  ] as const;
+
+  const renderDocumentSection = (
+    docType: MarketDocumentType,
+    label: string,
+    bgColor: string,
+    borderColor: string,
+  ) => {
+    const existingDoc = docs.find((doc) => doc.type === docType);
+    const statusKey = docType.toLowerCase();
+
+    return (
+      <div className={`rounded-lg border ${borderColor} ${bgColor} p-4`}>
+        <div className="space-y-4">
+          {/* En-tête avec upload */}
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-800">{label}</h3>
+            {existingDoc && (
+              <ButtonLink
+                onClick={() => handleDelete(existingDoc.id)}
+                className="rounded p-1 text-red-500 hover:bg-red-50"
+              >
+                <Trash2 className="h-4 w-4" />
+              </ButtonLink>
+            )}
+          </div>
+
+          {/* Widget d'upload */}
+          {!existingDoc && (
+            <FileAIUpload
+              label={`Télécharger ${label}`}
+              onParse={async (text) => ({ text })}
+              onResult={(result) => {
+                const { text } = result as { text: string };
+                handleDocumentParsed(text, label, docType);
+              }}
+              status={processingSteps[statusKey] || ""}
+              setStatus={(step) =>
+                setProcessingSteps((prev) => ({ ...prev, [statusKey]: step }))
+              }
+            />
+          )}
+
+          {/* Contenu du document */}
+          {existingDoc && (
+            <div className="space-y-3">
+              <div className="text-sm text-gray-600">
+                Document analysé et prêt
+              </div>
+              <textarea
+                className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                value={existingDoc.text}
+                readOnly
+                rows={4}
+                placeholder="Contenu du document..."
+              />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen space-y-6 p-4">
       <div className="border-b pb-4">
@@ -88,167 +176,28 @@ function MarketDocs() {
         </p>
       </div>
 
-      {/* Upload sections */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* CCAP */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">CCAP</h3>
-          <div className="rounded-lg bg-blue-50 p-4">
-            <FileAIUpload
-              label="CCAP"
-              onParse={async (text) => ({ text })}
-              onResult={(result) => {
-                const { text } = result as { text: string };
-                handleDocumentParsed(text, "CCAP", "CCAP");
-              }}
-              status={processingSteps.ccap || ""}
-              setStatus={(step) =>
-                setProcessingSteps((prev) => ({ ...prev, ccap: step }))
-              }
-            />
-          </div>
-        </div>
-
-        {/* CCTP */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">CCTP</h3>
-          <div className="rounded-lg bg-green-50 p-4">
-            <FileAIUpload
-              label="CCTP"
-              onParse={async (text) => ({ text })}
-              onResult={(result) => {
-                const { text } = result as { text: string };
-                handleDocumentParsed(text, "CCTP", "CCTP");
-              }}
-              status={processingSteps.cctp || ""}
-              setStatus={(step) =>
-                setProcessingSteps((prev) => ({ ...prev, cctp: step }))
-              }
-            />
-          </div>
-        </div>
-
-        {/* Acte d'Engagement */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">
-            Acte d'Engagement
-          </h3>
-          <div className="rounded-lg bg-purple-50 p-4">
-            <FileAIUpload
-              label="AE"
-              onParse={async (text) => ({ text })}
-              onResult={(result) => {
-                const { text } = result as { text: string };
-                handleDocumentParsed(text, "Acte d'Engagement", "AE");
-              }}
-              status={processingSteps.ae || ""}
-              setStatus={(step) =>
-                setProcessingSteps((prev) => ({ ...prev, ae: step }))
-              }
-            />
-          </div>
-        </div>
-
-        {/* Règlement de Consultation */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-medium text-gray-800">
-            Règlement de Consultation
-          </h3>
-          <div className="rounded-lg bg-yellow-50 p-4">
-            <FileAIUpload
-              label="RC"
-              onParse={async (text) => ({ text })}
-              onResult={(result) => {
-                const { text } = result as { text: string };
-                handleDocumentParsed(text, "Règlement de Consultation", "RC");
-              }}
-              status={processingSteps.rc || ""}
-              setStatus={(step) =>
-                setProcessingSteps((prev) => ({ ...prev, rc: step }))
-              }
-            />
-          </div>
-        </div>
-
-        {/* Autres documents */}
-        <div className="space-y-3 md:col-span-2">
-          <h3 className="text-lg font-medium text-gray-800">Autres pièces</h3>
-          <div className="space-y-4">
-            {/* Afficher les FileAIUpload existants pour les "AUTRE" documents */}
-            {docs
-              .filter((doc) => doc.type === "AUTRE")
-              .map((doc, index) => (
-                <div
-                  key={`autre-${index}`}
-                  className="rounded-lg bg-gray-50 p-4"
-                >
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">
-                      Document #{index + 1}: {doc.name}
-                    </span>
-                    <ButtonLink
-                      onClick={() => handleDelete(doc.id)}
-                      className="rounded p-1 text-red-500 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </ButtonLink>
-                  </div>
-                </div>
-              ))}
-
-            {/* Nouveau FileAIUpload pour ajouter un autre document */}
-            <div className="rounded-lg bg-gray-50 p-4">
-              <FileAIUpload
-                label="Ajouter un autre document"
-                onParse={async (text) => ({ text })}
-                onResult={(result) => {
-                  const { text } = result as { text: string };
-                  const fileInput = document.querySelector(
-                    'input[type="file"]:last-of-type',
-                  ) as HTMLInputElement;
-                  const fileName =
-                    fileInput?.files?.[0]?.name || "Document sans nom";
-
-                  // Mettre à jour le statut pour indiquer la génération du titre
-                  setProcessingSteps((prev) => ({
-                    ...prev,
-                    autre: "Génération du titre automatique...",
-                  }));
-
-                  handleDocumentParsed(text, fileName, "AUTRE").finally(() => {
-                    // Réinitialiser le statut après traitement
-                    setProcessingSteps((prev) => ({ ...prev, autre: "" }));
-                  });
-                }}
-                status={processingSteps.autre || ""}
-                setStatus={(step) =>
-                  setProcessingSteps((prev) => ({ ...prev, autre: step }))
-                }
-              />
-            </div>
-          </div>
-        </div>
+      {/* Documents principaux */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {documentTypes.map(({ type, label, bgColor, borderColor }) =>
+          renderDocumentSection(type, label, bgColor, borderColor),
+        )}
       </div>
 
-      {/* Documents list */}
-      {docs.length > 0 && (
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-800">
-            Documents chargés
-          </h2>
-          <div className="space-y-4">
-            {docs.map((doc) => (
-              <div
-                key={doc.id}
-                className="rounded-lg border border-gray-200 bg-white p-4"
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                      {doc.type}
-                    </span>
-                    <h3 className="font-semibold text-gray-900">{doc.name}</h3>
-                  </div>
+      {/* Autres documents */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold text-gray-800">Autres pièces</h3>
+
+        {/* Documents existants */}
+        {docs
+          .filter((doc) => doc.type === "AUTRE")
+          .map((doc) => (
+            <div
+              key={doc.id}
+              className="rounded-lg border border-gray-200 bg-gray-50 p-4"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-medium text-gray-800">{doc.name}</h4>
                   <ButtonLink
                     onClick={() => handleDelete(doc.id)}
                     className="rounded p-1 text-red-500 hover:bg-red-50"
@@ -256,42 +205,43 @@ function MarketDocs() {
                     <Trash2 className="h-4 w-4" />
                   </ButtonLink>
                 </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Contenu du document
-                  </label>
-                  <textarea
-                    className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                    value={doc.text}
-                    readOnly
-                    rows={6}
-                    placeholder="Le contenu du document apparaîtra ici après analyse..."
-                  />
-                </div>
+                <textarea
+                  className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                  value={doc.text}
+                  readOnly
+                  rows={4}
+                  placeholder="Contenu du document..."
+                />
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+          ))}
 
-      {/* Montant global */}
-      <div className="rounded-lg border border-gray-200 bg-white p-4">
-        <div className="space-y-3">
-          <label className="block text-sm font-medium text-gray-700">
-            Montant global des travaux (€)
-          </label>
-          <input
-            type="number"
-            className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            value={currentProject.worksAmount ?? ""}
-            onChange={(e) =>
-              updateCurrentProject({
-                worksAmount: e.target.value
-                  ? Number(e.target.value)
-                  : undefined,
-              })
+        {/* Widget pour ajouter un nouveau document */}
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <FileAIUpload
+            label="Ajouter un autre document"
+            onParse={async (text) => ({ text })}
+            onResult={(result) => {
+              const { text } = result as { text: string };
+              const fileInput = document.querySelector(
+                'input[type="file"]:last-of-type',
+              ) as HTMLInputElement;
+              const fileName =
+                fileInput?.files?.[0]?.name || "Document sans nom";
+
+              setProcessingSteps((prev) => ({
+                ...prev,
+                autre: "Génération du titre automatique...",
+              }));
+
+              handleDocumentParsed(text, fileName, "AUTRE").finally(() => {
+                setProcessingSteps((prev) => ({ ...prev, autre: "" }));
+              });
+            }}
+            status={processingSteps.autre || ""}
+            setStatus={(step) =>
+              setProcessingSteps((prev) => ({ ...prev, autre: step }))
             }
-            placeholder="Saisissez le montant des travaux"
           />
         </div>
       </div>

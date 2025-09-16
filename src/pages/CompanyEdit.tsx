@@ -135,6 +135,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
     <>
       {currentView === "person-create" && (
         <MobilizedPersonCreate
+          company={currentCompany}
           onClose={() => setCurrentView("edit")}
           onSave={handleSavePerson}
         />
