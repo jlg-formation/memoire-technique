@@ -7,7 +7,7 @@ import CompanyEdit from "./CompanyEdit";
 import MobilizedPersonCreate from "./MobilizedPersonCreate";
 import MobilizedPersonEdit from "./MobilizedPersonEdit";
 import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
-import { Plus, Building2, Trash2, Users, Edit, UserPlus } from "lucide-react";
+import { Plus, Building2, Trash2, UserPlus } from "lucide-react";
 
 function Equipes() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -213,21 +213,15 @@ function Equipes() {
                 key={company.id}
                 className="flex flex-col rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-all hover:border-gray-300 hover:shadow-md"
               >
-                <div className="flex-1">
+                {/* Partie haute cliquable pour édition */}
+                <div
+                  className="-m-2 flex-1 cursor-pointer rounded-md p-2 transition-colors hover:bg-gray-50"
+                  onClick={() => handleEditCompany(company)}
+                >
                   <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
                     {company.name}
                   </h3>
                   <div className="space-y-1 text-sm text-gray-600">
-                    {company.mobilizedPeople &&
-                      company.mobilizedPeople.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <Users className="h-4 w-4" />
-                          {company.mobilizedPeople.length} personne
-                          {company.mobilizedPeople.length > 1 ? "s" : ""}{" "}
-                          mobilisée
-                          {company.mobilizedPeople.length > 1 ? "s" : ""}
-                        </div>
-                      )}
                     {currentProject?.mandataireId === company.id && (
                       <div className="inline-flex items-center rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
                         Mandataire
@@ -266,7 +260,8 @@ function Equipes() {
                       {company.mobilizedPeople.map((person) => (
                         <div
                           key={person.id}
-                          className="flex items-center justify-between rounded-md bg-gray-50 p-2"
+                          className="flex cursor-pointer items-center justify-between rounded-md bg-gray-50 p-2 transition-colors hover:bg-gray-100"
+                          onClick={() => handleEditPerson(company, person)}
                         >
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-xs font-medium text-gray-900">
@@ -278,16 +273,7 @@ function Equipes() {
                               </p>
                             )}
                           </div>
-                          <div className="ml-2 flex items-center gap-1">
-                            <ButtonLink
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEditPerson(company, person);
-                              }}
-                              className="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-blue-600"
-                            >
-                              <Edit className="h-3 w-3" />
-                            </ButtonLink>
+                          <div className="ml-2">
                             <ButtonLink
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -312,18 +298,8 @@ function Equipes() {
                   )}
                 </div>
 
-                {/* Actions entreprise */}
-                <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
-                  <ButtonLink
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEditCompany(company);
-                    }}
-                    className="flex items-center gap-1 rounded px-2 py-1 text-xs text-gray-600 hover:bg-gray-50"
-                  >
-                    <Edit className="h-3 w-3" />
-                    Éditer
-                  </ButtonLink>
+                {/* Actions entreprise - seule la suppression */}
+                <div className="mt-3 flex items-center justify-end border-t border-gray-100 pt-3">
                   <ButtonLink
                     onClick={(e) => {
                       e.stopPropagation();
