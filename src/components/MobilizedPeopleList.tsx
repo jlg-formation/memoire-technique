@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 import { summarize } from "../lib/OpenAI";
 import FileAIUpload from "./ui/FileAIUpload";
-import { ButtonPrimary, ButtonLink } from "./ui";
+import { ButtonPrimary, ButtonLink, EditableTextArea } from "./ui";
 import { Trash2 } from "lucide-react";
 
 interface MobilizedPeopleListProps {
@@ -197,26 +197,19 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
 
                   {/* Résumé du CV */}
                   {person.cvSummary && (
-                    <div>
-                      <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Résumé du CV
-                      </label>
-                      <textarea
-                        className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                        value={person.cvSummary}
-                        onChange={(e) =>
-                          onUpdate(
-                            people.map((p) =>
-                              p.id === person.id
-                                ? { ...p, cvSummary: e.target.value }
-                                : p,
-                            ),
-                          )
-                        }
-                        rows={4}
-                        placeholder="Résumé du CV..."
-                      />
-                    </div>
+                    <EditableTextArea
+                      label="Résumé du CV"
+                      value={person.cvSummary}
+                      onChange={(value) =>
+                        onUpdate(
+                          people.map((p) =>
+                            p.id === person.id ? { ...p, cvSummary: value } : p,
+                          ),
+                        )
+                      }
+                      rows={4}
+                      placeholder="Résumé du CV..."
+                    />
                   )}
                 </div>
               </li>

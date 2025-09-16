@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { ButtonLink } from "./ui";
+import { ButtonLink, EditableTextArea } from "./ui";
 import FileAIUpload from "./ui/FileAIUpload";
 import MobilizedPeopleList from "./MobilizedPeopleList";
 import { summarize } from "../lib/OpenAI";
@@ -98,13 +98,11 @@ function Company({
           className="mb-2"
         />
         {company.presentationSummary && (
-          <textarea
-            className="mt-2 w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+          <EditableTextArea
             value={company.presentationSummary}
+            onChange={(value) => updateCompany({ presentationSummary: value })}
             rows={4}
-            onChange={(e) =>
-              updateCompany({ presentationSummary: e.target.value })
-            }
+            className="mt-2"
           />
         )}
       </div>
@@ -126,11 +124,12 @@ function Company({
           className="mb-2"
         />
         {company.equipmentText && (
-          <textarea
-            className="mt-2 w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-            readOnly
+          <EditableTextArea
             value={company.equipmentText}
+            onChange={(value) => updateCompany({ equipmentText: value })}
             rows={4}
+            className="mt-2"
+            disabled={true}
           />
         )}
       </div>

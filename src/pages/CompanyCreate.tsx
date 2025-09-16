@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { ButtonLink, ButtonPrimary } from "../components/ui";
+import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
@@ -128,19 +128,14 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
               />
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
-                Résumé de présentation
-              </label>
-              <textarea
-                className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
-                value={presentationSummary}
-                onChange={(e) => setPresentationSummary(e.target.value)}
-                placeholder="Résumé de la présentation"
-                disabled={processing}
-                rows={5}
-              />
-            </div>
+            <EditableTextArea
+              label="Résumé de présentation"
+              value={presentationSummary}
+              onChange={(value) => setPresentationSummary(value)}
+              placeholder="Résumé de la présentation"
+              disabled={processing}
+              rows={5}
+            />
           </div>
         </div>
 
@@ -162,10 +157,9 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
                 status=""
                 setStatus={() => {}}
               />
-              <textarea
-                className="w-full rounded-md border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
+              <EditableTextArea
                 value={equipmentText}
-                onChange={(e) => setEquipmentText(e.target.value)}
+                onChange={(value) => setEquipmentText(value)}
                 placeholder="Description du matériel et des équipements de l'entreprise"
                 disabled={processing}
                 rows={8}

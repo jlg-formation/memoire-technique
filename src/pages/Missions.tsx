@@ -8,7 +8,7 @@ import type {
   ParticipatingCompany,
   MobilizedPerson,
 } from "../types/project";
-import { ButtonPrimary } from "../components/ui";
+import { ButtonPrimary, EditableTextArea } from "../components/ui";
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -195,18 +195,18 @@ function Missions() {
                             {cost.toFixed(2)} €
                           </span>
                         </div>
-                        <textarea
-                          className="w-full border p-1"
+                        <EditableTextArea
                           value={justification}
-                          onChange={(e) =>
+                          onChange={(value) =>
                             handleJustificationChange(
                               mission,
                               company.id,
                               person.id,
-                              e.target.value,
+                              value,
                             )
                           }
                           placeholder="Justification du nombre de jours"
+                          className="w-full border p-1"
                         />
                       </li>
                     );

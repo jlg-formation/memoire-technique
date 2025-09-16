@@ -3,7 +3,7 @@ import { useProjectStore } from "../store/useProjectStore";
 // import supprimé, la clé est gérée par la fonction utilitaire
 import { generatePlanning } from "../lib/OpenAI";
 import PlanningChart from "../components/PlanningChart";
-import { ButtonPrimary } from "../components/ui";
+import { ButtonPrimary, EditableTextArea } from "../components/ui";
 
 function Planning() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -40,13 +40,11 @@ function Planning() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Planning</h1>
-      <textarea
-        className="w-full border p-2"
+      <EditableTextArea
         value={currentProject.planningSummary ?? ""}
-        onChange={(e) =>
-          updateCurrentProject({ planningSummary: e.target.value })
-        }
+        onChange={(value) => updateCurrentProject({ planningSummary: value })}
         placeholder="Résumé des contraintes de planning"
+        className="w-full border p-2"
       />
       <ButtonPrimary
         type="button"
@@ -59,10 +57,11 @@ function Planning() {
       {generating && <div>Génération en cours...</div>}
       {currentProject.planningText && (
         <>
-          <textarea
-            className="w-full border p-2"
-            readOnly
+          <EditableTextArea
             value={currentProject.planningText}
+            onChange={(value) => updateCurrentProject({ planningText: value })}
+            className="w-full border p-2"
+            disabled={true}
           />
           <PlanningChart markdown={currentProject.planningText} />
         </>

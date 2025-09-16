@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import FileAIUpload from "../components/ui/FileAIUpload";
-import { ButtonLink } from "../components/ui";
+import { ButtonLink, EditableTextArea } from "../components/ui";
 import { Trash2 } from "lucide-react";
 import {
   extractMethodologyScores,
@@ -151,12 +151,12 @@ function MarketDocs() {
               <div className="text-sm text-gray-600">
                 Document analysé et prêt
               </div>
-              <textarea
-                className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+              <EditableTextArea
                 value={existingDoc.text}
-                readOnly
-                rows={4}
+                onChange={() => {}} // readonly, pas de changement
                 placeholder="Contenu du document..."
+                rows={4}
+                disabled={true}
               />
             </div>
           )}
@@ -205,12 +205,12 @@ function MarketDocs() {
                     <Trash2 className="h-4 w-4" />
                   </ButtonLink>
                 </div>
-                <textarea
-                  className="w-full resize-none rounded-md border border-gray-300 bg-white p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                <EditableTextArea
                   value={doc.text}
-                  readOnly
-                  rows={4}
+                  onChange={() => {}} // readonly, pas de changement
                   placeholder="Contenu du document..."
+                  rows={4}
+                  disabled={true}
                 />
               </div>
             </div>

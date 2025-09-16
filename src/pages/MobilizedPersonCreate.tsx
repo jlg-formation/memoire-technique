@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { ButtonLink, ButtonPrimary } from "../components/ui";
+import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
@@ -145,19 +145,14 @@ function MobilizedPersonCreate({
         </div>
 
         {cvSummary && (
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Résumé du CV
-            </label>
-            <textarea
-              className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
-              value={cvSummary}
-              onChange={(e) => setCvSummary(e.target.value)}
-              placeholder="Résumé du CV de la personne"
-              disabled={processing}
-              rows={6}
-            />
-          </div>
+          <EditableTextArea
+            label="Résumé du CV"
+            value={cvSummary}
+            onChange={(value) => setCvSummary(value)}
+            placeholder="Résumé du CV de la personne"
+            disabled={processing}
+            rows={6}
+          />
         )}
 
         <div className="flex justify-end pt-4 pb-4 sm:pb-0">
