@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Edit3, Check, X } from "lucide-react";
+import { Edit3 } from "lucide-react";
 
 interface EditableTextAreaProps {
   value: string;
@@ -21,33 +21,23 @@ export function EditableTextArea({
   label,
 }: EditableTextAreaProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(value);
 
-  const handleEdit = () => {
+  const handleToggleEdit = () => {
     if (disabled) return;
-    setTempValue(value);
-    setIsEditing(true);
+    setIsEditing(!isEditing);
   };
 
-  const handleSave = () => {
-    onChange(tempValue);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setTempValue(value);
-    setIsEditing(false);
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onChange(e.target.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
-      handleCancel();
-    } else if (e.key === "Enter" && e.ctrlKey) {
-      handleSave();
+      setIsEditing(false);
     }
   };
 
-  const baseClassName = `w-full rounded-md border p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none resize-none ${className}`;
+  const baseClassName = `w-full rounded-md border p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${className}`;
 
   return (
     <div className="space-y-2">
@@ -58,8 +48,8 @@ export function EditableTextArea({
       )}
       <div className="relative">
         <textarea
-          value={isEditing ? tempValue : value}
-          onChange={(e) => setTempValue(e.target.value)}
+          value={value}
+          onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           rows={rows}
@@ -67,49 +57,32 @@ export function EditableTextArea({
           disabled={disabled}
           className={`${baseClassName} ${
             !isEditing
-              ? "cursor-default border-gray-200 bg-gray-50"
-              : "border-gray-300 bg-white"
+              ? "cursor-default resize-none overflow-hidden border-gray-200 bg-gray-50"
+              : "resize-both overflow-auto border-gray-300 bg-white"
           } ${disabled ? "cursor-not-allowed opacity-50" : ""} pr-12`}
         />
 
         {!disabled && (
-          <div className="absolute top-2 right-2 flex gap-1">
-            {!isEditing ? (
-              <button
-                type="button"
-                onClick={handleEdit}
-                className="flex h-8 w-8 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-500 transition-colors hover:border-blue-300 hover:text-blue-600"
-                title="Modifier"
-              >
-                <Edit3 className="h-4 w-4" />
-              </button>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-green-200 bg-green-50 text-green-600 transition-colors hover:bg-green-100"
-                  title="Sauvegarder (Ctrl+Entrée)"
-                >
-                  <Check className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCancel}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-red-200 bg-red-50 text-red-600 transition-colors hover:bg-red-100"
-                  title="Annuler (Échap)"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </>
-            )}
+          <div className="absolute top-2 right-2">
+            <button
+              type="button"
+              onClick={handleToggleEdit}
+              className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
+                !isEditing
+                  ? "border-gray-200 bg-white text-gray-500 hover:border-blue-300 hover:text-blue-600"
+                  : "border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100"
+              }`}
+              title={isEditing ? "Passer en lecture seule" : "Modifier"}
+            >
+              <Edit3 className="h-4 w-4" />
+            </button>
           </div>
         )}
       </div>
 
       {isEditing && (
         <div className="text-xs text-gray-500">
-          Appuyez sur Ctrl+Entrée pour sauvegarder ou Échap pour annuler
+          Appuyez sur Échap pour passer en lecture seule
         </div>
       )}
     </div>
