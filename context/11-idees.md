@@ -17,6 +17,8 @@ Faire un diagramme de barre avec les pourcentages obtenues et desires.
 
 Gerer des spinners pour les estimations. Faire des boutons pour regenerer l'estimation par mission.
 
+Faire un bouton pour voir/cacher les justifications.
+
 ## Planning
 
 ## Insertion photo visite
