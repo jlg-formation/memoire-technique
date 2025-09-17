@@ -12,6 +12,7 @@ export interface MissionDayEstimation {
 export default async function estimateMissionDays(
   missions: string[],
   companies: ParticipatingCompany[],
+  targetAmount?: number,
 ): Promise<MissionDayEstimation> {
   const openai = createClient();
   const missionsList = missions.map((m) => `- ${m}`).join("\n");
@@ -27,6 +28,12 @@ export default async function estimateMissionDays(
     })
     .join("\n");
 
+  let userPrompt = `Missions:\n${missionsList}\n\nIntervenants:\n${companiesList}`;
+  if (targetAmount && targetAmount > 0) {
+    userPrompt += `\n\nLe montant total de la réponse à l'appel d'offre doit être de ${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros. Répartis les jours de missions pour que le coût total corresponde à ce montant, en tenant compte des taux journaliers.`;
+  }
+  userPrompt += `\n\nRéponds uniquement en JSON au format {"missionDays": {"mission": {"companyId": {"personId": nombre}}}, "missionJustifications": {"mission": {"companyId": {"personId": "justification"}}}}`;
+
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
@@ -37,7 +44,7 @@ export default async function estimateMissionDays(
       },
       {
         role: "user",
-        content: `Missions:\n${missionsList}\n\nIntervenants:\n${companiesList}\n\nRéponds uniquement en JSON au format {"missionDays": {"mission": {"companyId": {"personId": nombre}}}, "missionJustifications": {"mission": {"companyId": {"personId": "justification"}}}}`,
+        content: userPrompt,
       },
     ],
     response_format: { type: "json_object" },

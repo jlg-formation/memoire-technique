@@ -8,12 +8,14 @@ import type {
   ParticipatingCompany,
   MobilizedPerson,
 } from "../types/project";
-import { ButtonPrimary, EditableTextArea } from "../components/ui";
+import { EditableTextArea } from "../components/ui";
+import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   // apiKey est maintenant géré par la fonction utilitaire
   const [estimating, setEstimating] = useState(false);
+  const [percentage, setPercentage] = useState<number>(8);
 
   if (!currentProject) {
     return (
@@ -23,6 +25,8 @@ function Missions() {
 
   const missions = currentProject.missions ?? [];
   const companies = currentProject.participatingCompanies ?? [];
+  const worksAmount = currentProject.worksAmount ?? 0;
+  const targetAmount = worksAmount * (percentage / 100);
   const missingRates = companies.flatMap((company) =>
     (company.mobilizedPeople ?? []).filter((p) => !p.dailyRate),
   );
@@ -117,7 +121,12 @@ function Missions() {
   const handleEstimate = async (): Promise<void> => {
     setEstimating(true);
     try {
-      const result = await estimateMissionDays(missions, companies);
+      // On transmet le montant cible à l'IA via le prompt
+      const result = await estimateMissionDays(
+        missions,
+        companies,
+        targetAmount,
+      );
       updateCurrentProject({
         missionDays: result.missionDays,
         missionJustifications: result.missionJustifications,
@@ -174,15 +183,52 @@ function Missions() {
           </div>
         </div>
       </div>
-      <ButtonPrimary
-        type="button"
-        onClick={handleEstimate}
-        disabled={estimating}
-        className="border-green-600 bg-green-600 hover:bg-green-700"
-      >
-        Estimer par IA
-      </ButtonPrimary>
-      {estimating && <div>Estimation en cours...</div>}
+      {/* Formulaire d'estimation avec pourcentage et montant global */}
+      <div className="mb-4 flex flex-col gap-2 rounded-lg border border-green-200 bg-green-50 p-4">
+        <div className="flex items-center gap-4">
+          <label htmlFor="worksAmount" className="font-medium text-green-900">
+            Montant global des travaux :
+          </label>
+          <span className="text-lg font-bold text-green-800">
+            {worksAmount.toLocaleString()} €
+          </span>
+        </div>
+        <div className="flex items-center gap-4">
+          <label htmlFor="percentage" className="font-medium text-green-900">
+            Pourcentage de l'offre :
+          </label>
+          <input
+            id="percentage"
+            type="number"
+            min={1}
+            max={100}
+            step={0.1}
+            value={percentage}
+            onChange={(e) => setPercentage(Number(e.target.value))}
+            className="w-20 border p-1 text-right"
+          />
+          <span className="text-green-800">%</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <label className="font-medium text-green-900">
+            Montant cible de l'offre :
+          </label>
+          <span className="text-lg font-bold text-green-800">
+            {targetAmount.toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            })}{" "}
+            €
+          </span>
+        </div>
+        <AsyncPrimaryButton
+          onClick={handleEstimate}
+          disabled={estimating}
+          className="mt-2 border-green-600 bg-green-600 hover:bg-green-700"
+        >
+          Estimer par IA
+        </AsyncPrimaryButton>
+      </div>
+      {/* ...reste inchangé... */}
       {missions.map((mission) => (
         <div key={mission} className="space-y-2 border p-2">
           <h2 className="font-semibold">{mission}</h2>
@@ -223,6 +269,7 @@ function Missions() {
                                 Number(e.target.value),
                               )
                             }
+                            disabled={estimating}
                           />
                           <span>{person.dailyRate ?? 0} €/j</span>
                           <span className="font-semibold">
