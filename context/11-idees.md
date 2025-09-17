@@ -1,5 +1,9 @@
 # Idees
 
+## Equipes
+
+Formattage du nom (majuscule) et prénom (minuscule)
+
 ## Page de Missions
 
 Remodeler l'objet mission pour qu'il ait un trigramme.
