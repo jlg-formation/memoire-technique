@@ -372,8 +372,11 @@ function Missions() {
       </div>
       {/* ...reste inchangé... */}
       {missions.map((mission) => (
-        <div key={mission.id} className="space-y-2 border p-2">
+        <div key={mission.id} className="relative space-y-2 border p-2">
           <h2 className="font-semibold">{mission.name}</h2>
+          <div className="absolute top-2 right-2 text-lg font-bold">
+            Total mission: {missionTotal(mission.id).toFixed(2)} €
+          </div>
           {companies.map((company) => {
             const people = company.mobilizedPeople ?? [];
             const companyTotal = people.reduce(
@@ -441,9 +444,6 @@ function Missions() {
               </div>
             );
           })}
-          <div className="font-bold">
-            Total mission: {missionTotal(mission.id).toFixed(2)} €
-          </div>
         </div>
       ))}
       <div className="text-lg font-bold">
