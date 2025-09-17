@@ -133,6 +133,14 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
             >
               Mémoire
             </NavLink>
+            <NavLink
+              to="/debug"
+              className={({ isActive }) =>
+                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+              }
+            >
+              Debug
+            </NavLink>
           </>
         )}
       </nav>

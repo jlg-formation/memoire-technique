@@ -11,6 +11,7 @@ import Planning from "./pages/Planning";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
 import { ButtonLink } from "./components/ui";
+import Debug from "./pages/Debug";
 import CompanyEditRoute from "./pages/CompanyEditRoute";
 import MobilizedPersonCreateRoute from "./pages/MobilizedPersonCreateRoute";
 import MobilizedPersonEditRoute from "./pages/MobilizedPersonEditRoute";
@@ -76,6 +77,7 @@ function App() {
               path="/equipes/entreprise/create"
               element={<CompanyCreateRoute />}
             />
+            <Route path="/debug" element={<Debug />} />
           </Routes>
         </div>
       </div>

@@ -4,6 +4,7 @@ import type {
   MobilizedPerson,
 } from "../../types/project";
 import type { ChatCompletionMessageParam } from "openai/resources";
+import { useIAHistoryStore } from "../../store/useIAHistoryStore";
 
 export interface MissionDayEstimation {
   missionDays: Record<string, Record<string, Record<string, number>>>;
@@ -81,10 +82,17 @@ Réponds en JSON comme précisé dans le prompt utilisateur.`,
   });
 
   const content = chat.choices[0].message.content ?? "{}";
+  let responseObj: MissionDayEstimation;
   try {
-    return JSON.parse(content) as MissionDayEstimation;
+    responseObj = JSON.parse(content);
   } catch {
-    console.error("Erreur de parsing JSON", content);
-    return { missionDays: {}, missionJustifications: {} };
+    responseObj = { missionDays: {}, missionJustifications: {} };
   }
+  useIAHistoryStore.getState().addEntry({
+    timestamp: Date.now(),
+    messages,
+    response: responseObj,
+    context: "estimateMissionDays",
+  });
+  return responseObj as MissionDayEstimation;
 }
