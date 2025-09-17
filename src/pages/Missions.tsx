@@ -384,8 +384,11 @@ function Missions() {
               0,
             );
             return (
-              <div key={company.id} className="space-y-1">
+              <div key={company.id} className="relative space-y-1 border p-2">
                 <h3 className="font-medium">{company.name}</h3>
+                <div className="text-md absolute top-2 right-2 font-semibold">
+                  Total {company.name}: {companyTotal.toFixed(2)} €
+                </div>
                 <ul className="space-y-1 pl-2">
                   {people.map((person) => {
                     const days = getDays(mission.id, company.id, person.id);
@@ -438,9 +441,6 @@ function Missions() {
                     );
                   })}
                 </ul>
-                <div className="font-semibold">
-                  Total {company.name}: {companyTotal.toFixed(2)} €
-                </div>
               </div>
             );
           })}
