@@ -50,34 +50,40 @@ Répartis les jours de missions pour que le coût total corresponde au montant c
 `;
 
   userPrompt += `
-Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.
-Plusieurs personnes peuvent travailler sur la même missions.
-Le total des jours fois les taux journaliers doit etre egal à ${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros
+IMPORTANT : Respecte strictement les contraintes suivantes :
+- Le coût total (nombre de jours x taux journaliers) doit être égal à ${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros.
+- Chaque mission peut être réalisée par plusieurs personnes. Répartis les jours de manière optimale entre les intervenants disponibles.
+- Fournis des justifications détaillées pour chaque attribution, en mentionnant les compétences, l'expérience ou la pertinence de chaque personne pour la mission.
 
-IMPORTANT: Réponds au format JSON suivant :
+Exemple de calcul :
+Si le montant cible est 10 000 euros et qu'une personne a un taux journalier de 500 €/j, elle peut travailler 20 jours (10 000 / 500). Si deux personnes sont mobilisées, répartis les jours en fonction de leurs taux journaliers et de leurs compétences.
+`;
+
+  userPrompt += `
+Réponds au format JSON suivant :
 {
   missionId1: {
     companyId1: {
       personId1: {
         nombreDeJours: ndj1_1_1,
-        justification: "justification",
+        justification: "justification détaillée",
       },
       ...
       personIdN: {
         nombreDeJours: Ndj1_1_N,
-        justification: "justification",
+        justification: "justification détaillée",
       },
     },
     ...
     companyIdM: {
       personId1: {
         nombreDeJours: Ndj1_M_1,
-        justification: "justification",
+        justification: "justification détaillée",
       },
       ...
       personIdN: {
         nombreDeJours: Ndj1_M_N,
-        justification: "justification",
+        justification: "justification détaillée",
       },
     },
   },
@@ -86,24 +92,24 @@ IMPORTANT: Réponds au format JSON suivant :
     companyId1: {
       personId1: {
         nombreDeJours: ndjK_1_1,
-        justification: "justification",
+        justification: "justification détaillée",
       },
       ...
       personIdN: {
         nombreDeJours: NdjK_1_N,
-        justification: "justification",
+        justification: "justification détaillée",
       },
     },
     ...
     companyIdM: {
       personId1: {
         nombreDeJours: NdjK_M_1,
-        justification: "justification",
+        justification: "justification détaillée",
       },
       ...
       personIdN: {
         nombreDeJours: NdjK_M_N,
-        justification: "justification",
+        justification: "justification détaillée",
       },
     },
   },
