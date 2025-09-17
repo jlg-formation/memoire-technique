@@ -87,6 +87,7 @@ IMPORTANT : Respecte strictement les contraintes suivantes :
 - Évite d'attribuer zéro jour à une personne mobilisée, sauf si cela est clairement justifié par un manque de pertinence ou de compétence pour la mission.
 - Fournis des justifications détaillées pour chaque attribution, en mentionnant les compétences, l'expérience ou la pertinence de chaque personne pour la mission.
 - Dans les justifications, mentionne toujours le prénom et le nom complet de chaque salarié mobilisé. Évite les familiarités ou les formulations informelles.
+- L'architecte responsable du cabinet d'architecture doit facturer au moins une journée de coordination sur chaque mission, car il est le garant de la communication avec le maître d'ouvrage (MOA).
 
 Pour t'aider dans le chiffrage, voici une répartition moyenne des rémunérations dans une mission complète de maîtrise d’œuvre loi MOP :
 
