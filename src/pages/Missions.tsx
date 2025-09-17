@@ -558,7 +558,8 @@ function Missions() {
                 <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
                   {targetAmount.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
-                  })}&nbsp;€
+                  })}
+                  &nbsp;€
                 </div>
               </div>
             </div>
