@@ -17,6 +17,37 @@ export type MissionDayEstimation = {
   };
 };
 
+const responseFormat = {
+  type: "json_schema" as const,
+  json_schema: {
+    name: "MissionDayEstimation",
+    schema: {
+      type: "object",
+      properties: {},
+      additionalProperties: {
+        type: "object",
+        properties: {},
+        additionalProperties: {
+          type: "object",
+          properties: {},
+          additionalProperties: {
+            type: "object",
+            properties: {},
+            additionalProperties: {
+              type: "object",
+              properties: {
+                nombreDeJours: { type: "number" },
+                justification: { type: "string" },
+              },
+              required: ["nombreDeJours", "justification"],
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 export async function estimateMissionDays(
   missions: Mission[],
   companies: ParticipatingCompany[],
@@ -53,7 +84,9 @@ Répartis les jours de missions pour que le coût total corresponde au montant c
 IMPORTANT : Respecte strictement les contraintes suivantes :
 - Le coût total (nombre de jours x taux journaliers) doit être égal à ${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros.
 - Chaque mission peut être réalisée par plusieurs personnes. Répartis les jours de manière optimale entre les intervenants disponibles.
+- Évite d'attribuer zéro jour à une personne mobilisée, sauf si cela est clairement justifié par un manque de pertinence ou de compétence pour la mission.
 - Fournis des justifications détaillées pour chaque attribution, en mentionnant les compétences, l'expérience ou la pertinence de chaque personne pour la mission.
+- Dans les justifications, mentionne toujours le prénom et le nom complet de chaque salarié mobilisé. Évite les familiarités ou les formulations informelles.
 
 Exemple de calcul :
 Si le montant cible est 10 000 euros et qu'une personne a un taux journalier de 500 €/j, elle peut travailler 20 jours (10 000 / 500). Si deux personnes sont mobilisées, répartis les jours en fonction de leurs taux journaliers et de leurs compétences.
@@ -122,43 +155,14 @@ Réponds au format JSON suivant :
       {
         role: "system",
         content: `Tu es un économiste de la construction.
-Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification brève.`,
+Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification détaillée.`,
       },
       {
         role: "user",
         content: userPrompt,
       },
     ],
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "MissionDayEstimation",
-        schema: {
-          type: "object",
-          properties: {},
-          additionalProperties: {
-            type: "object",
-            properties: {},
-            additionalProperties: {
-              type: "object",
-              properties: {},
-              additionalProperties: {
-                type: "object",
-                properties: {},
-                additionalProperties: {
-                  type: "object",
-                  properties: {
-                    nombreDeJours: { type: "number" },
-                    justification: { type: "string" },
-                  },
-                  required: ["nombreDeJours", "justification"],
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+    response_format: responseFormat,
   });
 
   const content = response.choices[0].message.content;
