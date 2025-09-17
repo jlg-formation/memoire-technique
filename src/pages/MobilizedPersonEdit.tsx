@@ -134,11 +134,10 @@ function MobilizedPersonEdit({
           </label>
           <input
             type="number"
-            className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-base"
+            className="w-full rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
             value={dailyRate}
             onChange={(e) => setDailyRate(Number(e.target.value))}
             placeholder="650"
-            disabled={processing}
             required
             min="0"
             step="1"
