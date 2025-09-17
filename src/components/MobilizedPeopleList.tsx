@@ -41,6 +41,9 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
     onUpdate(people.filter((p) => p.id !== id));
   };
 
+  const isRepresentative = (personId: string) =>
+    company.representativeId === personId;
+
   return (
     <div className="space-y-4 border-t pt-4">
       <h3 className="text-lg font-semibold text-gray-800">
@@ -112,14 +115,21 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
             {people.map((person) => (
               <li
                 key={person.id}
-                className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+                className={`rounded-lg border p-4 shadow-sm ${
+                  isRepresentative(person.id)
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 bg-white"
+                }`}
               >
                 <div className="space-y-4">
                   {/* En-tête avec nom et actions */}
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <label className="mb-1 block text-sm font-medium text-gray-700">
-                        Nom de la personne
+                        Nom de la personne{" "}
+                        {isRepresentative(person.id) && (
+                          <span className="text-blue-600">(Représentant)</span>
+                        )}
                       </label>
                       <input
                         type="text"

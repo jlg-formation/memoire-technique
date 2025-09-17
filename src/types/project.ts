@@ -16,6 +16,7 @@ export interface ParticipatingCompany {
   presentationSummary?: string;
   equipmentText?: string;
   mobilizedPeople?: MobilizedPerson[];
+  representativeId?: string; // ID of the mobilized person who is the representative
 }
 
 export type MarketDocumentType = "RC" | "CCTP" | "CCAP" | "AE" | "AUTRE";

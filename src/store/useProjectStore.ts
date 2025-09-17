@@ -73,6 +73,24 @@ export const useProjectStore = create<ProjectStore>((set) => {
     updateCurrentProject: (data) => {
       set((state) => {
         if (!state.currentProject) return state;
+
+        // Validation: Ensure representativeId is set if mobilizedPeople is not empty
+        if (data.participatingCompanies) {
+          data.participatingCompanies.forEach((company) => {
+            if (
+              company.mobilizedPeople &&
+              company.mobilizedPeople.length > 0 &&
+              !company.representativeId
+            ) {
+              // Automatically assign the first mobilized person as the representative
+              company.representativeId = company.mobilizedPeople[0].id;
+              window.alert(
+                `L'entreprise ${company.name} n'avait pas de représentant. La première personne mobilisée a été désignée comme représentant.`,
+              );
+            }
+          });
+        }
+
         const updated = stripPdfFields({
           ...state.currentProject,
           ...data,

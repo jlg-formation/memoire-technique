@@ -246,7 +246,11 @@ function Equipes() {
                       {company.mobilizedPeople.map((person) => (
                         <div
                           key={person.id}
-                          className="flex cursor-pointer items-center justify-between rounded-md bg-gray-50 p-2 transition-colors hover:bg-gray-100"
+                          className={`flex cursor-pointer items-center justify-between rounded-md p-2 transition-colors hover:bg-gray-100 ${
+                            company.representativeId === person.id
+                              ? "bg-green-100"
+                              : "bg-gray-50"
+                          }`}
                           onClick={() =>
                             navigate(
                               `/equipes/entreprise/${company.slug}/personne/${person.slug}/edit`,
