@@ -47,29 +47,45 @@ export default function FileAIUpload({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     setIsExtracting(true);
     setCancelled(false);
     setFileName(file.name);
     setStep("Extraction du contenu du fichier...");
+
     try {
       let text = "";
+
       if (file.name.toLowerCase().endsWith(".docx")) {
+        // @ts-expect-error: window.extractDocxText est injecté dynamiquement
+        if (typeof window.extractDocxText !== "function") {
+          throw new Error("window.extractDocxText is not available");
+        }
         // @ts-expect-error: window.extractDocxText est injecté dynamiquement
         text = await window.extractDocxText(file);
       } else {
         // @ts-expect-error: window.extractPdfText est injecté dynamiquement
+        if (typeof window.extractPdfText !== "function") {
+          throw new Error("window.extractPdfText is not available");
+        }
+        // @ts-expect-error: window.extractPdfText est injecté dynamiquement
         text = await window.extractPdfText(file);
       }
+
       if (cancelled) return;
+
       setStep("Analyse du contenu avec l'IA...");
       const result = await onParse(text);
+
       if (cancelled) return;
       setStep("Analyse terminée avec succès !");
       onResult(result);
       setTimeout(() => setStep(""), 2000);
-    } catch {
+    } catch (error) {
       if (!cancelled) {
-        setStep("Erreur lors de l'analyse du fichier");
+        setStep(
+          `Erreur lors de l'analyse du fichier: ${error instanceof Error ? error.message : "Erreur inconnue"}`,
+        );
         setTimeout(() => setStep(""), 3000);
         // Optionally: onResult(null)
       }

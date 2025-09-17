@@ -82,30 +82,41 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             label="Joindre le RC (Règlement de Consultation)"
             onParse={async (text) => {
               setProcessing(true);
+              setAnalysisStep("Extraction des informations...");
               const info = await extractConsultationInfo(text);
+              setAnalysisStep("Analyse de la notation...");
               // Analyse de la notation
               const notation = await extractMethodologyScores(text);
               return { ...info, notation };
             }}
             onResult={(result) => {
-              const info = result as {
-                consultationTitle?: string;
-                nomCourt?: string;
-                submissionDeadline?: string;
-                submissionTime?: string;
-                worksAmount?: number;
-                notation?: MethodologyScore[];
-              };
-              setConsultationTitle(info.consultationTitle ?? "");
-              setNomCourt(info.nomCourt ?? "");
-              setSubmissionDeadline(info.submissionDeadline ?? "");
-              setSubmissionTime(info.submissionTime ?? "");
-              setWorksAmount(info.worksAmount?.toString() ?? "");
-              // Met à jour la notation dans le projet
-              if (info.notation) {
-                setNotation(info.notation);
+              try {
+                const info = result as {
+                  consultationTitle?: string;
+                  nomCourt?: string;
+                  submissionDeadline?: string;
+                  submissionTime?: string;
+                  worksAmount?: number;
+                  notation?: MethodologyScore[];
+                };
+                setConsultationTitle(info.consultationTitle ?? "");
+                setNomCourt(info.nomCourt ?? "");
+                setSubmissionDeadline(info.submissionDeadline ?? "");
+                setSubmissionTime(info.submissionTime ?? "");
+                setWorksAmount(info.worksAmount?.toString() ?? "");
+                // Met à jour la notation dans le projet
+                if (info.notation) {
+                  setNotation(info.notation);
+                }
+                setAnalysisStep("Analyse terminée avec succès !");
+              } catch (error) {
+                setAnalysisStep("Erreur lors de l'analyse");
+                console.error("Erreur lors du traitement du résultat:", error);
+              } finally {
+                setProcessing(false);
+                // Efface le message après 2 secondes
+                setTimeout(() => setAnalysisStep(""), 2000);
               }
-              setProcessing(false);
             }}
             status={analysisStep}
             setStatus={setAnalysisStep}
