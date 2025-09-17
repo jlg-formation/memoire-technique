@@ -88,6 +88,20 @@ IMPORTANT : Respecte strictement les contraintes suivantes :
 - Fournis des justifications détaillées pour chaque attribution, en mentionnant les compétences, l'expérience ou la pertinence de chaque personne pour la mission.
 - Dans les justifications, mentionne toujours le prénom et le nom complet de chaque salarié mobilisé. Évite les familiarités ou les formulations informelles.
 
+Pour t'aider dans le chiffrage, voici une répartition moyenne des rémunérations dans une mission complète de maîtrise d’œuvre loi MOP :
+
+- ESQ : 5 % (si incluse)
+- APS : 10 %
+- APD : 15 %
+- PRO : 25 %
+- ACT : 5 %
+- VISA : 5 %
+- DET : 25 %
+- AOR : 5 %
+- OPC : 5–10 % (si inclus).
+
+Les études (ESQ à PRO) représentent 55–60 %, ACT ≈ 5 %, suivi de chantier (DET + VISA + AOR + OPC) ≈ 40–45 %.
+
 Exemple de calcul :
 Si le montant cible est 10 000 euros et qu'une personne a un taux journalier de 500 €/j, elle peut travailler 20 jours (10 000 / 500). Si deux personnes sont mobilisées, répartis les jours en fonction de leurs taux journaliers et de leurs compétences.
 `;
