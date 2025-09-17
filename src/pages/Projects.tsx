@@ -32,9 +32,9 @@ function Projects() {
     useProjectStore();
   const navigate = useNavigate();
 
-  const [currentView, setCurrentView] = useState<
-    "list" | "create" | "import" | "edit"
-  >("list");
+  const [currentView, setCurrentView] = useState<"list" | "import" | "edit">(
+    "list",
+  );
   // Suppression de editingProject, non utilisé
 
   const handleExportJSON = (project: Project): void => {
@@ -142,7 +142,7 @@ function Projects() {
               Créez votre premier projet pour commencer.
             </p>
             <ButtonPrimary
-              onClick={() => setCurrentView("create")}
+              onClick={() => navigate("/projects/create")}
               className="inline-flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
