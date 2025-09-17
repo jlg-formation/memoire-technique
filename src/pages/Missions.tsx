@@ -9,6 +9,7 @@ import type {
 } from "../types/project";
 import { EditableTextArea } from "../components/ui";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
+import Accordion from "../components/ui/Accordion";
 
 function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -370,13 +371,19 @@ function Missions() {
           Estimer par IA
         </AsyncPrimaryButton>
       </div>
-      {/* ...reste inchangé... */}
+      {/* Liste des missions avec détails par entreprise et par personne */}
       {missions.map((mission) => (
-        <div key={mission.id} className="relative space-y-2 border p-2">
-          <h2 className="font-semibold">{mission.name}</h2>
-          <div className="absolute top-2 right-2 text-lg font-bold">
-            Total mission: {missionTotal(mission.id).toFixed(2)} €
-          </div>
+        <Accordion
+          key={mission.id}
+          title={
+            <div className="flex w-full items-center justify-between">
+              <span className="text-lg font-semibold">{mission.name}</span>
+              <span className="text-lg font-bold text-blue-800">
+                {missionTotal(mission.id).toFixed(2)} €
+              </span>
+            </div>
+          }
+        >
           {companies.map((company) => {
             const people = company.mobilizedPeople ?? [];
             const companyTotal = people.reduce(
@@ -387,7 +394,7 @@ function Missions() {
               <div key={company.id} className="relative space-y-1 border p-2">
                 <h3 className="font-medium">{company.name}</h3>
                 <div className="text-md absolute top-2 right-2 font-semibold">
-                  Total {company.name}: {companyTotal.toFixed(2)} €
+                  {companyTotal.toFixed(2)} €
                 </div>
                 <ul className="space-y-1 pl-2">
                   {people.map((person) => {
@@ -444,7 +451,7 @@ function Missions() {
               </div>
             );
           })}
-        </div>
+        </Accordion>
       ))}
       <div className="text-lg font-bold">
         Total général: {allMissionsTotal.toFixed(2)} €
