@@ -166,7 +166,67 @@ Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entrepri
     throw new Error("content is null");
   }
 
-  const responseObj = JSON.parse(content);
+  const getDailyRate = (
+    personId: string,
+    companies: ParticipatingCompany[],
+  ): number => {
+    for (const company of companies) {
+      const person = company.mobilizedPeople?.find((p) => p.id === personId);
+      if (person && person.dailyRate) {
+        return person.dailyRate;
+      }
+    }
+    throw new Error(
+      `Taux journalier introuvable pour la personne avec l'ID: ${personId}`,
+    );
+  };
+
+  const calculateTotalAmount = (estimation: MissionDayEstimation): number => {
+    return Object.values(estimation).reduce((total, mission) => {
+      return (
+        total +
+        Object.values(mission).reduce((missionTotal, company) => {
+          return (
+            missionTotal +
+            Object.entries(company).reduce(
+              (companyTotal, [personId, person]) => {
+                const dailyRate = getDailyRate(personId, companies);
+                return companyTotal + person.nombreDeJours * dailyRate;
+              },
+              0,
+            )
+          );
+        }, 0)
+      );
+    }, 0);
+  };
+
+  const adjustDaysToTarget = (
+    estimation: MissionDayEstimation,
+    targetAmount: number,
+  ): MissionDayEstimation => {
+    const totalAmount = calculateTotalAmount(estimation);
+    const adjustmentFactor = targetAmount / totalAmount;
+
+    Object.values(estimation).forEach((mission) => {
+      Object.values(mission).forEach((company) => {
+        Object.values(company).forEach((person) => {
+          person.nombreDeJours = Math.round(
+            person.nombreDeJours * adjustmentFactor,
+          );
+        });
+      });
+    });
+
+    return estimation;
+  };
+
+  let responseObj = JSON.parse(content);
+
+  const totalAmount = calculateTotalAmount(responseObj);
+  if (totalAmount !== targetAmount) {
+    responseObj = adjustDaysToTarget(responseObj, targetAmount);
+  }
 
   useIAHistoryStore.getState().addEntry({
     timestamp: Date.now(),
