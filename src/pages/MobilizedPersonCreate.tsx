@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
-import { summarize } from "../lib/OpenAI";
+import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
 import { uniqueSlug } from "../lib/strings/slugify";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
@@ -84,13 +84,7 @@ function MobilizedPersonCreate({
             label="Joindre le CV de la personne"
             onParse={async (text) => {
               setProcessing(true);
-              const summary = await summarize(text, 150);
-              // Extraire le nom depuis le résumé (première ligne souvent)
-              const firstLine = summary.split("\n")[0];
-              const nameMatch = firstLine.match(
-                /^([A-ZÀÂÄÉÈÊËÏÎÔÖÙÛÜÇ][a-zàâäéèêëïîôöùûüç]+ [A-ZÀÂÄÉÈÊËÏÎÔÖÙÛÜÇ][a-zàâäéèêëïîôöùûüç]+)/,
-              );
-              const name = nameMatch ? nameMatch[1] : undefined;
+              const { summary, name } = await parseMobilizedPersonCV(text);
               return { text, summary, name };
             }}
             onResult={(result) => {
