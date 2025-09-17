@@ -523,7 +523,7 @@ function Missions() {
                   Montant global des travaux
                 </label>
                 <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
-                  {worksAmount.toLocaleString()} €
+                  {worksAmount.toLocaleString()}&nbsp;€
                 </div>
               </div>
 
@@ -558,8 +558,7 @@ function Missions() {
                 <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
                   {targetAmount.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
-                  })}{" "}
-                  €
+                  })}&nbsp;€
                 </div>
               </div>
             </div>
@@ -602,7 +601,7 @@ function Missions() {
                   <div className="text-xl font-bold text-blue-700 sm:text-2xl">
                     {estimating
                       ? "Calcul..."
-                      : `${allMissionsTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} €`}
+                      : `${allMissionsTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}\u00A0€`}
                   </div>
                 </div>
                 <div>
@@ -612,7 +611,7 @@ function Missions() {
                   <div className="text-xl font-bold text-blue-700 sm:text-2xl">
                     {estimating
                       ? "..."
-                      : `${((allMissionsTotal / worksAmount) * 100).toFixed(2)} %`}
+                      : `${((allMissionsTotal / worksAmount) * 100).toFixed(2)}\u00A0%`}
                   </div>
                 </div>
               </div>
@@ -655,7 +654,7 @@ function Missions() {
                   </div>
                   <div className="flex items-center gap-1 sm:gap-2">
                     <span className="rounded-full bg-blue-50 px-2 py-1 text-base font-bold text-blue-700 sm:px-3 sm:text-xl">
-                      {missionTotal(mission.id).toFixed(2)} €
+                      {missionTotal(mission.id).toFixed(2)}&nbsp;€
                     </span>
                   </div>
                 </div>
@@ -683,7 +682,7 @@ function Missions() {
                             </span>
                           </div>
                           <span className="rounded-full bg-slate-100 px-2 py-1 text-sm font-bold text-slate-700 sm:px-3 sm:text-lg">
-                            {companyTotal.toFixed(2)} €
+                            {companyTotal.toFixed(2)}&nbsp;€
                           </span>
                         </div>
                       }
@@ -742,10 +741,10 @@ function Missions() {
                                       </span>
                                     </div>
                                     <div className="rounded bg-slate-50 px-1 py-1 text-xs text-slate-600 sm:px-2 sm:text-sm">
-                                      {person.dailyRate ?? 0} €/j
+                                      {person.dailyRate ?? 0}&nbsp;€/j
                                     </div>
                                     <div className="rounded-full bg-amber-50 px-2 py-1 text-sm font-bold text-amber-700 sm:px-3 sm:text-lg">
-                                      {cost.toFixed(2)} €
+                                      {cost.toFixed(2)}&nbsp;€
                                     </div>
                                   </div>
                                 </div>
@@ -801,7 +800,7 @@ function Missions() {
               Total général
             </h3>
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-2xl font-bold text-slate-800 shadow-sm sm:px-6 sm:py-3 sm:text-3xl">
-              {allMissionsTotal.toFixed(2)} €
+              {allMissionsTotal.toFixed(2)}&nbsp;€
             </div>
           </div>
         </div>
