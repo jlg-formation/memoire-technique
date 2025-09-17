@@ -220,10 +220,22 @@ function Missions() {
             €
           </span>
         </div>
+        <div className="flex items-center gap-4">
+          <label className="font-medium text-blue-900">
+            Montant estimé IA&nbsp;:
+          </label>
+          <span className="text-lg font-bold text-blue-800">
+            {estimating
+              ? "..."
+              : allMissionsTotal.toLocaleString(undefined, {
+                  maximumFractionDigits: 2,
+                }) + " €"}
+          </span>
+        </div>
         <AsyncPrimaryButton
           onClick={handleEstimate}
           disabled={estimating}
-          className="mt-2 border-green-600 bg-green-600 hover:bg-green-700"
+          className="mt-2"
         >
           Estimer par IA
         </AsyncPrimaryButton>
