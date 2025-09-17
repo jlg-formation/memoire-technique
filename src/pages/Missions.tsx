@@ -644,7 +644,6 @@ function Missions() {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-slate-500">Total:</span>
                     <span className="rounded-full bg-blue-50 px-3 py-1 text-xl font-bold text-blue-700">
                       {missionTotal(mission.id).toFixed(2)} €
                     </span>
