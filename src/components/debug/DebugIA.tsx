@@ -29,7 +29,19 @@ export default function DebugIA() {
                       {msg.role} :
                     </span>
                     <pre className="mt-1 bg-gray-100 p-2 break-words whitespace-pre-wrap">
-                      {msg.content}
+                      {typeof msg.content === "string"
+                        ? msg.content
+                        : Array.isArray(msg.content)
+                          ? msg.content
+                              .map((part) =>
+                                typeof part === "string"
+                                  ? part
+                                  : JSON.stringify(part, null, 2),
+                              )
+                              .join("\n")
+                          : msg.content != null
+                            ? JSON.stringify(msg.content, null, 2)
+                            : ""}
                     </pre>
                   </div>
                 ))
