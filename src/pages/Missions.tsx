@@ -65,7 +65,6 @@ function Missions() {
   const missionEstimation: MissionEstimation =
     currentProject.missionEstimations ?? {};
   const missions = currentProject.missions ?? [];
-  const missionNames = missions.map((m) => m.name);
   const companies = currentProject.participatingCompanies ?? [];
   const worksAmount = currentProject.worksAmount ?? 0;
   const targetAmount = worksAmount * (percentage / 100);
@@ -125,26 +124,26 @@ function Missions() {
     );
   }
   const getDays = (
-    mission: string,
+    missionId: string,
     companyId: string,
     personId: string,
   ): number =>
-    missionEstimation[mission]?.[companyId]?.[personId]?.nombreDeJours ?? 0;
+    missionEstimation[missionId]?.[companyId]?.[personId]?.nombreDeJours ?? 0;
 
   const handleChange = (
-    mission: string,
+    missionId: string,
     companyId: string,
     personId: string,
     days: number,
   ): void => {
     const updated: MissionEstimation = {
       ...missionEstimation,
-      [mission]: {
-        ...(missionEstimation[mission] ?? {}),
+      [missionId]: {
+        ...(missionEstimation[missionId] ?? {}),
         [companyId]: {
-          ...(missionEstimation[mission]?.[companyId] ?? {}),
+          ...(missionEstimation[missionId]?.[companyId] ?? {}),
           [personId]: {
-            ...(missionEstimation[mission]?.[companyId]?.[personId] ?? {}),
+            ...(missionEstimation[missionId]?.[companyId]?.[personId] ?? {}),
             nombreDeJours: days,
           },
         },
@@ -154,26 +153,26 @@ function Missions() {
   };
 
   const getJustification = (
-    mission: string,
+    missionId: string,
     companyId: string,
     personId: string,
   ): string =>
-    missionEstimation[mission]?.[companyId]?.[personId]?.justification ?? "";
+    missionEstimation[missionId]?.[companyId]?.[personId]?.justification ?? "";
 
   const handleJustificationChange = (
-    mission: string,
+    missionId: string,
     companyId: string,
     personId: string,
     text: string,
   ): void => {
     const updated: MissionEstimation = {
       ...missionEstimation,
-      [mission]: {
-        ...(missionEstimation[mission] ?? {}),
+      [missionId]: {
+        ...(missionEstimation[missionId] ?? {}),
         [companyId]: {
-          ...(missionEstimation[mission]?.[companyId] ?? {}),
+          ...(missionEstimation[missionId]?.[companyId] ?? {}),
           [personId]: {
-            ...(missionEstimation[mission]?.[companyId]?.[personId] ?? {}),
+            ...(missionEstimation[missionId]?.[companyId]?.[personId] ?? {}),
             justification: text,
           },
         },
@@ -183,24 +182,24 @@ function Missions() {
   };
 
   const personCost = (
-    mission: string,
+    missionId: string,
     company: ParticipatingCompany,
     person: MobilizedPerson,
   ): number =>
-    getDays(mission, company.id, person.id) * (person.dailyRate ?? 0);
+    getDays(missionId, company.id, person.id) * (person.dailyRate ?? 0);
 
-  const missionTotal = (mission: string): number => {
+  const missionTotal = (missionId: string): number => {
     return companies.reduce((total, company) => {
       const people = company.mobilizedPeople ?? [];
       return (
         total +
-        people.reduce((sum, p) => sum + personCost(mission, company, p), 0)
+        people.reduce((sum, p) => sum + personCost(missionId, company, p), 0)
       );
     }, 0);
   };
 
-  const allMissionsTotal = missionNames.reduce(
-    (sum, m) => sum + missionTotal(m),
+  const allMissionsTotal = missions.reduce(
+    (sum: number, mission) => sum + missionTotal(mission.id),
     0,
   );
 
@@ -209,7 +208,7 @@ function Missions() {
     try {
       // On transmet le montant cible à l'IA via le prompt
       const result = await estimateMissionDays(
-        missionNames,
+        missions,
         companies,
         targetAmount,
       );
@@ -222,7 +221,7 @@ function Missions() {
     setEstimating(false);
   };
 
-  if (!missionNames.length || !companies.length) {
+  if (!missions.length || !companies.length) {
     return (
       <div className="space-y-4 p-4">
         <h1 className="text-xl font-bold">Missions</h1>
@@ -362,13 +361,13 @@ function Missions() {
         </AsyncPrimaryButton>
       </div>
       {/* ...reste inchangé... */}
-      {missionNames.map((mission) => (
-        <div key={mission} className="space-y-2 border p-2">
-          <h2 className="font-semibold">{mission}</h2>
+      {missions.map((mission) => (
+        <div key={mission.id} className="space-y-2 border p-2">
+          <h2 className="font-semibold">{mission.name}</h2>
           {companies.map((company) => {
             const people = company.mobilizedPeople ?? [];
             const companyTotal = people.reduce(
-              (sum, p) => sum + personCost(mission, company, p),
+              (sum, p) => sum + personCost(mission.id, company, p),
               0,
             );
             return (
@@ -376,10 +375,10 @@ function Missions() {
                 <h3 className="font-medium">{company.name}</h3>
                 <ul className="space-y-1 pl-2">
                   {people.map((person) => {
-                    const days = getDays(mission, company.id, person.id);
-                    const cost = personCost(mission, company, person);
+                    const days = getDays(mission.id, company.id, person.id);
+                    const cost = personCost(mission.id, company, person);
                     const justification = getJustification(
-                      mission,
+                      mission.id,
                       company.id,
                       person.id,
                     );
@@ -396,7 +395,7 @@ function Missions() {
                             value={days}
                             onChange={(e) =>
                               handleChange(
-                                mission,
+                                mission.id,
                                 company.id,
                                 person.id,
                                 Number(e.target.value),
@@ -413,7 +412,7 @@ function Missions() {
                           value={justification}
                           onChange={(value) =>
                             handleJustificationChange(
-                              mission,
+                              mission.id,
                               company.id,
                               person.id,
                               value,
@@ -433,7 +432,7 @@ function Missions() {
             );
           })}
           <div className="font-bold">
-            Total mission: {missionTotal(mission).toFixed(2)} €
+            Total mission: {missionTotal(mission.id).toFixed(2)} €
           </div>
         </div>
       ))}

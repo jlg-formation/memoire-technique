@@ -1,5 +1,6 @@
 import { useIAHistoryStore } from "../../store/useIAHistoryStore";
 import type {
+  Mission,
   MobilizedPerson,
   ParticipatingCompany,
 } from "../../types/project";
@@ -17,15 +18,15 @@ export type MissionDayEstimation = {
 };
 
 export async function estimateMissionDays(
-  missions: string[],
+  missions: Mission[],
   companies: ParticipatingCompany[],
-  targetAmount?: number,
+  targetAmount: number,
 ): Promise<MissionDayEstimation> {
   const openai = createClient();
 
   // Prompt utilisateur markdown multiligne
   let userPrompt = `# Missions
-${missions.map((m) => `- ${m}`).join("\n")}
+${missions.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
 
 # Intervenants
 ${companies
@@ -36,9 +37,6 @@ ${companies
         if (p.cvSummary) {
           cvInfo += `\n    **CV résumé**: ${p.cvSummary}`;
         }
-        if (p.cvText) {
-          cvInfo += `\n    **CV complet**: ${p.cvText}`;
-        }
         return `  - ${p.name} (id:${p.id}, taux ${p.dailyRate ?? 0} €/j)${cvInfo}`;
       })
       .join("\n");
@@ -47,24 +45,64 @@ ${companies
   .join("\n")}
 `;
 
-  if (targetAmount && targetAmount > 0) {
-    userPrompt += `
-## Montant cible de l'offre
-${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros
-
-Répartis les jours de missions pour que le coût total corresponde à ce montant, en tenant compte des taux journaliers.
+  userPrompt += `
+Répartis les jours de missions pour que le coût total corresponde au montant cible de l'offre, en tenant compte des taux journaliers.
 `;
-  }
 
   userPrompt += `
 Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.
+Plusieurs personnes peuvent travailler sur la même missions.
+Le total des jours fois les taux journaliers doit etre egal à ${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros
 
 IMPORTANT: Réponds au format JSON suivant :
 {
-  mission1: {
+  missionId1: {
     companyId1: {
       personId1: {
-        nombreDeJours: "nombreDeJours",
+        nombreDeJours: ndj1_1_1,
+        justification: "justification",
+      },
+      ...
+      personIdN: {
+        nombreDeJours: Ndj1_1_N,
+        justification: "justification",
+      },
+    },
+    ...
+    companyIdM: {
+      personId1: {
+        nombreDeJours: Ndj1_M_1,
+        justification: "justification",
+      },
+      ...
+      personIdN: {
+        nombreDeJours: Ndj1_M_N,
+        justification: "justification",
+      },
+    },
+  },
+  ...
+  missionIdK: {
+    companyId1: {
+      personId1: {
+        nombreDeJours: ndjK_1_1,
+        justification: "justification",
+      },
+      ...
+      personIdN: {
+        nombreDeJours: NdjK_1_N,
+        justification: "justification",
+      },
+    },
+    ...
+    companyIdM: {
+      personId1: {
+        nombreDeJours: NdjK_M_1,
+        justification: "justification",
+      },
+      ...
+      personIdN: {
+        nombreDeJours: NdjK_M_N,
         justification: "justification",
       },
     },
