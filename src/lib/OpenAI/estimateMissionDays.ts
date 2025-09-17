@@ -16,30 +16,55 @@ export default async function estimateMissionDays(
   targetAmount?: number,
 ): Promise<MissionDayEstimation> {
   const openai = createClient();
-  const missionsList = missions.map((m) => `- ${m}`).join("\n");
-  const companiesList = companies
-    .map((c) => {
-      const people = (c.mobilizedPeople ?? [])
-        .map(
-          (p: MobilizedPerson) =>
-            `  - ${p.name} (id:${p.id}, taux ${p.dailyRate ?? 0} €/j)`,
-        )
-        .join("\n");
-      return `- ${c.name} (id:${c.id})\n${people}`;
-    })
-    .join("\n");
 
-  let userPrompt = `Missions:\n${missionsList}\n\nIntervenants:\n${companiesList}`;
+  // Prompt utilisateur markdown multiligne
+  let userPrompt = `# Missions
+${missions.map((m) => `- ${m}`).join("\n")}
+
+# Intervenants
+${companies
+  .map((c) => {
+    const people = (c.mobilizedPeople ?? [])
+      .map((p: MobilizedPerson) => {
+        let cvInfo = "";
+        if (p.cvSummary) {
+          cvInfo += `\n    **CV résumé**: ${p.cvSummary}`;
+        }
+        if (p.cvText) {
+          cvInfo += `\n    **CV complet**: ${p.cvText}`;
+        }
+        return `  - ${p.name} (id:${p.id}, taux ${p.dailyRate ?? 0} €/j)${cvInfo}`;
+      })
+      .join("\n");
+    return `- ${c.name} (id:${c.id})\n${people}`;
+  })
+  .join("\n")}
+`;
+
   if (targetAmount && targetAmount > 0) {
-    userPrompt += `\n\nLe montant total de la réponse à l'appel d'offre doit être de ${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros. Répartis les jours de missions pour que le coût total corresponde à ce montant, en tenant compte des taux journaliers.`;
+    userPrompt += `
+## Montant cible de l'offre
+${targetAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })} euros
+
+Répartis les jours de missions pour que le coût total corresponde à ce montant, en tenant compte des taux journaliers.
+`;
   }
-  userPrompt += `\n\nRéponds uniquement en JSON au format {"missionDays": {"mission": {"companyId": {"personId": nombre}}}, "missionJustifications": {"mission": {"companyId": {"personId": "justification"}}}}`;
+
+  userPrompt += `
+Réponds uniquement en JSON au format :
+
+{
+  "missionDays": { "mission": { "companyId": { "personId": nombre } } },
+  "missionJustifications": { "mission": { "companyId": { "personId": "justification" } } }
+}
+`;
 
   const messages: ChatCompletionMessageParam[] = [
     {
       role: "system",
-      content:
-        "Tu es un économiste de la construction. Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.",
+      content: `Tu es un économiste de la construction.
+Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.
+Réponds en JSON comme précisé dans le prompt utilisateur.`,
     },
     {
       role: "user",
