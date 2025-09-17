@@ -3,13 +3,18 @@ import type {
   ParticipatingCompany,
   MobilizedPerson,
 } from "../../types/project";
-import type { ChatCompletionMessageParam } from "openai/resources";
 import { useIAHistoryStore } from "../../store/useIAHistoryStore";
 
-export interface MissionDayEstimation {
-  missionDays: Record<string, Record<string, Record<string, number>>>;
-  missionJustifications: Record<string, Record<string, Record<string, string>>>;
-}
+export type MissionDayEstimation = {
+  [mission: string]: {
+    [companyId: string]: {
+      [personId1: string]: {
+        nombreDeJours: number;
+        justification: string;
+      };
+    };
+  };
+};
 
 export default async function estimateMissionDays(
   missions: string[],
@@ -52,47 +57,88 @@ Répartis les jours de missions pour que le coût total corresponde à ce montan
   }
 
   userPrompt += `
-Réponds uniquement en JSON au format :
+Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.
 
+IMPORTANT: Réponds au format JSON suivant :
 {
-  "missionDays": { "mission": { "companyId": { "personId": nombre } } },
-  "missionJustifications": { "mission": { "companyId": { "personId": "justification" } } }
-}
+  mission1: {
+    companyId1: {
+      personId1: {
+        nombreDeJours: "nombreDeJours",
+        justification: "justification",
+      },
+    },
+  },
+};
 `;
 
-  const messages: ChatCompletionMessageParam[] = [
-    {
-      role: "system",
-      content: `Tu es un économiste de la construction.
-Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.
-Réponds en JSON comme précisé dans le prompt utilisateur.`,
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-2024-08-06",
+    messages: [
+      {
+        role: "system",
+        content: `Tu es un économiste de la construction.
+Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification brève.`,
+      },
+      {
+        role: "user",
+        content: userPrompt,
+      },
+    ],
+    response_format: {
+      type: "json_schema",
+      json_schema: {
+        name: "MissionDayEstimation",
+        schema: {
+          type: "object",
+          properties: {},
+          additionalProperties: {
+            type: "object",
+            properties: {},
+            additionalProperties: {
+              type: "object",
+              properties: {},
+              additionalProperties: {
+                type: "object",
+                properties: {},
+                additionalProperties: {
+                  type: "object",
+                  properties: {
+                    nombreDeJours: { type: "number" },
+                    justification: { type: "string" },
+                  },
+                  required: ["nombreDeJours", "justification"],
+                },
+              },
+            },
+          },
+        },
+      },
     },
-    {
-      role: "user",
-      content: userPrompt,
-    },
-  ];
-
-  console.log("messages: ", messages);
-
-  const chat = await openai.chat.completions.create({
-    model: "gpt-4o",
-    messages,
-    response_format: { type: "json_object" },
   });
 
-  const content = chat.choices[0].message.content ?? "{}";
-  let responseObj: MissionDayEstimation;
-  try {
-    responseObj = JSON.parse(content);
-  } catch {
-    responseObj = { missionDays: {}, missionJustifications: {} };
+  const content = response.choices[0].message.content;
+  if (content === null) {
+    throw new Error("content is null");
   }
+
+  const responseObj = JSON.parse(content);
+
   useIAHistoryStore.getState().addEntry({
     timestamp: Date.now(),
-    messages,
+    messages: [
+      {
+        role: "system",
+        content: `Tu es un économiste de la construction.\nPour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.`,
+      },
+      {
+        role: "user",
+        content: userPrompt,
+      },
+    ],
     response: responseObj,
     context: "estimateMissionDays",
   });
-  return responseObj as MissionDayEstimation;
+
+  return responseObj;
 }
