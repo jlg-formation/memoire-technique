@@ -19,13 +19,13 @@ function Missions() {
 
   if (!currentProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="mx-auto max-w-4xl space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
+        <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white sm:h-10 sm:w-10">
               <svg
-                className="h-6 w-6"
+                className="h-4 w-4 sm:h-6 sm:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -38,15 +38,17 @@ function Missions() {
                 />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-slate-800">Missions</h1>
+            <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
+              Missions
+            </h1>
           </div>
 
           {/* Information Panel */}
-          <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+          <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-3 shadow-sm sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
                 <svg
-                  className="h-6 w-6 text-blue-600"
+                  className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -59,13 +61,13 @@ function Missions() {
                   />
                 </svg>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-blue-900">
+              <div className="space-y-1 sm:space-y-2">
+                <h3 className="text-base font-semibold text-blue-900 sm:text-lg">
                   Source des missions
                 </h3>
-                <p className="leading-relaxed text-blue-800">
+                <p className="text-sm leading-relaxed text-blue-800 sm:text-base">
                   Les missions ci-dessous sont extraites automatiquement de l'
-                  <span className="rounded bg-blue-100 px-2 py-1 font-semibold">
+                  <span className="rounded bg-blue-100 px-1 py-1 font-semibold sm:px-2">
                     Acte d'Engagement (AE)
                   </span>
                   que vous fournissez dans la section "Pièces de marché".
@@ -78,11 +80,11 @@ function Missions() {
           </div>
 
           {/* Error Message */}
-          <div className="rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-pink-50 p-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100">
+          <div className="rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-pink-50 p-3 shadow-sm sm:p-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:h-12 sm:w-12">
                 <svg
-                  className="h-6 w-6 text-red-600"
+                  className="h-5 w-5 text-red-600 sm:h-6 sm:w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -96,10 +98,10 @@ function Missions() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-red-900">
+                <h3 className="text-base font-semibold text-red-900 sm:text-lg">
                   Aucun projet sélectionné
                 </h3>
-                <p className="text-red-800">
+                <p className="text-sm text-red-800 sm:text-base">
                   Veuillez sélectionner un projet pour consulter les missions.
                 </p>
               </div>
@@ -122,13 +124,13 @@ function Missions() {
 
   if (missingRates.length) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="mx-auto max-w-4xl space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
+        <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white sm:h-10 sm:w-10">
               <svg
-                className="h-6 w-6"
+                className="h-4 w-4 sm:h-6 sm:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -141,15 +143,17 @@ function Missions() {
                 />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-slate-800">Missions</h1>
+            <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
+              Missions
+            </h1>
           </div>
 
           {/* Information Panel */}
-          <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+          <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-3 shadow-sm sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
                 <svg
-                  className="h-6 w-6 text-blue-600"
+                  className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -162,13 +166,13 @@ function Missions() {
                   />
                 </svg>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-blue-900">
+              <div className="space-y-1 sm:space-y-2">
+                <h3 className="text-base font-semibold text-blue-900 sm:text-lg">
                   Source des missions
                 </h3>
-                <p className="leading-relaxed text-blue-800">
+                <p className="text-sm leading-relaxed text-blue-800 sm:text-base">
                   Les missions ci-dessous sont extraites automatiquement de l'
-                  <span className="rounded bg-blue-100 px-2 py-1 font-semibold">
+                  <span className="rounded bg-blue-100 px-1 py-1 font-semibold sm:px-2">
                     Acte d'Engagement (AE)
                   </span>
                   que vous fournissez dans la section "Pièces de marché".
@@ -181,11 +185,11 @@ function Missions() {
           </div>
 
           {/* Missing Rates Warning */}
-          <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-amber-100">
+          <div className="rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 p-3 shadow-sm sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 sm:h-12 sm:w-12">
                 <svg
-                  className="h-6 w-6 text-amber-600"
+                  className="h-5 w-5 text-amber-600 sm:h-6 sm:w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -198,11 +202,11 @@ function Missions() {
                   />
                 </svg>
               </div>
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold text-amber-900">
+              <div className="space-y-2 sm:space-y-3">
+                <h3 className="text-base font-semibold text-amber-900 sm:text-lg">
                   Taux journaliers manquants
                 </h3>
-                <p className="text-amber-800">
+                <p className="text-sm text-amber-800 sm:text-base">
                   Les personnes suivantes n'ont pas de taux journalier (TUJ)
                   défini. Rendez-vous dans la page "Équipes" pour compléter ces
                   informations.
@@ -211,18 +215,18 @@ function Missions() {
                   {missingRates.map((p) => (
                     <div
                       key={p.id}
-                      className="flex items-center gap-3 rounded-lg border border-amber-200 bg-white p-3"
+                      className="flex items-center gap-2 rounded-lg border border-amber-200 bg-white p-2 sm:gap-3 sm:p-3"
                     >
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-800">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-800 sm:h-8 sm:w-8">
                         {p.name
                           .split(" ")
                           .map((n) => n.charAt(0))
                           .join("")}
                       </div>
-                      <span className="font-medium text-amber-900">
+                      <span className="text-sm font-medium text-amber-900 sm:text-base">
                         {p.name}
                       </span>
-                      <span className="rounded bg-amber-50 px-2 py-1 text-sm text-amber-700">
+                      <span className="rounded bg-amber-50 px-1 py-1 text-xs text-amber-700 sm:px-2 sm:text-sm">
                         TUJ manquant
                       </span>
                     </div>
@@ -335,13 +339,13 @@ function Missions() {
 
   if (!missions.length || !companies.length) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="mx-auto max-w-4xl space-y-6">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
+        <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white sm:h-10 sm:w-10">
               <svg
-                className="h-6 w-6"
+                className="h-4 w-4 sm:h-6 sm:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -354,15 +358,17 @@ function Missions() {
                 />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-slate-800">Missions</h1>
+            <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
+              Missions
+            </h1>
           </div>
 
           {/* Information Panel */}
-          <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+          <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-3 shadow-sm sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
                 <svg
-                  className="h-6 w-6 text-blue-600"
+                  className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -375,13 +381,13 @@ function Missions() {
                   />
                 </svg>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-blue-900">
+              <div className="space-y-1 sm:space-y-2">
+                <h3 className="text-base font-semibold text-blue-900 sm:text-lg">
                   Source des missions
                 </h3>
-                <p className="leading-relaxed text-blue-800">
+                <p className="text-sm leading-relaxed text-blue-800 sm:text-base">
                   Les missions ci-dessous sont extraites automatiquement de l'
-                  <span className="rounded bg-blue-100 px-2 py-1 font-semibold">
+                  <span className="rounded bg-blue-100 px-1 py-1 font-semibold sm:px-2">
                     Acte d'Engagement (AE)
                   </span>
                   que vous fournissez dans la section "Pièces de marché".
@@ -394,11 +400,11 @@ function Missions() {
           </div>
 
           {/* Empty State */}
-          <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-50 to-gray-50 p-8 text-center shadow-sm">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+          <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-50 to-gray-50 p-4 text-center shadow-sm sm:p-8">
+            <div className="flex flex-col items-center space-y-3 sm:space-y-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 sm:h-16 sm:w-16">
                 <svg
-                  className="h-8 w-8 text-slate-400"
+                  className="h-6 w-6 text-slate-400 sm:h-8 sm:w-8"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -411,11 +417,11 @@ function Missions() {
                   />
                 </svg>
               </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-slate-700">
+              <div className="space-y-1 sm:space-y-2">
+                <h3 className="text-lg font-semibold text-slate-700 sm:text-xl">
                   Aucune donnée disponible
                 </h3>
-                <p className="text-slate-600">
+                <p className="text-sm text-slate-600 sm:text-base">
                   Aucune mission ou entreprise n'a été détectée dans votre
                   projet.
                   <br />
@@ -430,13 +436,13 @@ function Missions() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
+      <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white sm:h-10 sm:w-10">
             <svg
-              className="h-6 w-6"
+              className="h-4 w-4 sm:h-6 sm:w-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -449,15 +455,17 @@ function Missions() {
               />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-slate-800">Missions</h1>
+          <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
+            Missions
+          </h1>
         </div>
 
         {/* Information Panel */}
-        <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+        <div className="rounded-xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-3 shadow-sm sm:p-6">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
               <svg
-                className="h-6 w-6 text-blue-600"
+                className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -470,13 +478,13 @@ function Missions() {
                 />
               </svg>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-blue-900">
+            <div className="space-y-1 sm:space-y-2">
+              <h3 className="text-base font-semibold text-blue-900 sm:text-lg">
                 Source des missions
               </h3>
-              <p className="leading-relaxed text-blue-800">
+              <p className="text-sm leading-relaxed text-blue-800 sm:text-base">
                 Les missions ci-dessous sont extraites automatiquement de l'
-                <span className="rounded bg-blue-100 px-2 py-1 font-semibold">
+                <span className="rounded bg-blue-100 px-1 py-1 font-semibold sm:px-2">
                   Acte d'Engagement (AE)
                 </span>
                 que vous fournissez dans la section "Pièces de marché".
@@ -489,11 +497,11 @@ function Missions() {
         </div>
 
         {/* Estimation Panel */}
-        <div className="rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-6 shadow-sm">
-          <div className="space-y-4">
-            <h3 className="flex items-center gap-2 text-xl font-semibold text-emerald-900">
+        <div className="rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-3 shadow-sm sm:p-6">
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-emerald-900 sm:text-xl">
               <svg
-                className="h-6 w-6"
+                className="h-5 w-5 sm:h-6 sm:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -508,22 +516,22 @@ function Missions() {
               Estimation financière
             </h3>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
               {/* Montant des travaux */}
-              <div className="rounded-lg border border-emerald-100 bg-white p-4">
-                <label className="mb-1 block text-sm font-medium text-slate-600">
+              <div className="rounded-lg border border-emerald-100 bg-white p-3 sm:p-4">
+                <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
                   Montant global des travaux
                 </label>
-                <div className="text-2xl font-bold text-emerald-700">
+                <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
                   {worksAmount.toLocaleString()} €
                 </div>
               </div>
 
               {/* Pourcentage */}
-              <div className="rounded-lg border border-emerald-100 bg-white p-4">
+              <div className="rounded-lg border border-emerald-100 bg-white p-3 sm:p-4">
                 <label
                   htmlFor="percentage"
-                  className="mb-1 block text-sm font-medium text-slate-600"
+                  className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm"
                 >
                   Pourcentage de l'offre
                 </label>
@@ -536,18 +544,18 @@ function Missions() {
                     step={0.001}
                     value={percentage}
                     onChange={(e) => setPercentage(Number(e.target.value))}
-                    className="w-20 rounded-md border border-slate-300 px-3 py-2 text-right focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+                    className="w-16 rounded-md border border-slate-300 px-2 py-1 text-right text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 sm:w-20 sm:px-3 sm:py-2"
                   />
-                  <span className="font-medium text-slate-600">%</span>
+                  <span className="text-sm font-medium text-slate-600">%</span>
                 </div>
               </div>
 
               {/* Montant cible */}
-              <div className="rounded-lg border border-emerald-100 bg-white p-4">
-                <label className="mb-1 block text-sm font-medium text-slate-600">
+              <div className="rounded-lg border border-emerald-100 bg-white p-3 sm:p-4">
+                <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
                   Montant cible de l'offre
                 </label>
-                <div className="text-2xl font-bold text-emerald-700">
+                <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
                   {targetAmount.toLocaleString(undefined, {
                     maximumFractionDigits: 2,
                   })}{" "}
@@ -557,11 +565,11 @@ function Missions() {
             </div>
 
             {/* Estimation IA */}
-            <div className="rounded-lg border border-blue-200 bg-white p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <h4 className="flex items-center gap-2 text-lg font-semibold text-blue-900">
+            <div className="rounded-lg border border-blue-200 bg-white p-3 sm:p-4">
+              <div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
+                <h4 className="flex items-center gap-2 text-base font-semibold text-blue-900 sm:text-lg">
                   <svg
-                    className="h-5 w-5"
+                    className="h-4 w-4 sm:h-5 sm:w-5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -573,33 +581,35 @@ function Missions() {
                       d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                     />
                   </svg>
-                  Estimation par Intelligence Artificielle
+                  <span className="text-sm sm:text-base">
+                    Estimation par Intelligence Artificielle
+                  </span>
                 </h4>
                 <AsyncPrimaryButton
                   onClick={handleEstimate}
                   disabled={estimating}
-                  className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700"
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:px-6"
                 >
-                  {estimating ? "Estimation en cours..." : "Estimer par IA"}
+                  {estimating ? "Estimation..." : "Estimer par IA"}
                 </AsyncPrimaryButton>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-600">
+                  <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
                     Montant estimé IA
                   </label>
-                  <div className="text-2xl font-bold text-blue-700">
+                  <div className="text-xl font-bold text-blue-700 sm:text-2xl">
                     {estimating
-                      ? "Calcul en cours..."
+                      ? "Calcul..."
                       : `${allMissionsTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })} €`}
                   </div>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-600">
+                  <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
                     Pourcentage obtenu
                   </label>
-                  <div className="text-2xl font-bold text-blue-700">
+                  <div className="text-xl font-bold text-blue-700 sm:text-2xl">
                     {estimating
                       ? "..."
                       : `${((allMissionsTotal / worksAmount) * 100).toFixed(2)} %`}
@@ -611,10 +621,10 @@ function Missions() {
         </div>
 
         {/* Missions List */}
-        <div className="space-y-4">
-          <h2 className="flex items-center gap-2 text-2xl font-semibold text-slate-800">
+        <div className="space-y-3 sm:space-y-4">
+          <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-800 sm:text-2xl">
             <svg
-              className="h-6 w-6 text-blue-600"
+              className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -635,23 +645,23 @@ function Missions() {
               variant="primary"
               title={
                 <div className="flex w-full items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-medium text-blue-800">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800 sm:h-8 sm:w-8 sm:text-sm">
                       {mission.name.charAt(0)}
                     </span>
-                    <span className="text-lg font-semibold text-slate-800">
+                    <span className="text-base font-semibold text-slate-800 sm:text-lg">
                       {mission.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xl font-bold text-blue-700">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <span className="rounded-full bg-blue-50 px-2 py-1 text-base font-bold text-blue-700 sm:px-3 sm:text-xl">
                       {missionTotal(mission.id).toFixed(2)} €
                     </span>
                   </div>
                 </div>
               }
             >
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {companies.map((company) => {
                   const people = company.mobilizedPeople ?? [];
                   const companyTotal = people.reduce(
@@ -664,21 +674,21 @@ function Missions() {
                       variant="secondary"
                       title={
                         <div className="flex w-full items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <span className="inline-flex h-6 w-6 items-center justify-center rounded bg-slate-200 text-xs font-medium text-slate-700">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-slate-200 text-xs font-medium text-slate-700 sm:h-6 sm:w-6">
                               {company.name.charAt(0)}
                             </span>
-                            <span className="font-semibold text-slate-700">
+                            <span className="text-sm font-semibold text-slate-700 sm:text-base">
                               {company.name}
                             </span>
                           </div>
-                          <span className="rounded-full bg-slate-100 px-3 py-1 text-lg font-bold text-slate-700">
+                          <span className="rounded-full bg-slate-100 px-2 py-1 text-sm font-bold text-slate-700 sm:px-3 sm:text-lg">
                             {companyTotal.toFixed(2)} €
                           </span>
                         </div>
                       }
                     >
-                      <div className="space-y-3">
+                      <div className="space-y-2 sm:space-y-3">
                         {people.map((person) => {
                           const days = getDays(
                             mission.id,
@@ -697,22 +707,22 @@ function Missions() {
                               variant="tertiary"
                               title={
                                 <div className="flex w-full items-center justify-between">
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-800">
+                                  <div className="flex items-center gap-2 sm:gap-3">
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-800 sm:h-8 sm:w-8">
                                       {person.name
                                         .split(" ")
                                         .map((n) => n.charAt(0))
                                         .join("")}
                                     </div>
-                                    <span className="font-medium text-slate-700">
+                                    <span className="text-sm font-medium text-slate-700 sm:text-base">
                                       {person.name}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-1 sm:gap-3">
+                                    <div className="flex items-center gap-1 sm:gap-2">
                                       <input
                                         type="number"
-                                        className="w-16 rounded border border-slate-300 px-2 py-1 text-right text-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-400"
+                                        className="w-12 rounded border border-slate-300 px-1 py-1 text-right text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400 sm:w-16 sm:px-2 sm:text-sm"
                                         value={days}
                                         onChange={(e) =>
                                           handleChange(
@@ -724,22 +734,25 @@ function Missions() {
                                         }
                                         disabled={estimating}
                                       />
-                                      <span className="text-xs text-slate-500">
+                                      <span className="hidden text-xs text-slate-500 sm:inline">
                                         jours
                                       </span>
+                                      <span className="text-xs text-slate-500 sm:hidden">
+                                        j
+                                      </span>
                                     </div>
-                                    <div className="rounded bg-slate-50 px-2 py-1 text-sm text-slate-600">
+                                    <div className="rounded bg-slate-50 px-1 py-1 text-xs text-slate-600 sm:px-2 sm:text-sm">
                                       {person.dailyRate ?? 0} €/j
                                     </div>
-                                    <div className="rounded-full bg-amber-50 px-3 py-1 text-lg font-bold text-amber-700">
+                                    <div className="rounded-full bg-amber-50 px-2 py-1 text-sm font-bold text-amber-700 sm:px-3 sm:text-lg">
                                       {cost.toFixed(2)} €
                                     </div>
                                   </div>
                                 </div>
                               }
                             >
-                              <div className="mt-3">
-                                <label className="mb-2 block text-sm font-medium text-slate-600">
+                              <div className="mt-2 sm:mt-3">
+                                <label className="mb-1 block text-xs font-medium text-slate-600 sm:mb-2 sm:text-sm">
                                   Justification du nombre de jours
                                 </label>
                                 <EditableTextArea
@@ -753,7 +766,7 @@ function Missions() {
                                     )
                                   }
                                   placeholder="Expliquez pourquoi ce nombre de jours est nécessaire pour cette mission..."
-                                  className="min-h-[80px] w-full resize-none rounded-lg border border-slate-300 px-3 py-2 focus:border-amber-400 focus:ring-2 focus:ring-amber-400"
+                                  className="min-h-[60px] w-full resize-none rounded-lg border border-slate-300 px-2 py-2 text-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-400 sm:min-h-[80px] sm:px-3"
                                 />
                               </div>
                             </Accordion>
@@ -769,11 +782,11 @@ function Missions() {
         </div>
 
         {/* Total Summary */}
-        <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-50 to-gray-50 p-6 shadow-sm">
-          <div className="flex items-center justify-between">
-            <h3 className="flex items-center gap-2 text-xl font-semibold text-slate-800">
+        <div className="rounded-xl border border-slate-200 bg-gradient-to-r from-slate-50 to-gray-50 p-3 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-800 sm:text-xl">
               <svg
-                className="h-6 w-6 text-slate-600"
+                className="h-5 w-5 text-slate-600 sm:h-6 sm:w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -787,7 +800,7 @@ function Missions() {
               </svg>
               Total général
             </h3>
-            <div className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-3xl font-bold text-slate-800 shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-2xl font-bold text-slate-800 shadow-sm sm:px-6 sm:py-3 sm:text-3xl">
               {allMissionsTotal.toFixed(2)} €
             </div>
           </div>

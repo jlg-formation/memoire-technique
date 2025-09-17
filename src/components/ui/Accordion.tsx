@@ -57,12 +57,12 @@ const Accordion: React.FC<AccordionProps> = ({
   return (
     <div className={styles.container}>
       <div
-        className={`flex cursor-pointer items-center justify-between p-4 font-semibold text-slate-700 transition-all duration-200 ${styles.header} ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}
+        className={`flex cursor-pointer items-center justify-between p-2 font-semibold text-slate-700 transition-all duration-200 sm:p-4 ${styles.header} ${isOpen ? "rounded-t-lg" : "rounded-lg"}`}
         onClick={toggleAccordion}
       >
         {title}
         <svg
-          className={`h-5 w-5 text-slate-500 transition-transform duration-200 ${
+          className={`h-4 w-4 flex-shrink-0 text-slate-500 transition-transform duration-200 sm:h-5 sm:w-5 ${
             isOpen ? "rotate-180" : ""
           }`}
           fill="none"
@@ -80,7 +80,7 @@ const Accordion: React.FC<AccordionProps> = ({
       </div>
       {isOpen && (
         <div
-          className={`p-4 transition-all duration-200 ${styles.content} rounded-b-lg`}
+          className={`p-2 transition-all duration-200 sm:p-4 ${styles.content} rounded-b-lg`}
         >
           {children}
         </div>
