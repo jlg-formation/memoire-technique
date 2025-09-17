@@ -13,7 +13,7 @@
   "dependencies": {
     "localforage": "^1.10.0",
     "lucide-react": "^0.544.0",
-    "openai": "^5.20.2",
+    "openai": "^5.20.3",
     "pdfjs-dist": "^5.4.149",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
