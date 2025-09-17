@@ -22,8 +22,10 @@ function Missions() {
     );
   }
 
-  const missionEstimation: MissionEstimation = currentProject.missions ?? {};
-  const missionNames = Object.keys(missionEstimation);
+  const missionEstimation: MissionEstimation =
+    currentProject.missionEstimations ?? {};
+  const missions = currentProject.missions ?? [];
+  const missionNames = missions.map((m) => m.name);
   const companies = currentProject.participatingCompanies ?? [];
   const worksAmount = currentProject.worksAmount ?? 0;
   const targetAmount = worksAmount * (percentage / 100);
@@ -68,7 +70,7 @@ function Missions() {
         },
       },
     };
-    updateCurrentProject({ missions: updated });
+    updateCurrentProject({ missionEstimations: updated });
   };
 
   const getJustification = (
@@ -97,7 +99,7 @@ function Missions() {
         },
       },
     };
-    updateCurrentProject({ missions: updated });
+    updateCurrentProject({ missionEstimations: updated });
   };
 
   const personCost = (
@@ -132,7 +134,7 @@ function Missions() {
         targetAmount,
       );
       updateCurrentProject({
-        missions: result,
+        missionEstimations: result,
       });
     } catch (err) {
       console.error(err);

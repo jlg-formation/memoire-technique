@@ -32,8 +32,13 @@ export interface NotationItem {
   points: number;
 }
 
+export interface Mission {
+  id: string;
+  name: string;
+}
+
 export type MissionEstimation = {
-  [mission: string]: {
+  [missionId: string]: {
     [companyId: string]: {
       [personId: string]: {
         nombreDeJours: number;
@@ -69,8 +74,10 @@ export interface Project {
   memoHtml?: string;
   /** Barème de la note méthodologique extrait du RC */
   notation?: NotationItem[];
+  /** Liste des missions du projet */
+  missions?: Mission[];
   /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
-  missions?: MissionEstimation;
+  missionEstimations?: MissionEstimation;
   /** Texte résumant les contraintes de planning extraites de l'AE */
   planningSummary?: string;
   /** Planning généré par l'IA en Markdown */

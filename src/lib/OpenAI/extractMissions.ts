@@ -1,6 +1,9 @@
 import createClient from "./client";
+import type { Mission } from "../../types/project";
 
-export default async function extractMissions(text: string): Promise<string[]> {
+export default async function extractMissions(
+  text: string,
+): Promise<Mission[]> {
   const openai = createClient();
   const truncated = text.slice(0, 100000);
   const chat = await openai.chat.completions.create({
@@ -19,7 +22,14 @@ export default async function extractMissions(text: string): Promise<string[]> {
   });
   const content = chat.choices[0].message.content ?? "{}";
   try {
-    return JSON.parse(content).missions as string[];
+    const parsed = JSON.parse(content);
+    const missionNames = parsed.missions as string[];
+
+    // Convertir les noms de missions en objets Mission avec id et nom
+    return missionNames.map((name, index) => ({
+      id: `mission-${index + 1}`,
+      name: name,
+    }));
   } catch {
     console.error("Erreur de parsing JSON", content);
     return [];

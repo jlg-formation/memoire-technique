@@ -1,11 +1,12 @@
 import createClient from "./client";
+import type { Mission } from "../../types/project";
 
 export default async function generatePlanning(
-  missions: string[],
+  missions: Mission[],
   constraints: string,
 ): Promise<string> {
   const openai = createClient();
-  const list = missions.map((m, i) => `${i + 1}. ${m}`).join("\n");
+  const list = missions.map((m, i) => `${i + 1}. ${m.name}`).join("\n");
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
