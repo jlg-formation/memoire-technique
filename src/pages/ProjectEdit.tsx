@@ -3,9 +3,11 @@ import { useProjectStore } from "../store/useProjectStore";
 import { extractPdfText } from "../lib/pdf";
 import { extractDocxText } from "../lib/docx";
 import { extractConsultationInfo } from "../lib/OpenAI";
+import extractMethodologyScores from "../lib/OpenAI/extractMethodologyScores";
 import { ButtonPrimary, ButtonLink } from "../components/ui";
 import { ArrowLeft, Check, Info } from "lucide-react";
 import type { Project } from "../types/project";
+import type { MethodologyScore } from "../lib/OpenAI/extractMethodologyScores";
 
 interface ProjectEditProps {
   project: Project;
@@ -21,6 +23,9 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
   const [worksAmount, setWorksAmount] = useState("");
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
+  const [notation, setNotation] = useState<MethodologyScore[] | undefined>(
+    project.notation,
+  );
 
   // Initialiser les champs avec les données du projet
   useEffect(() => {
@@ -39,6 +44,7 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
       submissionTime: submissionTime || undefined,
       worksAmount: +worksAmount,
       lastUpdateDate: new Date().toISOString(),
+      notation,
     };
     updateProject(updatedProject);
     onClose();
@@ -64,6 +70,9 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
       // Étape 2: Analyse avec OpenAI
       setAnalysisStep("Analyse du contenu avec l'IA...");
       const info = await extractConsultationInfo(text);
+      // Analyse de la notation
+      const extractedNotation = await extractMethodologyScores(text);
+      setNotation(extractedNotation);
 
       // Étape 3: Préremplissage des champs
       setAnalysisStep("Préremplissage des champs...");
@@ -71,6 +80,13 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
       setSubmissionDeadline(info.submissionDeadline ?? "");
       setSubmissionTime(info.submissionTime ?? "");
       setWorksAmount(info.worksAmount?.toString() ?? "");
+      // Met à jour la notation dans le projet
+      updateProject({
+        ...project,
+        ...info,
+        worksAmount: info.worksAmount ? Number(info.worksAmount) : undefined,
+        notation: extractedNotation,
+      });
 
       // Succès
       setAnalysisStep("Analyse terminée avec succès !");

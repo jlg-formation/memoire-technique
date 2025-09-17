@@ -44,29 +44,9 @@ function Equipes() {
     }, companyName);
   };
 
-  const handleEditCompany = (company: ParticipatingCompany): void => {
-    setEditingCompany(company);
-    setCurrentView("edit");
-  };
-
   const handleCloseEdit = (): void => {
     setEditingCompany(null);
     setCurrentView("list");
-  };
-
-  // Fonctions de gestion des personnes mobilisées
-  const handleAddPerson = (company: ParticipatingCompany): void => {
-    setSelectedCompany(company);
-    setCurrentView("person-create");
-  };
-
-  const handleEditPerson = (
-    company: ParticipatingCompany,
-    person: MobilizedPerson,
-  ): void => {
-    setSelectedCompany(company);
-    setEditingPerson(person);
-    setCurrentView("person-edit");
   };
 
   const handleDeletePerson = (

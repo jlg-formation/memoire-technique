@@ -3,7 +3,8 @@ import { useState } from "react";
 import { ButtonLink, ButtonPrimary } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { extractConsultationInfo } from "../lib/OpenAI";
-// import supprimé, la clé est gérée par la fonction utilitaire
+import extractMethodologyScores from "../lib/OpenAI/extractMethodologyScores";
+import type { MethodologyScore } from "../lib/OpenAI/extractMethodologyScores";
 import { useProjectStore } from "../store/useProjectStore";
 
 interface ProjectCreateProps {
@@ -12,14 +13,15 @@ interface ProjectCreateProps {
 
 function ProjectCreate({ onClose }: ProjectCreateProps) {
   const { addProject, setProject } = useProjectStore();
-  // apiKey est maintenant géré par la fonction utilitaire
 
   const [consultationTitle, setConsultationTitle] = useState("");
   const [nomCourt, setNomCourt] = useState("");
   const [submissionDeadline, setSubmissionDeadline] = useState("");
   const [submissionTime, setSubmissionTime] = useState("");
   const [worksAmount, setWorksAmount] = useState("");
-  // Synchronise l'état de traitement avec FileAIUpload
+  const [notation, setNotation] = useState<MethodologyScore[] | undefined>(
+    undefined,
+  );
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
 
@@ -34,6 +36,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
       worksAmount: +worksAmount,
       creationDate: new Date().toISOString(),
       lastUpdateDate: new Date().toISOString(),
+      notation,
     };
     addProject(newProject);
     setProject(newProject);
@@ -74,7 +77,9 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
             onParse={async (text) => {
               setProcessing(true);
               const info = await extractConsultationInfo(text);
-              return info;
+              // Analyse de la notation
+              const notation = await extractMethodologyScores(text);
+              return { ...info, notation };
             }}
             onResult={(result) => {
               const info = result as {
@@ -83,12 +88,17 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
                 submissionDeadline?: string;
                 submissionTime?: string;
                 worksAmount?: number;
+                notation?: MethodologyScore[];
               };
               setConsultationTitle(info.consultationTitle ?? "");
               setNomCourt(info.nomCourt ?? "");
               setSubmissionDeadline(info.submissionDeadline ?? "");
               setSubmissionTime(info.submissionTime ?? "");
               setWorksAmount(info.worksAmount?.toString() ?? "");
+              // Met à jour la notation dans le projet
+              if (info.notation) {
+                setNotation(info.notation);
+              }
               setProcessing(false);
             }}
             status={analysisStep}
