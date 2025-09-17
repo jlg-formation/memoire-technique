@@ -352,6 +352,16 @@ function Missions() {
                 }) + " €"}
           </span>
         </div>
+        <div className="flex items-center gap-4">
+          <label className="font-medium text-blue-900">
+            Pourcentage obtenu après estimation IA&nbsp;:
+          </label>
+          <span className="text-lg font-bold text-blue-800">
+            {estimating
+              ? "..."
+              : ((allMissionsTotal / worksAmount) * 100).toFixed(2) + " %"}
+          </span>
+        </div>
         <AsyncPrimaryButton
           onClick={handleEstimate}
           disabled={estimating}
