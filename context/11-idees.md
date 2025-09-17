@@ -11,6 +11,8 @@ Une mission doit avoir aussi un descriptif. Il doit etre dans le CCTP.
 
 Faire un diagramme de barre avec les pourcentages obtenues et desires.
 
+Gerer des spinners pour les estimations. Faire des boutons pour regenerer l'estimation par mission.
+
 ## Planning
 
 ## Insertion photo visite
@@ -24,3 +26,5 @@ l'utilisateur ecrit en petit negre puis l'IA reformule.
 l'utilisateur ecrit en petit negre ses commentaire et l'IA reformule
 
 ## Generation Memoire
+
+en markdown, en docx à partir d'un template.
