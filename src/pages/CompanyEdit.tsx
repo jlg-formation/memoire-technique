@@ -6,6 +6,7 @@ import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
 import { useProjectStore } from "../store/useProjectStore";
 import { executeDeleteAction } from "../lib/critical-actions";
+import { uniqueSlug } from "../lib/strings/slugify";
 import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
 import MobilizedPersonCreate from "./MobilizedPersonCreate";
 import MobilizedPersonEdit from "./MobilizedPersonEdit";
@@ -109,25 +110,22 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Toujours prendre la version la plus à jour de mobilizedPeople
-    const updatedCompany: ParticipatingCompany = {
+    // Générer un slug unique à partir du nom modifié
+    const otherSlugs = companies
+      .filter((c) => c.id !== company.id)
+      .map((c) => c.slug ?? "");
+    const newSlug = uniqueSlug(companyName, otherSlugs);
+    const updatedCompany = {
       ...currentCompany,
       name: companyName,
+      slug: newSlug,
       presentationSummary,
       equipmentText,
     };
-
     const updatedCompanies = companies.map((c) =>
       c.id === company.id ? updatedCompany : c,
     );
-
-    const updatedProject: Partial<typeof currentProject> = {
-      participatingCompanies: updatedCompanies,
-    };
-
-    // La gestion du mandataire est déplacée dans Equipes.tsx
-
-    updateCurrentProject(updatedProject);
+    updateCurrentProject({ participatingCompanies: updatedCompanies });
     onClose();
   };
 

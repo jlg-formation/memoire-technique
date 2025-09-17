@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
+import { uniqueSlug } from "../lib/strings/slugify";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 interface MobilizedPersonCreateProps {
@@ -24,8 +25,13 @@ function MobilizedPersonCreate({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const existingSlugs = (company.mobilizedPeople ?? []).map(
+      (p) => p.slug ?? "",
+    );
+    const slug = uniqueSlug(personName, existingSlugs);
     const newPerson: MobilizedPerson = {
       id: crypto.randomUUID(),
+      slug,
       name: personName,
       dailyRate,
       cvText: cvText || undefined,
@@ -33,7 +39,6 @@ function MobilizedPersonCreate({
     };
 
     onSave(newPerson);
-    onClose();
   };
 
   return (

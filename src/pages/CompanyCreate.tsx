@@ -4,6 +4,7 @@ import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
+import { uniqueSlug } from "../lib/strings/slugify";
 import { useProjectStore } from "../store/useProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 
@@ -27,8 +28,11 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const existingSlugs = companies.map((c) => c.slug ?? "");
+    const slug = uniqueSlug(companyName, existingSlugs);
     const newCompany: ParticipatingCompany = {
       id: crypto.randomUUID(),
+      slug,
       name: companyName,
       presentationSummary,
       equipmentText,

@@ -41,7 +41,7 @@ function MobilizedPersonEdit({
     };
 
     onSave(updatedPerson);
-    onClose();
+    // onClose(); // supprimé pour éviter la double navigation
   };
 
   return (

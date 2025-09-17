@@ -10,6 +10,10 @@ import Memoire from "./pages/Memoire";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
 import { ButtonLink } from "./components/ui";
+import CompanyEditRoute from "./pages/CompanyEditRoute";
+import MobilizedPersonCreateRoute from "./pages/MobilizedPersonCreateRoute";
+import MobilizedPersonEditRoute from "./pages/MobilizedPersonEditRoute";
+import CompanyCreateRoute from "./pages/CompanyCreateRoute";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -42,12 +46,28 @@ function App() {
             />
             <Route path="/projects" element={<Projects />} />
             <Route path="/equipes" element={<Equipes />} />
+            <Route
+              path="/equipes/entreprise/:companySlug/edit"
+              element={<CompanyEditRoute />}
+            />
+            <Route
+              path="/equipes/entreprise/:companySlug/personne/ajouter"
+              element={<MobilizedPersonCreateRoute />}
+            />
+            <Route
+              path="/equipes/entreprise/:companySlug/personne/:personSlug/edit"
+              element={<MobilizedPersonEditRoute />}
+            />
             <Route path="/documents" element={<MarketDocs />} />
             <Route path="/memoire" element={<Memoire />} />
             <Route path="/missions" element={<Missions />} />
             <Route path="/planning" element={<Planning />} />
             <Route path="/notation" element={<Notation />} />
             <Route path="/parametres" element={<Settings />} />
+            <Route
+              path="/equipes/entreprise/create"
+              element={<CompanyCreateRoute />}
+            />
           </Routes>
         </div>
       </div>

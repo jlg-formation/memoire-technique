@@ -8,8 +8,10 @@ import MobilizedPersonCreate from "./MobilizedPersonCreate";
 import MobilizedPersonEdit from "./MobilizedPersonEdit";
 import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
 import { Plus, Building2, Trash2, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Equipes() {
+  const navigate = useNavigate();
   const { currentProject, updateCurrentProject } = useProjectStore();
 
   const [currentView, setCurrentView] = useState<
@@ -178,7 +180,7 @@ function Equipes() {
         {/* Action Buttons */}
         <div className="mb-6 flex flex-wrap gap-3">
           <ButtonPrimary
-            onClick={() => setCurrentView("create")}
+            onClick={() => navigate("/equipes/entreprise/create")}
             className="flex items-center gap-2"
           >
             <Plus className="h-5 w-5" />
@@ -199,7 +201,7 @@ function Equipes() {
               Ajoutez votre première entreprise pour commencer.
             </p>
             <ButtonPrimary
-              onClick={() => setCurrentView("create")}
+              onClick={() => navigate("/equipes/entreprise/create")}
               className="inline-flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
@@ -216,7 +218,9 @@ function Equipes() {
                 {/* Partie haute cliquable pour édition */}
                 <div
                   className="-m-2 flex-1 cursor-pointer rounded-md p-2 transition-colors hover:bg-gray-50"
-                  onClick={() => handleEditCompany(company)}
+                  onClick={() =>
+                    navigate(`/equipes/entreprise/${company.slug}/edit`)
+                  }
                 >
                   <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
                     {company.name}
@@ -244,7 +248,9 @@ function Equipes() {
                     <ButtonLink
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleAddPerson(company);
+                        navigate(
+                          `/equipes/entreprise/${company.slug}/personne/ajouter`,
+                        );
                       }}
                       className="flex items-center gap-1 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50"
                     >
@@ -261,7 +267,11 @@ function Equipes() {
                         <div
                           key={person.id}
                           className="flex cursor-pointer items-center justify-between rounded-md bg-gray-50 p-2 transition-colors hover:bg-gray-100"
-                          onClick={() => handleEditPerson(company, person)}
+                          onClick={() =>
+                            navigate(
+                              `/equipes/entreprise/${company.slug}/personne/${person.slug}/edit`,
+                            )
+                          }
                         >
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-xs font-medium text-gray-900">

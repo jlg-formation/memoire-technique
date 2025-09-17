@@ -1,5 +1,6 @@
 export interface MobilizedPerson {
   id: string;
+  slug?: string; // slug lisible pour l'URL
   name: string;
   /** Taux journalier hors taxes en euros */
   dailyRate?: number;
@@ -9,6 +10,7 @@ export interface MobilizedPerson {
 
 export interface ParticipatingCompany {
   id: string;
+  slug?: string; // slug lisible pour l'URL
   name: string;
   presentationText?: string;
   presentationSummary?: string;
