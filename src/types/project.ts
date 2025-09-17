@@ -56,6 +56,8 @@ export interface Project {
   worksAmount?: number;
   creationDate: string;
   lastUpdateDate: string;
+  /** Slug lisible pour l'URL */
+  slug: string;
   groupType?: "solidaire" | "conjoint" | "seule";
   participatingCompanies?: ParticipatingCompany[];
   mandataireId?: string;

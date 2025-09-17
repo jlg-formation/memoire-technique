@@ -5,6 +5,7 @@ import FileAIUpload from "../components/ui/FileAIUpload";
 import { extractConsultationInfo } from "../lib/OpenAI";
 import extractMethodologyScores from "../lib/OpenAI/extractMethodologyScores";
 import type { MethodologyScore } from "../lib/OpenAI/extractMethodologyScores";
+import { uniqueSlug } from "../lib/strings/slugify";
 import { useProjectStore } from "../store/useProjectStore";
 
 interface ProjectCreateProps {
@@ -12,7 +13,7 @@ interface ProjectCreateProps {
 }
 
 function ProjectCreate({ onClose }: ProjectCreateProps) {
-  const { addProject, setProject } = useProjectStore();
+  const { addProject, setProject, projects } = useProjectStore();
 
   const [consultationTitle, setConsultationTitle] = useState("");
   const [nomCourt, setNomCourt] = useState("");
@@ -27,6 +28,10 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Génère un slug unique à partir du nom court ou du titre
+    const baseSlug = nomCourt || consultationTitle;
+    const existingSlugs = projects.map((p) => p.slug);
+    const slug = uniqueSlug(baseSlug, existingSlugs);
     const newProject = {
       id: crypto.randomUUID(),
       consultationTitle,
@@ -37,6 +42,7 @@ function ProjectCreate({ onClose }: ProjectCreateProps) {
       creationDate: new Date().toISOString(),
       lastUpdateDate: new Date().toISOString(),
       notation,
+      slug,
     };
     addProject(newProject);
     setProject(newProject);

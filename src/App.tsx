@@ -2,11 +2,12 @@ import { Routes, Route } from "react-router";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Projects from "./pages/Projects";
+import ProjectCreate from "./pages/ProjectCreate";
+import ProjectEditRoute from "./pages/ProjectEditRoute";
 import Equipes from "./pages/Equipes";
 import MarketDocs from "./pages/MarketDocs";
 import Missions from "./pages/Missions";
 import Planning from "./pages/Planning";
-import Memoire from "./pages/Memoire";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
 import { ButtonLink } from "./components/ui";
@@ -45,6 +46,14 @@ function App() {
               }
             />
             <Route path="/projects" element={<Projects />} />
+            <Route
+              path="/projects/create"
+              element={<ProjectCreate onClose={() => window.history.back()} />}
+            />
+            <Route
+              path="/projects/:projectSlug/edit"
+              element={<ProjectEditRoute />}
+            />
             <Route path="/equipes" element={<Equipes />} />
             <Route
               path="/equipes/entreprise/:companySlug/edit"
@@ -59,7 +68,6 @@ function App() {
               element={<MobilizedPersonEditRoute />}
             />
             <Route path="/documents" element={<MarketDocs />} />
-            <Route path="/memoire" element={<Memoire />} />
             <Route path="/missions" element={<Missions />} />
             <Route path="/planning" element={<Planning />} />
             <Route path="/notation" element={<Notation />} />

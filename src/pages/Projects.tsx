@@ -7,8 +7,7 @@ import {
 } from "../lib/export";
 import { executeDeleteAction } from "../lib/critical-actions";
 import type { Project } from "../types/project";
-import ProjectCreate from "./ProjectCreate";
-import ProjectEdit from "./ProjectEdit";
+import { useNavigate } from "react-router-dom";
 import ProjectImport from "./ProjectImport";
 import {
   ButtonPrimary,
@@ -31,11 +30,12 @@ import {
 function Projects() {
   const { projects, currentProject, deleteProject, setProject } =
     useProjectStore();
+  const navigate = useNavigate();
 
   const [currentView, setCurrentView] = useState<
     "list" | "create" | "import" | "edit"
   >("list");
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  // Suppression de editingProject, non utilisé
 
   const handleExportJSON = (project: Project): void => {
     const json = exportProjectJSON(project);
@@ -49,22 +49,10 @@ function Projects() {
   };
 
   const handleEditProject = (project: Project): void => {
-    setEditingProject(project);
-    setCurrentView("edit");
+    navigate(`/projects/${project.slug}/edit`);
   };
 
-  const handleCloseEdit = (): void => {
-    setEditingProject(null);
-    setCurrentView("list");
-  };
-
-  if (currentView === "create") {
-    return <ProjectCreate onClose={() => setCurrentView("list")} />;
-  }
-
-  if (currentView === "edit" && editingProject) {
-    return <ProjectEdit project={editingProject} onClose={handleCloseEdit} />;
-  }
+  // Suppression de handleCloseEdit, non utilisé
 
   if (currentView === "import") {
     return <ProjectImport onClose={() => setCurrentView("list")} />;
@@ -83,7 +71,7 @@ function Projects() {
         {/* Action Buttons */}
         <div className="mb-6 flex flex-wrap gap-3">
           <ButtonPrimary
-            onClick={() => setCurrentView("create")}
+            onClick={() => navigate("/projects/create")}
             className="flex items-center gap-2"
           >
             <Plus className="h-5 w-5" />
