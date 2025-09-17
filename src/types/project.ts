@@ -32,15 +32,16 @@ export interface NotationItem {
   points: number;
 }
 
-export type MissionDays = Record<
-  string,
-  Record<string, Record<string, number>>
->;
-
-export type MissionJustifications = Record<
-  string,
-  Record<string, Record<string, string>>
->;
+export type MissionEstimation = {
+  [mission: string]: {
+    [companyId: string]: {
+      [personId: string]: {
+        nombreDeJours: number;
+        justification: string;
+      };
+    };
+  };
+};
 
 export interface Project {
   id: string;
@@ -68,12 +69,8 @@ export interface Project {
   memoHtml?: string;
   /** Barème de la note méthodologique extrait du RC */
   notation?: NotationItem[];
-  /** Missions demandées dans l'acte d'engagement */
-  missions?: string[];
-  /** Jours alloués par mission, entreprise et personne mobilisée */
-  missionDays?: MissionDays;
-  /** Justification du nombre de jours par mission, entreprise et personne */
-  missionJustifications?: MissionJustifications;
+  /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
+  missions?: MissionEstimation;
   /** Texte résumant les contraintes de planning extraites de l'AE */
   planningSummary?: string;
   /** Planning généré par l'IA en Markdown */

@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 // import supprimé, la clé est gérée par la fonction utilitaire
-import { estimateMissionDays } from "../lib/OpenAI";
+import { estimateMissionDaysTest } from "../lib/OpenAI";
 import type {
-  MissionDays,
-  MissionJustifications,
+  MissionEstimation,
   ParticipatingCompany,
   MobilizedPerson,
 } from "../types/project";
@@ -23,7 +22,8 @@ function Missions() {
     );
   }
 
-  const missions = currentProject.missions ?? [];
+  const missionEstimation: MissionEstimation = currentProject.missions ?? {};
+  const missionNames = Object.keys(missionEstimation);
   const companies = currentProject.participatingCompanies ?? [];
   const worksAmount = currentProject.worksAmount ?? 0;
   const targetAmount = worksAmount * (percentage / 100);
@@ -42,15 +42,12 @@ function Missions() {
       </div>
     );
   }
-  const missionDays: MissionDays = currentProject.missionDays ?? {};
-  const missionJustifications: MissionJustifications =
-    currentProject.missionJustifications ?? {};
-
   const getDays = (
     mission: string,
     companyId: string,
     personId: string,
-  ): number => missionDays[mission]?.[companyId]?.[personId] ?? 0;
+  ): number =>
+    missionEstimation[mission]?.[companyId]?.[personId]?.nombreDeJours ?? 0;
 
   const handleChange = (
     mission: string,
@@ -58,24 +55,28 @@ function Missions() {
     personId: string,
     days: number,
   ): void => {
-    const updated: MissionDays = {
-      ...missionDays,
+    const updated: MissionEstimation = {
+      ...missionEstimation,
       [mission]: {
-        ...(missionDays[mission] ?? {}),
+        ...(missionEstimation[mission] ?? {}),
         [companyId]: {
-          ...(missionDays[mission]?.[companyId] ?? {}),
-          [personId]: days,
+          ...(missionEstimation[mission]?.[companyId] ?? {}),
+          [personId]: {
+            ...(missionEstimation[mission]?.[companyId]?.[personId] ?? {}),
+            nombreDeJours: days,
+          },
         },
       },
     };
-    updateCurrentProject({ missionDays: updated });
+    updateCurrentProject({ missions: updated });
   };
 
   const getJustification = (
     mission: string,
     companyId: string,
     personId: string,
-  ): string => missionJustifications[mission]?.[companyId]?.[personId] ?? "";
+  ): string =>
+    missionEstimation[mission]?.[companyId]?.[personId]?.justification ?? "";
 
   const handleJustificationChange = (
     mission: string,
@@ -83,17 +84,20 @@ function Missions() {
     personId: string,
     text: string,
   ): void => {
-    const updated: MissionJustifications = {
-      ...missionJustifications,
+    const updated: MissionEstimation = {
+      ...missionEstimation,
       [mission]: {
-        ...(missionJustifications[mission] ?? {}),
+        ...(missionEstimation[mission] ?? {}),
         [companyId]: {
-          ...(missionJustifications[mission]?.[companyId] ?? {}),
-          [personId]: text,
+          ...(missionEstimation[mission]?.[companyId] ?? {}),
+          [personId]: {
+            ...(missionEstimation[mission]?.[companyId]?.[personId] ?? {}),
+            justification: text,
+          },
         },
       },
     };
-    updateCurrentProject({ missionJustifications: updated });
+    updateCurrentProject({ missions: updated });
   };
 
   const personCost = (
@@ -113,7 +117,7 @@ function Missions() {
     }, 0);
   };
 
-  const allMissionsTotal = missions.reduce(
+  const allMissionsTotal = missionNames.reduce(
     (sum, m) => sum + missionTotal(m),
     0,
   );
@@ -122,14 +126,13 @@ function Missions() {
     setEstimating(true);
     try {
       // On transmet le montant cible à l'IA via le prompt
-      const result = await estimateMissionDays(
-        missions,
+      const result = await estimateMissionDaysTest(
+        missionNames,
         companies,
         targetAmount,
       );
       updateCurrentProject({
-        missionDays: result.missionDays,
-        missionJustifications: result.missionJustifications,
+        missions: result,
       });
     } catch (err) {
       console.error(err);
@@ -137,7 +140,7 @@ function Missions() {
     setEstimating(false);
   };
 
-  if (!missions.length || !companies.length) {
+  if (!missionNames.length || !companies.length) {
     return (
       <div className="space-y-4 p-4">
         <h1 className="text-xl font-bold">Missions</h1>
@@ -241,7 +244,7 @@ function Missions() {
         </AsyncPrimaryButton>
       </div>
       {/* ...reste inchangé... */}
-      {missions.map((mission) => (
+      {missionNames.map((mission) => (
         <div key={mission} className="space-y-2 border p-2">
           <h2 className="font-semibold">{mission}</h2>
           {companies.map((company) => {
