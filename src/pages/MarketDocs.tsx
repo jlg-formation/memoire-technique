@@ -74,7 +74,20 @@ function MarketDocs() {
   };
 
   const handleDelete = (id: string): void => {
-    updateCurrentProject({ marketDocuments: docs.filter((d) => d.id !== id) });
+    const docToDelete = docs.find((doc) => doc.id === id);
+    const updatedDocs = docs.filter((d) => d.id !== id);
+
+    // Si on supprime l'Acte d'Engagement, on efface aussi les missions et le planning
+    if (docToDelete?.type === "AE") {
+      updateCurrentProject({
+        marketDocuments: updatedDocs,
+        missions: [],
+        planningSummary: "",
+        missionEstimations: {},
+      });
+    } else {
+      updateCurrentProject({ marketDocuments: updatedDocs });
+    }
   };
 
   const documentTypes = [

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 // import supprimé, la clé est gérée par la fonction utilitaire
-import { estimateMissionDaysTest } from "../lib/OpenAI";
+import { estimateMissionDays } from "../lib/OpenAI";
 import type {
   MissionEstimation,
   ParticipatingCompany,
@@ -18,7 +18,47 @@ function Missions() {
 
   if (!currentProject) {
     return (
-      <div className="p-4 text-red-500">Veuillez sélectionner un projet.</div>
+      <div className="space-y-4 p-4">
+        <h1 className="text-xl font-bold">Missions</h1>
+        {/* Panneau bleu d'information toujours visible */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <div className="flex items-start gap-3">
+            <svg
+              className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                d="M12 16v-4m0-4h.01"
+              />
+            </svg>
+            <div className="space-y-2">
+              <h3 className="font-medium text-blue-900">Source des missions</h3>
+              <p className="text-sm text-blue-800">
+                Les missions ci-dessous sont extraites automatiquement de l'
+                <strong>Acte d'Engagement (AE)</strong> que vous fournissez dans
+                la section "Pièces de marché".
+                <br />
+                Pour mettre à jour la liste des missions, importez ou remplacez
+                l'Acte d'Engagement.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="text-red-500">Veuillez sélectionner un projet.</div>
+      </div>
     );
   }
 
@@ -35,12 +75,52 @@ function Missions() {
 
   if (missingRates.length) {
     return (
-      <div className="space-y-2 p-4 text-red-500">
-        {missingRates.map((p) => (
-          <div key={p.id}>
-            Aller dans la page Equipes pour indiquer un TUJ pour {p.name}
+      <div className="space-y-4 p-4">
+        <h1 className="text-xl font-bold">Missions</h1>
+        {/* Panneau bleu d'information toujours visible */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <div className="flex items-start gap-3">
+            <svg
+              className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                d="M12 16v-4m0-4h.01"
+              />
+            </svg>
+            <div className="space-y-2">
+              <h3 className="font-medium text-blue-900">Source des missions</h3>
+              <p className="text-sm text-blue-800">
+                Les missions ci-dessous sont extraites automatiquement de l'
+                <strong>Acte d'Engagement (AE)</strong> que vous fournissez dans
+                la section "Pièces de marché".
+                <br />
+                Pour mettre à jour la liste des missions, importez ou remplacez
+                l'Acte d'Engagement.
+              </p>
+            </div>
           </div>
-        ))}
+        </div>
+        <div className="space-y-2 text-red-500">
+          {missingRates.map((p) => (
+            <div key={p.id}>
+              Aller dans la page Equipes pour indiquer un TUJ pour {p.name}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -128,7 +208,7 @@ function Missions() {
     setEstimating(true);
     try {
       // On transmet le montant cible à l'IA via le prompt
-      const result = await estimateMissionDaysTest(
+      const result = await estimateMissionDays(
         missionNames,
         companies,
         targetAmount,
@@ -146,6 +226,43 @@ function Missions() {
     return (
       <div className="space-y-4 p-4">
         <h1 className="text-xl font-bold">Missions</h1>
+        {/* Panneau bleu d'information toujours visible */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <div className="flex items-start gap-3">
+            <svg
+              className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="2"
+                fill="none"
+              />
+              <path
+                stroke="currentColor"
+                strokeWidth="2"
+                d="M12 16v-4m0-4h.01"
+              />
+            </svg>
+            <div className="space-y-2">
+              <h3 className="font-medium text-blue-900">Source des missions</h3>
+              <p className="text-sm text-blue-800">
+                Les missions ci-dessous sont extraites automatiquement de l'
+                <strong>Acte d'Engagement (AE)</strong> que vous fournissez dans
+                la section "Pièces de marché".
+                <br />
+                Pour mettre à jour la liste des missions, importez ou remplacez
+                l'Acte d'Engagement.
+              </p>
+            </div>
+          </div>
+        </div>
         <div>Aucune mission ou entreprise détectée.</div>
       </div>
     );
@@ -154,10 +271,9 @@ function Missions() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-xl font-bold">Missions</h1>
-      {/* Encadré d'information sur la source des missions */}
+      {/* Panneau bleu d'information toujours visible */}
       <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
         <div className="flex items-start gap-3">
-          {/* Icône d'information, style similaire à Notation */}
           <svg
             className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600"
             xmlns="http://www.w3.org/2000/svg"
