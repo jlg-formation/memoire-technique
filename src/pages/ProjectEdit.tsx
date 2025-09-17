@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
+import FileAIUpload from "../components/ui/FileAIUpload";
 import { useProjectStore } from "../store/useProjectStore";
-import { extractPdfText } from "../lib/pdf";
-import { extractDocxText } from "../lib/docx";
 import { extractConsultationInfo } from "../lib/OpenAI";
 import extractMethodologyScores from "../lib/OpenAI/extractMethodologyScores";
 import { ButtonPrimary, ButtonLink } from "../components/ui";
-import { ArrowLeft, Check, Info } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { Project } from "../types/project";
 import type { MethodologyScore } from "../lib/OpenAI/extractMethodologyScores";
 
@@ -50,55 +49,36 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
     onClose();
   };
 
-  const handleRCFileChange = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ): Promise<void> => {
-    const file = e.target.files?.[0];
-    if (!file) {
-      return;
-    }
-
+  // Utilisation de FileAIUpload pour l'import RC
+  const handleParse = async (text: string) => {
     setProcessing(true);
+    setAnalysisStep("Analyse du contenu avec l'IA...");
+    const info = await extractConsultationInfo(text);
+    const extractedNotation = await extractMethodologyScores(text);
+    return { ...info, extractedNotation };
+  };
 
-    try {
-      // Étape 1: Extraction du texte
-      setAnalysisStep("Extraction du contenu du fichier...");
-      const text = file.name.toLowerCase().endsWith(".docx")
-        ? await extractDocxText(file)
-        : await extractPdfText(file);
-
-      // Étape 2: Analyse avec OpenAI
-      setAnalysisStep("Analyse du contenu avec l'IA...");
-      const info = await extractConsultationInfo(text);
-      // Analyse de la notation
-      const extractedNotation = await extractMethodologyScores(text);
-      setNotation(extractedNotation);
-
-      // Étape 3: Préremplissage des champs
-      setAnalysisStep("Préremplissage des champs...");
-      setConsultationTitle(info.consultationTitle ?? "");
-      setSubmissionDeadline(info.submissionDeadline ?? "");
-      setSubmissionTime(info.submissionTime ?? "");
-      setWorksAmount(info.worksAmount?.toString() ?? "");
-      // Met à jour la notation dans le projet
-      updateProject({
-        ...project,
-        ...info,
-        worksAmount: info.worksAmount ? Number(info.worksAmount) : undefined,
-        notation: extractedNotation,
-      });
-
-      // Succès
-      setAnalysisStep("Analyse terminée avec succès !");
-      setTimeout(() => setAnalysisStep(""), 2000);
-    } catch (err) {
-      console.error("Erreur lors de l'analyse:", err);
-      setAnalysisStep("Erreur lors de l'analyse du fichier");
-      setTimeout(() => setAnalysisStep(""), 3000);
-    } finally {
-      setProcessing(false);
-      e.target.value = "";
-    }
+  type RCAnalysisResult = {
+    consultationTitle?: string;
+    submissionDeadline?: string;
+    submissionTime?: string;
+    worksAmount?: number;
+    extractedNotation?: MethodologyScore[];
+  };
+  const handleResult = (result: unknown) => {
+    const info = result as RCAnalysisResult;
+    setConsultationTitle(info.consultationTitle ?? "");
+    setSubmissionDeadline(info.submissionDeadline ?? "");
+    setSubmissionTime(info.submissionTime ?? "");
+    setWorksAmount(info.worksAmount?.toString() ?? "");
+    setNotation(info.extractedNotation ?? notation);
+    updateProject({
+      ...project,
+      ...info,
+      worksAmount: info.worksAmount ? Number(info.worksAmount) : undefined,
+      notation: info.extractedNotation ?? notation,
+    });
+    setProcessing(false);
   };
 
   return (
@@ -131,58 +111,14 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
           Importez votre règlement de consultation pour extraire automatiquement
           le titre et la date limite de soumission.
         </p>
-
-        <div className="space-y-3">
-          <div className="relative">
-            <input
-              type="file"
-              accept=".pdf,.docx"
-              onChange={handleRCFileChange}
-              disabled={processing}
-              className="w-full cursor-pointer rounded-md border border-blue-200 bg-white p-3 text-xs file:mr-4 file:cursor-pointer file:rounded-md file:border-0 file:bg-blue-600 file:px-4 file:py-2 file:text-white disabled:cursor-not-allowed disabled:bg-gray-100 sm:text-sm"
-            />
-          </div>
-
-          {/* Status message container with fixed height to prevent CLS */}
-          <div className="min-h-[52px] sm:min-h-[60px]">
-            {processing && (
-              <div className="flex items-center gap-2 rounded-md bg-blue-100 p-2 sm:gap-3 sm:p-3">
-                {/* Spinner */}
-                <div className="flex-shrink-0">
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-t-transparent sm:h-5 sm:w-5"></div>
-                </div>
-
-                {/* Message d'étape */}
-                <div className="text-xs text-blue-800 sm:text-sm">
-                  {analysisStep || "Traitement en cours..."}
-                </div>
-              </div>
-            )}
-
-            {!processing && analysisStep && (
-              <div className="flex items-center gap-2 rounded-md bg-green-100 p-2 sm:gap-3 sm:p-3">
-                <div className="flex-shrink-0">
-                  <Check className="h-4 w-4 text-green-600 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-xs text-green-800 sm:text-sm">
-                  {analysisStep}
-                </div>
-              </div>
-            )}
-
-            {!processing && !analysisStep && (
-              <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2 sm:gap-3 sm:p-3">
-                <div className="flex-shrink-0">
-                  <Info className="h-4 w-4 text-gray-400 sm:h-5 sm:w-5" />
-                </div>
-                <div className="text-xs text-gray-600 sm:text-sm">
-                  Une fois sélectionné, le fichier sera analysé automatiquement
-                  par l'IA pour extraire les informations.
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <FileAIUpload
+          disabled={processing}
+          onParse={handleParse}
+          onResult={handleResult}
+          status={analysisStep}
+          setStatus={setAnalysisStep}
+          label="Joindre le RC (.pdf ou .docx)"
+        />
       </div>
 
       {/* Form */}

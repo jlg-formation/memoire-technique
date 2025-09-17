@@ -96,12 +96,7 @@ function MarketDocs() {
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
     },
-    {
-      type: "RC",
-      label: "Règlement de Consultation",
-      bgColor: "bg-yellow-50",
-      borderColor: "border-yellow-200",
-    },
+    // RC supprimé car déjà traité lors de la création/édition du projet
   ] as const;
 
   const renderDocumentSection = (
