@@ -1,3 +1,4 @@
+import type { ChatCompletionMessageParam } from "openai/resources";
 import { useIAHistoryStore } from "../../store/useIAHistoryStore";
 import type {
   Mission,
@@ -87,8 +88,10 @@ IMPORTANT : Respecte strictement les contraintes suivantes :
 - Évite d'attribuer zéro jour à une personne mobilisée, sauf si cela est clairement justifié par un manque de pertinence ou de compétence pour la mission.
 - Fournis des justifications détaillées pour chaque attribution, en mentionnant les compétences, l'expérience ou la pertinence de chaque personne pour la mission.
 - Dans les justifications, mentionne toujours le prénom et le nom complet de chaque salarié mobilisé. Évite les familiarités ou les formulations informelles.
-- L'architecte responsable du cabinet d'architecture doit facturer au moins une journée de coordination sur chaque mission, car il est le garant de la communication avec le maître d'ouvrage (MOA).
+- Les représentants des entreprises doivent être préférés aux autres personnes mobilisées pour les missions, car ils sont les interlocuteurs principaux.
+- Pour l'entreprise mandataire d'un groupement, l'architecte doit être priorisé pour les missions de coordination et de communication avec le maître d'ouvrage (MOA).`;
 
+  userPrompt += `
 Pour t'aider dans le chiffrage, voici une répartition moyenne des rémunérations dans une mission complète de maîtrise d’œuvre loi MOP :
 
 - ESQ : 5 % (si incluse)
@@ -164,19 +167,21 @@ Réponds au format JSON suivant :
 };
 `;
 
+  const messages: ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content: `Tu es un économiste de la construction.
+Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification détaillée.`,
+    },
+    {
+      role: "user",
+      content: userPrompt,
+    },
+  ];
+
   const response = await openai.chat.completions.create({
     model: "gpt-4o-2024-08-06",
-    messages: [
-      {
-        role: "system",
-        content: `Tu es un économiste de la construction.
-Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification détaillée.`,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
+    messages: messages,
     response_format: responseFormat,
   });
 
@@ -240,6 +245,39 @@ Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entrepri
     return estimation;
   };
 
+  // Ajout d'une contrainte pour garantir qu'au moins deux personnes sont affectées par mission
+  userPrompt += `
+IMPORTANT : Respecte strictement les contraintes suivantes :
+- Chaque mission doit avoir au moins deux personnes affectées, sauf si aucune autre personne n'est disponible ou pertinente pour la mission.
+`;
+
+  const ensureMinimumTwoPeoplePerMission = (
+    estimation: MissionDayEstimation,
+    companies: ParticipatingCompany[],
+  ): MissionDayEstimation => {
+    Object.entries(estimation).forEach(([, mission]) => {
+      Object.entries(mission).forEach(([companyId, company]) => {
+        const people = Object.keys(company);
+        if (people.length < 2) {
+          const availablePeople =
+            companies.find((c) => c.id === companyId)?.mobilizedPeople ?? [];
+          const additionalPeople = availablePeople.filter(
+            (p) => !people.includes(p.id),
+          );
+
+          if (additionalPeople.length > 0) {
+            const personToAdd = additionalPeople[0];
+            company[personToAdd.id] = {
+              nombreDeJours: 1, // Affectation minimale
+              justification: `Ajout pour respecter la contrainte de deux personnes par mission.`,
+            };
+          }
+        }
+      });
+    });
+    return estimation;
+  };
+
   let responseObj = JSON.parse(content);
 
   const totalAmount = calculateTotalAmount(responseObj);
@@ -247,18 +285,11 @@ Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entrepri
     responseObj = adjustDaysToTarget(responseObj, targetAmount);
   }
 
+  responseObj = ensureMinimumTwoPeoplePerMission(responseObj, companies);
+
   useIAHistoryStore.getState().addEntry({
     timestamp: Date.now(),
-    messages: [
-      {
-        role: "system",
-        content: `Tu es un économiste de la construction.\nPour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.`,
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
+    messages: messages,
     response: responseObj,
     context: "estimateMissionDays",
   });

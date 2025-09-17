@@ -246,10 +246,10 @@ function Equipes() {
                       {company.mobilizedPeople.map((person) => (
                         <div
                           key={person.id}
-                          className={`flex cursor-pointer items-center justify-between rounded-md p-2 transition-colors hover:bg-gray-100 ${
+                          className={`flex cursor-pointer items-center justify-between rounded-md p-2 transition-colors ${
                             company.representativeId === person.id
-                              ? "bg-green-100"
-                              : "bg-gray-50"
+                              ? "bg-green-100 hover:bg-green-200"
+                              : "bg-gray-50 hover:bg-gray-100"
                           }`}
                           onClick={() =>
                             navigate(
