@@ -3,6 +3,7 @@ import type {
   ParticipatingCompany,
   MobilizedPerson,
 } from "../../types/project";
+import type { ChatCompletionMessageParam } from "openai/resources";
 
 export interface MissionDayEstimation {
   missionDays: Record<string, Record<string, Record<string, number>>>;
@@ -34,19 +35,23 @@ export default async function estimateMissionDays(
   }
   userPrompt += `\n\nRéponds uniquement en JSON au format {"missionDays": {"mission": {"companyId": {"personId": nombre}}}, "missionJustifications": {"mission": {"companyId": {"personId": "justification"}}}}`;
 
+  const messages: ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content:
+        "Tu es un économiste de la construction. Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.",
+    },
+    {
+      role: "user",
+      content: userPrompt,
+    },
+  ];
+
+  console.log("messages: ", messages);
+
   const chat = await openai.chat.completions.create({
     model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content:
-          "Tu es un économiste de la construction. Pour chaque mission et chaque personne mobilisée, propose un nombre de jours et une justification brève.",
-      },
-      {
-        role: "user",
-        content: userPrompt,
-      },
-    ],
+    messages,
     response_format: { type: "json_object" },
   });
 

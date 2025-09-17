@@ -200,12 +200,12 @@ function Missions() {
           <input
             id="percentage"
             type="number"
-            min={1}
+            min={0.001}
             max={100}
-            step={0.1}
+            step={0.001}
             value={percentage}
             onChange={(e) => setPercentage(Number(e.target.value))}
-            className="w-20 border p-1 text-right"
+            className="w-24 border p-1 text-right"
           />
           <span className="text-green-800">%</span>
         </div>
