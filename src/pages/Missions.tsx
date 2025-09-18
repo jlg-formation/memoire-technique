@@ -1,6 +1,5 @@
 import InformationPanel from "../components/missions/InformationPanel";
 import EstimationPanel from "../components/missions/EstimationPanel";
-import PriceConstraintsPanel from "../components/missions/PriceConstraintsPanel";
 import TotalSummary from "../components/missions/TotalSummary";
 import { MissionCategoriesDisplay } from "../components/missions/MissionCategoriesDisplay";
 import MissionHeader from "../components/missions/MissionHeader";
@@ -8,7 +7,7 @@ import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
 import NoProjectSelected from "../components/missions/states/NoProjectSelected";
 import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
-import { allMissionsTotal } from "../lib/missions/missionCalculations";
+import { allMissionsTotalWithConstraints } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
 import { useMissionData, useMissionEstimation } from "../hooks/missions";
 import { useProjectStore } from "../store/useProjectStore";
@@ -56,7 +55,12 @@ export default function Missions() {
   }
 
   // Calculs avec les fonctions importées
-  const totalAllMissions = allMissionsTotal(missions, companies, getDays);
+  const totalAllMissions = allMissionsTotalWithConstraints(
+    missions,
+    companies,
+    getDays,
+    currentProject?.missionPriceConstraints || [],
+  );
 
   if (!missions.length || !companies.length) {
     return <EmptyState />;
@@ -67,17 +71,6 @@ export default function Missions() {
       <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         <MissionHeader />
         <InformationPanel />
-
-        {/* Contraintes de prix */}
-        {missionCategories && (
-          <PriceConstraintsPanel
-            missionCategories={missionCategories}
-            companies={companies}
-            worksAmount={worksAmount}
-            constraints={currentProject?.missionPriceConstraints || []}
-            onUpdateConstraints={handleUpdateConstraints}
-          />
-        )}
 
         <EstimationPanel
           worksAmount={worksAmount}
@@ -111,7 +104,11 @@ export default function Missions() {
           </h2>
 
           {missionCategories && (
-            <MissionCategoriesDisplay missionEstimation={missionEstimation} />
+            <MissionCategoriesDisplay
+              missionEstimation={missionEstimation}
+              constraints={currentProject?.missionPriceConstraints || []}
+              onUpdateConstraints={handleUpdateConstraints}
+            />
           )}
         </div>
 

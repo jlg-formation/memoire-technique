@@ -4,18 +4,21 @@ import { useMissionChanges } from "../../hooks/missions/useMissionChanges";
 import { useMissionEstimation } from "../../hooks/missions/useMissionEstimation";
 import { useProjectStore } from "../../store/useProjectStore";
 import {
-  missionTotal,
+  missionTotalWithConstraints,
   personCost,
 } from "../../lib/missions/missionCalculations";
 import type {
   MissionEstimation,
   MissionCategories,
+  MissionPriceConstraint,
   MobilizedPerson,
   ParticipatingCompany,
 } from "../../types/project";
 
 interface MissionCategoriesDisplayProps {
   missionEstimation: MissionEstimation;
+  constraints: MissionPriceConstraint[];
+  onUpdateConstraints: (constraints: MissionPriceConstraint[]) => void;
 }
 
 interface CategoryConfig {
@@ -50,6 +53,8 @@ const CATEGORY_CONFIG: CategoryConfig[] = [
 
 export function MissionCategoriesDisplay({
   missionEstimation,
+  constraints,
+  onUpdateConstraints,
 }: MissionCategoriesDisplayProps) {
   const { currentProject } = useProjectStore();
 
@@ -64,7 +69,7 @@ export function MissionCategoriesDisplay({
 
   // Définitions des fonctions de calcul (reprises de Missions.tsx)
   const getMissionTotal = (missionId: string) =>
-    missionTotal(missionId, companies, getDays);
+    missionTotalWithConstraints(missionId, companies, getDays, constraints);
 
   const getPersonCost = (
     missionId: string,
@@ -94,6 +99,8 @@ export function MissionCategoriesDisplay({
           handleJustificationChange,
           getPersonCost,
           estimating,
+          constraints,
+          onUpdateConstraints,
         );
       })}
     </>
