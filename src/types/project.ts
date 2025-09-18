@@ -38,6 +38,13 @@ export interface Mission {
   name: string;
 }
 
+export interface MissionCategories {
+  base: Mission[];
+  pse: Mission[]; // Prestations Supplémentaires Éventuelles
+  tranchesConditionnelles: Mission[];
+  variantes: Mission[];
+}
+
 export type MissionEstimation = {
   [missionId: string]: {
     [companyId: string]: {
@@ -75,8 +82,8 @@ export interface Project {
   memoHtml?: string;
   /** Barème de la note méthodologique extrait du RC */
   notation?: NotationItem[];
-  /** Liste des missions du projet */
-  missions?: Mission[];
+  /** Liste des missions du projet organisées par catégories */
+  missions?: MissionCategories;
   /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
   missionEstimations?: MissionEstimation;
   /** Texte résumant les contraintes de planning extraites de l'AE */

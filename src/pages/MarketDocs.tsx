@@ -81,7 +81,12 @@ function MarketDocs() {
     if (docToDelete?.type === "AE") {
       updateCurrentProject({
         marketDocuments: updatedDocs,
-        missions: [],
+        missions: {
+          base: [],
+          pse: [],
+          tranchesConditionnelles: [],
+          variantes: [],
+        },
         planningSummary: "",
         missionEstimations: {},
       });

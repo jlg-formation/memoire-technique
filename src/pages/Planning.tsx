@@ -4,6 +4,18 @@ import { useProjectStore } from "../store/useProjectStore";
 import { generatePlanning } from "../lib/OpenAI";
 import PlanningChart from "../components/PlanningChart";
 import { ButtonPrimary, EditableTextArea } from "../components/ui";
+import type { Mission, MissionCategories } from "../types/project";
+
+// Helper function pour obtenir toutes les missions d'un objet MissionCategories
+const getAllMissions = (missionCategories?: MissionCategories): Mission[] => {
+  if (!missionCategories) return [];
+  return [
+    ...missionCategories.base,
+    ...missionCategories.pse,
+    ...missionCategories.tranchesConditionnelles,
+    ...missionCategories.variantes,
+  ];
+};
 
 function Planning() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -16,7 +28,8 @@ function Planning() {
     );
   }
 
-  const missions = currentProject.missions ?? [];
+  const missionCategories = currentProject.missions;
+  const missions = getAllMissions(missionCategories);
 
   const handleGenerate = async (): Promise<void> => {
     if (!missions.length) {
