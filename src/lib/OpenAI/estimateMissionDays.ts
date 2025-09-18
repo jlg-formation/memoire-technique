@@ -3,6 +3,7 @@ import { useIAHistoryStore } from "../../store/useIAHistoryStore";
 import type {
   MissionCategories,
   MissionEstimation,
+  MissionPriceConstraint,
   MobilizedPerson,
   ParticipatingCompany,
 } from "../../types/project";
@@ -61,28 +62,51 @@ export async function estimateMissionDaysWithCategories(
   missionCategories: MissionCategories,
   companies: ParticipatingCompany[],
   categoryTargetAmounts: CategoryTargetAmounts,
+  priceConstraints: MissionPriceConstraint[] = [],
 ): Promise<MissionEstimation> {
   const openai = createClient();
+
+  // Calculer le montant total des contraintes de prix
+  const totalConstrainedAmount = priceConstraints.reduce(
+    (sum, constraint) => sum + constraint.imposedAmount,
+    0,
+  );
 
   const totalTargetAmount = Object.values(categoryTargetAmounts).reduce(
     (sum, amount) => sum + (amount || 0),
     0,
   );
 
+  // Ajuster les budgets par catégorie en déduisant les contraintes
+  const adjustedCategoryTargetAmounts = { ...categoryTargetAmounts };
+  if (totalConstrainedAmount > 0) {
+    // Répartir proportionnellement la réduction sur chaque catégorie
+    const adjustmentRatio = Math.max(
+      0,
+      (totalTargetAmount - totalConstrainedAmount) / totalTargetAmount,
+    );
+    Object.keys(adjustedCategoryTargetAmounts).forEach((category) => {
+      const key = category as keyof CategoryTargetAmounts;
+      if (adjustedCategoryTargetAmounts[key]) {
+        adjustedCategoryTargetAmounts[key]! *= adjustmentRatio;
+      }
+    });
+  }
+
   // Prompt utilisateur markdown multiligne avec informations par catégorie
   let userPrompt = `# Répartition par catégories de missions
 
 `;
 
-  if (missionCategories.base.length > 0 && categoryTargetAmounts.base) {
-    userPrompt += `## Missions de Base (Budget: ${categoryTargetAmounts.base.toLocaleString()} €)
+  if (missionCategories.base.length > 0 && adjustedCategoryTargetAmounts.base) {
+    userPrompt += `## Missions de Base (Budget: ${adjustedCategoryTargetAmounts.base.toLocaleString()} €)
 ${missionCategories.base.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
 
 `;
   }
 
-  if (missionCategories.pse.length > 0 && categoryTargetAmounts.pse) {
-    userPrompt += `## Prestations Supplémentaires Éventuelles (Budget: ${categoryTargetAmounts.pse.toLocaleString()} €)
+  if (missionCategories.pse.length > 0 && adjustedCategoryTargetAmounts.pse) {
+    userPrompt += `## Prestations Supplémentaires Éventuelles (Budget: ${adjustedCategoryTargetAmounts.pse.toLocaleString()} €)
 ${missionCategories.pse.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
 
 `;
@@ -90,9 +114,9 @@ ${missionCategories.pse.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
 
   if (
     missionCategories.tranchesConditionnelles.length > 0 &&
-    categoryTargetAmounts.tranchesConditionnelles
+    adjustedCategoryTargetAmounts.tranchesConditionnelles
   ) {
-    userPrompt += `## Tranches Conditionnelles (Budget: ${categoryTargetAmounts.tranchesConditionnelles.toLocaleString()} €)
+    userPrompt += `## Tranches Conditionnelles (Budget: ${adjustedCategoryTargetAmounts.tranchesConditionnelles.toLocaleString()} €)
 ${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
 
 `;
@@ -100,9 +124,9 @@ ${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (id: ${m.id}
 
   if (
     missionCategories.variantes.length > 0 &&
-    categoryTargetAmounts.variantes
+    adjustedCategoryTargetAmounts.variantes
   ) {
-    userPrompt += `## Variantes (Budget: ${categoryTargetAmounts.variantes.toLocaleString()} €)
+    userPrompt += `## Variantes (Budget: ${adjustedCategoryTargetAmounts.variantes.toLocaleString()} €)
 ${missionCategories.variantes.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
 
 `;
@@ -125,11 +149,32 @@ ${companies
   .join("\n")}
 `;
 
+  // Ajouter les contraintes de prix si présentes
+  if (priceConstraints.length > 0) {
+    userPrompt += `
+# Contraintes de prix imposées
+
+**IMPORTANT** : Les missions suivantes ont des prix FIXES imposés par les entreprises. NE PAS estimer ces missions :
+
+${priceConstraints
+  .map((constraint) => {
+    const company = companies.find((c) => c.id === constraint.companyId);
+    return `- Mission ${constraint.missionId} par ${company?.name}: ${constraint.imposedAmount.toLocaleString()} € (${constraint.justification})`;
+  })
+  .join("\n")}
+
+**Total des contraintes**: ${totalConstrainedAmount.toLocaleString()} €
+**Budget restant à estimer**: ${(totalTargetAmount - totalConstrainedAmount).toLocaleString()} €
+
+`;
+  }
+
   userPrompt += `
-**CONTRAINTE PRINCIPALE** : Respecte les budgets par catégorie de missions. 
+**CONTRAINTE PRINCIPALE** : Respecte les budgets par catégorie de missions${priceConstraints.length > 0 ? " ET les contraintes de prix imposées" : ""}. 
 - Le coût total des missions de chaque catégorie doit correspondre exactement au budget alloué à cette catégorie.
 - Répartis les jours de missions en tenant compte des taux journaliers pour atteindre ces budgets.
-- Budget total à atteindre : ${totalTargetAmount.toLocaleString()} €
+${priceConstraints.length > 0 ? "- IGNORE complètement les missions avec des contraintes de prix imposées (ne les estime PAS)." : ""}
+- Budget total à atteindre pour l'estimation : ${(totalTargetAmount - totalConstrainedAmount).toLocaleString()} €
 `;
 
   userPrompt += `

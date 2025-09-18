@@ -1,5 +1,6 @@
 import InformationPanel from "../components/missions/InformationPanel";
 import EstimationPanel from "../components/missions/EstimationPanel";
+import PriceConstraintsPanel from "../components/missions/PriceConstraintsPanel";
 import TotalSummary from "../components/missions/TotalSummary";
 import { MissionCategoriesDisplay } from "../components/missions/MissionCategoriesDisplay";
 import MissionHeader from "../components/missions/MissionHeader";
@@ -11,9 +12,10 @@ import { allMissionsTotal } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
 import { useMissionData, useMissionEstimation } from "../hooks/missions";
 import { useProjectStore } from "../store/useProjectStore";
+import type { MissionPriceConstraint } from "../types/project";
 
 export default function Missions() {
-  const { currentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useProjectStore();
   const {
     categoryPercentages,
     updateCategoryPercentage,
@@ -29,6 +31,10 @@ export default function Missions() {
     missingRates,
     getDays,
   } = useMissionData(currentProject);
+
+  const handleUpdateConstraints = (constraints: MissionPriceConstraint[]) => {
+    updateCurrentProject({ missionPriceConstraints: constraints });
+  };
 
   if (!currentProject) {
     return <NoProjectSelected />;
@@ -61,6 +67,17 @@ export default function Missions() {
       <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         <MissionHeader />
         <InformationPanel />
+
+        {/* Contraintes de prix */}
+        {missionCategories && (
+          <PriceConstraintsPanel
+            missionCategories={missionCategories}
+            companies={companies}
+            worksAmount={worksAmount}
+            constraints={currentProject?.missionPriceConstraints || []}
+            onUpdateConstraints={handleUpdateConstraints}
+          />
+        )}
 
         <EstimationPanel
           worksAmount={worksAmount}

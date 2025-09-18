@@ -65,6 +65,15 @@ export type MissionEstimation = {
   };
 };
 
+export interface MissionPriceConstraint {
+  missionId: string;
+  companyId: string;
+  /** Montant imposé en euros HT */
+  imposedAmount: number;
+  /** Justification du prix imposé */
+  justification: string;
+}
+
 export interface Project {
   id: string;
   /** Titre de la consultation extrait du RC */
@@ -97,6 +106,8 @@ export interface Project {
   missionEstimations?: MissionEstimation;
   /** Pourcentages de l'offre par catégorie de missions */
   categoryPercentages?: CategoryPercentages;
+  /** Contraintes de prix imposées par les entreprises */
+  missionPriceConstraints?: MissionPriceConstraint[];
   /** Texte résumant les contraintes de planning extraites de l'AE */
   planningSummary?: string;
   /** Planning généré par l'IA en Markdown */

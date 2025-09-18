@@ -79,6 +79,7 @@ export function useMissionEstimation() {
         missionCategories,
         companies,
         categoryTargetAmounts,
+        currentProject?.missionPriceConstraints || [],
       );
 
       updateCurrentProject({ missionEstimations });
