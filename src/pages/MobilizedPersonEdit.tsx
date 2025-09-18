@@ -3,16 +3,18 @@ import { useState, useEffect } from "react";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
-import type { MobilizedPerson } from "../types/project";
+import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 interface MobilizedPersonEditProps {
   person: MobilizedPerson;
+  company: ParticipatingCompany;
   onClose: () => void;
-  onSave: (person: MobilizedPerson) => void;
+  onSave: (person: MobilizedPerson, shouldBeRepresentative?: boolean) => void;
 }
 
 function MobilizedPersonEdit({
   person,
+  company,
   onClose,
   onSave,
 }: MobilizedPersonEditProps) {
@@ -21,6 +23,9 @@ function MobilizedPersonEdit({
   const [cvText, setCvText] = useState("");
   const [cvSummary, setCvSummary] = useState("");
   const [processing, setProcessing] = useState(false);
+  const [shouldBeRepresentative, setShouldBeRepresentative] = useState(false);
+
+  const isCurrentRepresentative = company.representativeId === person.id;
 
   // Initialiser les champs avec les données de la personne
   useEffect(() => {
@@ -40,7 +45,7 @@ function MobilizedPersonEdit({
       cvSummary: cvSummary || undefined,
     };
 
-    onSave(updatedPerson);
+    onSave(updatedPerson, shouldBeRepresentative);
     // onClose(); // supprimé pour éviter la double navigation
   };
 
@@ -147,6 +152,56 @@ function MobilizedPersonEdit({
             disabled={processing}
             rows={6}
           />
+        )}
+
+        {/* Section représentant - seulement si pas déjà représentant */}
+        {!isCurrentRepresentative && (
+          <div className="rounded-lg bg-green-50 p-4">
+            <div className="flex items-center">
+              <input
+                id="representative-checkbox"
+                type="checkbox"
+                checked={shouldBeRepresentative}
+                onChange={(e) => setShouldBeRepresentative(e.target.checked)}
+                disabled={processing}
+                className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+              />
+              <label
+                htmlFor="representative-checkbox"
+                className="ml-3 text-sm font-medium text-green-900"
+              >
+                Désigner cette personne comme représentant de l'entreprise
+              </label>
+            </div>
+            <p className="mt-2 text-xs text-green-700">
+              Le représentant de l'entreprise sera responsable de la
+              coordination et sera affiché comme contact principal.
+            </p>
+          </div>
+        )}
+
+        {/* Affichage si déjà représentant */}
+        {isCurrentRepresentative && (
+          <div className="rounded-lg bg-blue-50 p-4">
+            <div className="flex items-center">
+              <div className="flex h-4 w-4 items-center justify-center rounded bg-blue-600">
+                <svg
+                  className="h-3 w-3 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <span className="ml-3 text-sm font-medium text-blue-900">
+                Cette personne est actuellement le représentant de l'entreprise
+              </span>
+            </div>
+          </div>
         )}
 
         <div className="flex justify-end pt-4 pb-4 sm:pb-0">

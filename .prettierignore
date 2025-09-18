@@ -1,0 +1,10 @@
+# Directories to ignore
+dist/
+public/
+
+# Dependencies
+node_modules/
+
+# Build outputs
+*.min.js
+*.min.css

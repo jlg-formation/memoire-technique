@@ -49,6 +49,21 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
     // La gestion du mandataire est déplacée dans Equipes.tsx
   }, [company, currentProject]);
 
+  // Fonction utilitaire pour valider le representativeId
+  const validateRepresentativeId = (
+    representativeId: string | undefined,
+    mobilizedPeople: MobilizedPerson[],
+  ): string | undefined => {
+    if (!representativeId) return undefined;
+
+    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
+    const isValid = mobilizedPeople.some(
+      (person) => person.id === representativeId,
+    );
+
+    return isValid ? representativeId : undefined;
+  };
+
   // Fonctions de gestion des personnes mobilisées
   const handleCreatePerson = () => {
     setCurrentView("person-create");
@@ -59,7 +74,10 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
     setCurrentView("person-edit");
   };
 
-  const handleSavePerson = (person: MobilizedPerson) => {
+  const handleSavePerson = (
+    person: MobilizedPerson,
+    shouldBeRepresentative?: boolean,
+  ) => {
     const currentPeople = currentCompany.mobilizedPeople || [];
     const existingIndex = currentPeople.findIndex((p) => p.id === person.id);
 
@@ -74,9 +92,24 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
       updatedPeople = [...currentPeople, person];
     }
 
+    // Valider le representativeId existant et l'effacer s'il n'est pas valide
+    let representativeId = validateRepresentativeId(
+      currentCompany.representativeId,
+      updatedPeople,
+    );
+
+    // Gérer la désignation explicite comme représentant
+    if (shouldBeRepresentative) {
+      representativeId = person.id;
+    } else if (!representativeId && updatedPeople.length > 0) {
+      // S'il n'y a pas de représentant valide et qu'il y a des personnes mobilisées, assigner la première ou la nouvelle
+      representativeId = existingIndex >= 0 ? person.id : person.id;
+    }
+
     const updatedCompany = {
       ...currentCompany,
       mobilizedPeople: updatedPeople,
+      representativeId,
     };
     const updatedCompanies = companies.map((c) =>
       c.id === company.id ? updatedCompany : c,
@@ -96,9 +129,22 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
       const updatedPeople = (currentCompany.mobilizedPeople || []).filter(
         (p) => p.id !== personId,
       );
+
+      // Valider le representativeId et l'effacer s'il correspond à la personne supprimée ou s'il n'est pas valide
+      let representativeId = validateRepresentativeId(
+        currentCompany.representativeId,
+        updatedPeople,
+      );
+
+      // Si pas de représentant valide et qu'il reste des personnes, assigner la première
+      if (!representativeId && updatedPeople.length > 0) {
+        representativeId = updatedPeople[0].id;
+      }
+
       const updatedCompany = {
         ...currentCompany,
         mobilizedPeople: updatedPeople,
+        representativeId,
       };
       const updatedCompanies = companies.map((c) =>
         c.id === company.id ? updatedCompany : c,
@@ -142,6 +188,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
       {currentView === "person-edit" && selectedPerson && (
         <MobilizedPersonEdit
           person={selectedPerson}
+          company={currentCompany}
           onClose={() => setCurrentView("edit")}
           onSave={handleSavePerson}
         />
