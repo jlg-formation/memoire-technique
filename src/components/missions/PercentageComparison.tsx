@@ -43,56 +43,79 @@ export default function PercentageComparison({
 
   // Calculer l'écart entre réel et IA
   const difference = actualPercentage - aiPercentage;
-  const isDifferenceSignificant = Math.abs(difference) > 5; // Plus de 5% d'écart
 
   return (
-    <div className={`flex flex-col gap-1 ${className}`}>
+    <div className={`space-y-3 ${className}`}>
       {/* Barre actuelle */}
-      <div className="flex items-center gap-2">
-        <span className="w-12 text-xs text-slate-500">Réel:</span>
-        <ProgressBar
-          percentage={actualPercentage}
-          barColor="bg-blue-500"
-          width="w-16 sm:w-20"
-          height="h-1.5"
-          showPercentage={true}
-        />
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="w-12 text-sm font-medium text-slate-600">Réel:</span>
+          <span className="w-12 text-right text-sm font-semibold text-blue-600">
+            {actualPercentage.toFixed(1)}%
+          </span>
+        </div>
+        <div className="flex-1">
+          <ProgressBar
+            percentage={actualPercentage}
+            barColor="bg-blue-500"
+            width="w-full"
+            height="h-2"
+            showPercentage={false}
+            backgroundColor="bg-slate-200"
+          />
+        </div>
       </div>
 
       {/* Barre recommandée par l'IA */}
-      <div className="flex items-center gap-2">
-        <span className="w-12 text-xs text-slate-500">IA:</span>
-        <ProgressBar
-          percentage={aiPercentage}
-          barColor="bg-amber-500"
-          width="w-16 sm:w-20"
-          height="h-1.5"
-          showPercentage={true}
-        />
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="w-12 text-sm font-medium text-slate-600">IA:</span>
+          <span className="w-12 text-right text-sm font-semibold text-amber-600">
+            {aiPercentage.toFixed(1)}%
+          </span>
+        </div>
+        <div className="flex-1">
+          <ProgressBar
+            percentage={aiPercentage}
+            barColor="bg-amber-500"
+            width="w-full"
+            height="h-2"
+            showPercentage={false}
+            backgroundColor="bg-slate-200"
+          />
+        </div>
       </div>
 
-      {/* Indicateur d'écart significatif */}
-      {isDifferenceSignificant && (
-        <div className="flex items-center gap-1">
-          <span className="w-12 text-xs text-slate-400">Écart:</span>
+      {/* Affichage de l'écart (toujours visible) */}
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <span className="w-12 text-sm font-medium text-slate-600">
+            Écart:
+          </span>
           <span
-            className={`text-xs font-medium ${
-              difference > 0 ? "text-red-600" : "text-green-600"
+            className={`w-12 text-right text-sm font-semibold ${
+              Math.abs(difference) > 5
+                ? difference > 0
+                  ? "text-red-600"
+                  : "text-green-600"
+                : "text-slate-600"
             }`}
           >
             {difference > 0 ? "+" : ""}
             {difference.toFixed(1)}%
           </span>
+        </div>
+        <div className="flex items-center gap-2">
           {Math.abs(difference) > 10 && (
             <span
-              className="text-xs text-red-500"
+              className="text-sm text-red-500"
               title={aiEstimation.justification}
             >
-              ⚠️
+              ⚠️ Écart important
             </span>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

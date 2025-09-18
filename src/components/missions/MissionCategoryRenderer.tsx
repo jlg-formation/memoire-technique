@@ -114,53 +114,70 @@ export const renderMissionCategory = (
                       {mission.name}
                     </span>
                   </div>
-                  <div className="flex items-center gap-3 sm:gap-4">
+                  <span className="rounded-full bg-blue-50 px-2 py-1 text-base font-bold text-blue-700 sm:px-3 sm:text-xl">
+                    {missionCost.toFixed(2)}&nbsp;€
+                  </span>
+                </div>
+              }
+            >
+              <div className="space-y-4">
+                {/* Comparaison des pourcentages en pleine largeur */}
+                {aiEstimation && (
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <h4 className="mb-3 text-sm font-medium text-slate-700">
+                      Comparaison avec l'état de l'art du métier
+                    </h4>
                     <PercentageComparison
                       actualPercentage={missionPercentage}
                       aiEstimation={aiEstimation}
                       showCategoryPercentage={true}
-                      className="hidden sm:flex"
+                      className="w-full"
                     />
-                    <span className="rounded-full bg-blue-50 px-2 py-1 text-base font-bold text-blue-700 sm:px-3 sm:text-xl">
-                      {missionCost.toFixed(2)}&nbsp;€
-                    </span>
+                    {aiEstimation.justification && (
+                      <p className="mt-3 text-xs text-slate-600">
+                        <strong>Justification IA :</strong>{" "}
+                        {aiEstimation.justification}
+                      </p>
+                    )}
                   </div>
+                )}
+
+                {/* Liste des entreprises */}
+                <div className="space-y-3 sm:space-y-4">
+                  {companies.map((company) => {
+                    const people = company.mobilizedPeople ?? [];
+                    const companyTotal = people.reduce(
+                      (sum, p) => sum + personCost(mission.id, company, p),
+                      0,
+                    );
+
+                    // Vérifier s'il y a une contrainte de prix pour cette mission/entreprise
+                    const constraint = constraints.find(
+                      (c) =>
+                        c.missionId === mission.id &&
+                        c.companyId === company.id,
+                    );
+
+                    return (
+                      <CompanyAccordionWithConstraint
+                        key={company.id}
+                        mission={mission}
+                        company={company}
+                        companyTotal={companyTotal}
+                        constraint={constraint}
+                        constraints={constraints}
+                        onUpdateConstraints={onUpdateConstraints}
+                        people={people}
+                        getDays={getDays}
+                        handleChange={handleChange}
+                        getJustification={getJustification}
+                        handleJustificationChange={handleJustificationChange}
+                        personCost={personCost}
+                        estimating={estimating}
+                      />
+                    );
+                  })}
                 </div>
-              }
-            >
-              <div className="space-y-3 sm:space-y-4">
-                {companies.map((company) => {
-                  const people = company.mobilizedPeople ?? [];
-                  const companyTotal = people.reduce(
-                    (sum, p) => sum + personCost(mission.id, company, p),
-                    0,
-                  );
-
-                  // Vérifier s'il y a une contrainte de prix pour cette mission/entreprise
-                  const constraint = constraints.find(
-                    (c) =>
-                      c.missionId === mission.id && c.companyId === company.id,
-                  );
-
-                  return (
-                    <CompanyAccordionWithConstraint
-                      key={company.id}
-                      mission={mission}
-                      company={company}
-                      companyTotal={companyTotal}
-                      constraint={constraint}
-                      constraints={constraints}
-                      onUpdateConstraints={onUpdateConstraints}
-                      people={people}
-                      getDays={getDays}
-                      handleChange={handleChange}
-                      getJustification={getJustification}
-                      handleJustificationChange={handleJustificationChange}
-                      personCost={personCost}
-                      estimating={estimating}
-                    />
-                  );
-                })}
               </div>
             </Accordion>
           );
