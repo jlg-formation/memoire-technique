@@ -167,7 +167,7 @@ export default function CompanyAccordionWithConstraint({
                 ) : (
                   <button
                     onClick={() => setIsEditingConstraint(true)}
-                    className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700"
+                    className="cursor-pointer rounded bg-slate-200 px-2 py-1 text-xs text-slate-600 hover:bg-slate-300 hover:text-slate-700"
                     title="Imposer un prix"
                   >
                     🔒
