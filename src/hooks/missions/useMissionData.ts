@@ -4,10 +4,16 @@ import type {
   MobilizedPerson,
   Project,
 } from "../../types/project";
+import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
 export function useMissionData(currentProject: Project | null) {
   const missionEstimation: MissionEstimation =
-    currentProject?.missionEstimations ?? {};
+    currentProject?.missionEstimations ?? {
+      base: {},
+      pse: {},
+      tranchesConditionnelles: {},
+      variantes: {},
+    };
   const missionCategories = currentProject?.missions;
   const companies = currentProject?.participatingCompanies ?? [];
   const worksAmount = currentProject?.worksAmount ?? 0;
@@ -22,15 +28,27 @@ export function useMissionData(currentProject: Project | null) {
     missionId: string,
     companyId: string,
     personId: string,
-  ): number =>
-    missionEstimation[missionId]?.[companyId]?.[personId]?.nombreDeJours ?? 0;
+  ): number => {
+    const category = findMissionCategory(missionId, missionCategories);
+    if (!category) return 0;
+    return (
+      missionEstimation[category]?.[missionId]?.[companyId]?.[personId]
+        ?.nombreDeJours ?? 0
+    );
+  };
 
   const getJustification = (
     missionId: string,
     companyId: string,
     personId: string,
-  ): string =>
-    missionEstimation[missionId]?.[companyId]?.[personId]?.justification ?? "";
+  ): string => {
+    const category = findMissionCategory(missionId, missionCategories);
+    if (!category) return "";
+    return (
+      missionEstimation[category]?.[missionId]?.[companyId]?.[personId]
+        ?.justification ?? ""
+    );
+  };
 
   return {
     missionEstimation,

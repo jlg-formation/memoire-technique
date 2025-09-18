@@ -53,11 +53,13 @@ export interface CategoryPercentages {
 }
 
 export type MissionEstimation = {
-  [missionId: string]: {
-    [companyId: string]: {
-      [personId: string]: {
-        nombreDeJours: number;
-        justification: string;
+  [category in keyof MissionCategories]: {
+    [missionId: string]: {
+      [companyId: string]: {
+        [personId: string]: {
+          nombreDeJours: number;
+          justification: string;
+        };
       };
     };
   };

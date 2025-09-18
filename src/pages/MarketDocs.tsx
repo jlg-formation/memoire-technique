@@ -88,7 +88,12 @@ function MarketDocs() {
           variantes: [],
         },
         planningSummary: "",
-        missionEstimations: {},
+        missionEstimations: {
+          base: {},
+          pse: {},
+          tranchesConditionnelles: {},
+          variantes: {},
+        },
       });
     } else {
       updateCurrentProject({ marketDocuments: updatedDocs });

@@ -6,6 +6,25 @@ import type {
 } from "../../types/project";
 
 /**
+ * Trouve la catégorie d'une mission par son ID
+ */
+export const findMissionCategory = (
+  missionId: string,
+  missionCategories?: MissionCategories,
+): keyof MissionCategories | null => {
+  if (!missionCategories) return null;
+
+  if (missionCategories.base.some((m) => m.id === missionId)) return "base";
+  if (missionCategories.pse.some((m) => m.id === missionId)) return "pse";
+  if (missionCategories.tranchesConditionnelles.some((m) => m.id === missionId))
+    return "tranchesConditionnelles";
+  if (missionCategories.variantes.some((m) => m.id === missionId))
+    return "variantes";
+
+  return null;
+};
+
+/**
  * Obtient les catégories non vides avec leurs métadonnées
  */
 export const getNonEmptyCategories = (currentProject: Project | null) => {

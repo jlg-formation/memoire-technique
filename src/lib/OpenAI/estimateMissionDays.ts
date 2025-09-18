@@ -5,6 +5,7 @@ import type {
   MobilizedPerson,
   ParticipatingCompany,
   MissionCategories,
+  MissionEstimation,
 } from "../../types/project";
 import createClient from "./client";
 
@@ -61,7 +62,7 @@ export async function estimateMissionDaysWithCategories(
   missionCategories: MissionCategories,
   companies: ParticipatingCompany[],
   categoryTargetAmounts: CategoryTargetAmounts,
-): Promise<MissionDayEstimation> {
+): Promise<MissionEstimation> {
   const openai = createClient();
 
   const totalTargetAmount = Object.values(categoryTargetAmounts).reduce(
@@ -329,14 +330,59 @@ Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entrepri
 
   responseObj = ensureMinimumTwoPeoplePerMission(responseObj, companies);
 
+  // Restructurer le résultat selon le nouveau format hiérarchique par catégorie
+  const restructuredResult: MissionEstimation = {
+    base: {},
+    pse: {},
+    tranchesConditionnelles: {},
+    variantes: {},
+  };
+
+  // Répartir chaque mission dans sa catégorie appropriée
+  for (const [missionId, missionData] of Object.entries(responseObj)) {
+    const typedMissionData = missionData as {
+      [companyId: string]: {
+        [personId: string]: {
+          nombreDeJours: number;
+          justification: string;
+        };
+      };
+    };
+
+    let categoryFound = false;
+
+    // Vérifier dans chaque catégorie
+    if (missionCategories.base.some((m) => m.id === missionId)) {
+      restructuredResult.base[missionId] = typedMissionData;
+      categoryFound = true;
+    } else if (missionCategories.pse.some((m) => m.id === missionId)) {
+      restructuredResult.pse[missionId] = typedMissionData;
+      categoryFound = true;
+    } else if (
+      missionCategories.tranchesConditionnelles.some((m) => m.id === missionId)
+    ) {
+      restructuredResult.tranchesConditionnelles[missionId] = typedMissionData;
+      categoryFound = true;
+    } else if (missionCategories.variantes.some((m) => m.id === missionId)) {
+      restructuredResult.variantes[missionId] = typedMissionData;
+      categoryFound = true;
+    }
+
+    if (!categoryFound) {
+      console.warn(
+        `Mission ${missionId} n'appartient à aucune catégorie connue`,
+      );
+    }
+  }
+
   useIAHistoryStore.getState().addEntry({
     timestamp: Date.now(),
     messages: messages,
-    response: responseObj,
+    response: restructuredResult,
     context: "estimateMissionDaysWithCategories",
   });
 
-  return responseObj;
+  return restructuredResult;
 }
 
 export async function estimateMissionDays(
