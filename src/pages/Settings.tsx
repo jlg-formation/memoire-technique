@@ -3,7 +3,7 @@ import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { testKey } from "../lib/OpenAI";
 import { ButtonPrimary } from "../components/ui";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
-import { TestTube } from "lucide-react";
+import { FlaskConical } from "lucide-react";
 
 function Settings() {
   const { apiKey, setApiKey } = useOpenAIKeyStore(); // gestion locale uniquement
@@ -73,7 +73,8 @@ function Settings() {
             <AsyncPrimaryButton
               onClick={handleTest}
               disabled={!tempKey.trim()}
-              icon={TestTube}
+              icon={FlaskConical}
+              className="bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700"
             >
               Tester
             </AsyncPrimaryButton>
