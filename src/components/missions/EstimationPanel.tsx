@@ -22,6 +22,8 @@ interface EstimationPanelProps {
   onEstimate: () => Promise<void>;
   estimating: boolean;
   allMissionsTotal: number;
+  onEstimatePercentages: () => Promise<void>;
+  estimatingPercentages: boolean;
 }
 
 export default function EstimationPanel({
@@ -32,6 +34,8 @@ export default function EstimationPanel({
   onEstimate,
   estimating,
   allMissionsTotal,
+  onEstimatePercentages,
+  estimatingPercentages,
 }: EstimationPanelProps) {
   const totalTargetAmount = getTotalTargetAmount(
     worksAmount,
@@ -70,9 +74,20 @@ export default function EstimationPanel({
 
         {/* Pourcentages par catégorie */}
         <div className="space-y-4">
-          <h4 className="text-base font-semibold text-emerald-800 sm:text-lg">
-            Pourcentages par catégorie de missions
-          </h4>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h4 className="text-base font-semibold text-emerald-800 sm:text-lg">
+              Pourcentages par catégorie de missions
+            </h4>
+            <AsyncPrimaryButton
+              onClick={onEstimatePercentages}
+              disabled={estimatingPercentages}
+              className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 sm:px-6"
+            >
+              {estimatingPercentages
+                ? "Estimation IA..."
+                : "Estimer pourcentages IA"}
+            </AsyncPrimaryButton>
+          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
             {nonEmptyCategories.map((category) => {

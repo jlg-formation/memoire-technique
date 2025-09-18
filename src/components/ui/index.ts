@@ -4,3 +4,4 @@ export { ButtonLink } from "./ButtonLink";
 export { AccentButton } from "./AccentButton";
 export { Select } from "./Select";
 export { EditableTextArea } from "./EditableTextArea";
+export { default as ProgressBar } from "./ProgressBar";

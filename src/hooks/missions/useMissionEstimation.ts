@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useProjectStore } from "../../store/useProjectStore";
-import { estimateMissionDaysWithCategories } from "../../lib/OpenAI";
+import {
+  estimateMissionDaysWithCategories,
+  estimateRecommendedPercentages,
+} from "../../lib/OpenAI";
 import type { CategoryTargetAmounts } from "../../lib/OpenAI";
 import type {
   CategoryPercentages,
@@ -12,6 +15,7 @@ import { getCategoryTargetAmount } from "../../lib/missions";
 export function useMissionEstimation() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   const [estimating, setEstimating] = useState(false);
+  const [estimatingPercentages, setEstimatingPercentages] = useState(false);
 
   // Initialiser les pourcentages par catégorie avec des valeurs par défaut
   const categoryPercentages = currentProject?.categoryPercentages || {};
@@ -25,6 +29,28 @@ export function useMissionEstimation() {
       [category]: percentage,
     };
     updateCurrentProject({ categoryPercentages: updated });
+  };
+
+  /**
+   * Nouvelle fonction pour estimer les pourcentages recommandés par l'IA
+   */
+  const handleEstimateRecommendedPercentages = async (
+    missionCategories: MissionCategories,
+  ): Promise<void> => {
+    setEstimatingPercentages(true);
+    try {
+      if (!missionCategories) {
+        throw new Error("Aucune catégorie de missions disponible");
+      }
+
+      const aiRecommendedPercentages =
+        await estimateRecommendedPercentages(missionCategories);
+
+      updateCurrentProject({ aiRecommendedPercentages });
+    } catch (err) {
+      console.error("Erreur lors de l'estimation des pourcentages IA:", err);
+    }
+    setEstimatingPercentages(false);
   };
 
   const handleEstimate = async (
@@ -80,6 +106,7 @@ export function useMissionEstimation() {
         companies,
         categoryTargetAmounts,
         currentProject?.missionPriceConstraints || [],
+        currentProject?.aiRecommendedPercentages,
       );
 
       updateCurrentProject({ missionEstimations });
@@ -95,6 +122,8 @@ export function useMissionEstimation() {
     categoryPercentages,
     updateCategoryPercentage,
     estimating,
+    estimatingPercentages,
     handleEstimate,
+    handleEstimateRecommendedPercentages,
   };
 }

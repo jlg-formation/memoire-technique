@@ -6,6 +6,7 @@ import type {
   MissionPriceConstraint,
   MobilizedPerson,
   ParticipatingCompany,
+  AIRecommendedPercentages,
 } from "../../types/project";
 import createClient from "./client";
 
@@ -63,8 +64,12 @@ export async function estimateMissionDaysWithCategories(
   companies: ParticipatingCompany[],
   categoryTargetAmounts: CategoryTargetAmounts,
   priceConstraints: MissionPriceConstraint[] = [],
+  aiRecommendedPercentages?: AIRecommendedPercentages,
 ): Promise<MissionEstimation> {
   const openai = createClient();
+
+  // TODO: Utiliser aiRecommendedPercentages pour enrichir le prompt avec les recommandations IA
+  console.log("AI recommendations available:", !!aiRecommendedPercentages);
 
   // Calculer le montant total des contraintes de prix
   const totalConstrainedAmount = priceConstraints.reduce(

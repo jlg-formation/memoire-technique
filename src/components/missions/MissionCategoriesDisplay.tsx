@@ -101,6 +101,8 @@ export function MissionCategoriesDisplay({
           estimating,
           constraints,
           onUpdateConstraints,
+          currentProject?.aiRecommendedPercentages,
+          categoryConfig.key,
         );
       })}
     </>

@@ -19,7 +19,9 @@ export default function Missions() {
     categoryPercentages,
     updateCategoryPercentage,
     estimating,
+    estimatingPercentages,
     handleEstimate,
+    handleEstimateRecommendedPercentages,
   } = useMissionEstimation();
 
   const {
@@ -82,6 +84,10 @@ export default function Missions() {
           }
           estimating={estimating}
           allMissionsTotal={totalAllMissions}
+          onEstimatePercentages={() =>
+            handleEstimateRecommendedPercentages(missionCategories!)
+          }
+          estimatingPercentages={estimatingPercentages}
         />
 
         {/* Missions List - Utilise les composants décomposés */}

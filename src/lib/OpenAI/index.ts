@@ -11,6 +11,7 @@ export type {
   MissionDayEstimation,
   CategoryTargetAmounts,
 } from "./estimateMissionDays";
+export { default as estimateRecommendedPercentages } from "./estimateRecommendedPercentages";
 export { default as generateMemoire } from "./generateMemoire";
 export { default as extractPlanningConstraints } from "./extractPlanningConstraints";
 export { default as generatePlanning } from "./generatePlanning";
