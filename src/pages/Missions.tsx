@@ -1,4 +1,3 @@
-import { useState } from "react";
 import InformationPanel from "../components/missions/InformationPanel";
 import { renderMissionCategory } from "../components/missions/MissionCategoryRenderer.tsx";
 import MissionHeader from "../components/missions/MissionHeader";
@@ -17,51 +16,45 @@ import {
   personCost,
 } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
-import type { CategoryTargetAmounts } from "../lib/OpenAI";
-import { estimateMissionDaysWithCategories } from "../lib/OpenAI";
+import {
+  useMissionData,
+  useMissionEstimation,
+  useMissionChanges,
+} from "../hooks/missions";
 import { useProjectStore } from "../store/useProjectStore";
-import type {
-  CategoryPercentages,
-  MissionEstimation,
-  MobilizedPerson,
-  ParticipatingCompany,
-} from "../types/project";
+import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 export default function Missions() {
-  const { currentProject, updateCurrentProject } = useProjectStore();
-  const [estimating, setEstimating] = useState(false);
+  const { currentProject } = useProjectStore();
+  const {
+    categoryPercentages,
+    updateCategoryPercentage,
+    estimating,
+    handleEstimate,
+  } = useMissionEstimation();
+
+  const {
+    missionEstimation,
+    missionCategories,
+    companies,
+    worksAmount,
+    missingRates,
+    getDays,
+    getJustification,
+  } = useMissionData(currentProject);
+
+  const { handleChange, handleJustificationChange } =
+    useMissionChanges(missionEstimation);
 
   if (!currentProject) {
     return <NoProjectSelected />;
   }
 
-  // Initialiser les pourcentages par catégorie avec des valeurs par défaut
-  const categoryPercentages = currentProject?.categoryPercentages || {};
   const nonEmptyCategories = getNonEmptyCategories(currentProject);
-
-  const updateCategoryPercentage = (
-    category: keyof CategoryPercentages,
-    percentage: number,
-  ) => {
-    const updated: CategoryPercentages = {
-      ...categoryPercentages,
-      [category]: percentage,
-    };
-    updateCurrentProject({ categoryPercentages: updated });
-  };
-
-  const missionEstimation: MissionEstimation =
-    currentProject.missionEstimations ?? {};
-  const missionCategories = currentProject.missions;
   const missions = getAllMissions(missionCategories);
-  const companies = currentProject.participatingCompanies ?? [];
-  const worksAmount = currentProject.worksAmount ?? 0;
   const totalTargetAmount = getTotalTargetAmount(
     worksAmount,
     categoryPercentages,
-  );
-  const missingRates = companies.flatMap((company) =>
-    (company.mobilizedPeople ?? []).filter((p) => !p.dailyRate),
   );
 
   if (missingRates.length) {
@@ -76,14 +69,6 @@ export default function Missions() {
     );
   }
 
-  // Fonctions pour la gestion des données
-  const getDays = (
-    missionId: string,
-    companyId: string,
-    personId: string,
-  ): number =>
-    missionEstimation[missionId]?.[companyId]?.[personId]?.nombreDeJours ?? 0;
-
   // Calculs avec les fonctions importées
   const totalAllMissions = allMissionsTotal(missions, companies, getDays);
   const getMissionTotal = (missionId: string) =>
@@ -93,111 +78,6 @@ export default function Missions() {
     company: ParticipatingCompany,
     person: MobilizedPerson,
   ) => personCost(missionId, company, person, getDays);
-
-  const handleChange = (
-    missionId: string,
-    companyId: string,
-    personId: string,
-    days: number,
-  ): void => {
-    const updated: MissionEstimation = {
-      ...missionEstimation,
-      [missionId]: {
-        ...(missionEstimation[missionId] ?? {}),
-        [companyId]: {
-          ...(missionEstimation[missionId]?.[companyId] ?? {}),
-          [personId]: {
-            ...(missionEstimation[missionId]?.[companyId]?.[personId] ?? {}),
-            nombreDeJours: days,
-          },
-        },
-      },
-    };
-    updateCurrentProject({ missionEstimations: updated });
-  };
-
-  const getJustification = (
-    missionId: string,
-    companyId: string,
-    personId: string,
-  ): string =>
-    missionEstimation[missionId]?.[companyId]?.[personId]?.justification ?? "";
-
-  const handleJustificationChange = (
-    missionId: string,
-    companyId: string,
-    personId: string,
-    text: string,
-  ): void => {
-    const updated: MissionEstimation = {
-      ...missionEstimation,
-      [missionId]: {
-        ...(missionEstimation[missionId] ?? {}),
-        [companyId]: {
-          ...(missionEstimation[missionId]?.[companyId] ?? {}),
-          [personId]: {
-            ...(missionEstimation[missionId]?.[companyId]?.[personId] ?? {}),
-            justification: text,
-          },
-        },
-      },
-    };
-    updateCurrentProject({ missionEstimations: updated });
-  };
-
-  const handleEstimate = async (): Promise<void> => {
-    setEstimating(true);
-    try {
-      if (!missionCategories) {
-        throw new Error("Aucune catégorie de missions disponible");
-      }
-
-      // Construire les montants cibles par catégorie
-      const categoryTargetAmounts: CategoryTargetAmounts = {};
-
-      if (missionCategories.base.length > 0 && categoryPercentages.base) {
-        categoryTargetAmounts.base = getCategoryTargetAmount(
-          worksAmount,
-          categoryPercentages.base,
-        );
-      }
-      if (missionCategories.pse.length > 0 && categoryPercentages.pse) {
-        categoryTargetAmounts.pse = getCategoryTargetAmount(
-          worksAmount,
-          categoryPercentages.pse,
-        );
-      }
-      if (
-        missionCategories.tranchesConditionnelles.length > 0 &&
-        categoryPercentages.tranchesConditionnelles
-      ) {
-        categoryTargetAmounts.tranchesConditionnelles = getCategoryTargetAmount(
-          worksAmount,
-          categoryPercentages.tranchesConditionnelles,
-        );
-      }
-      if (
-        missionCategories.variantes.length > 0 &&
-        categoryPercentages.variantes
-      ) {
-        categoryTargetAmounts.variantes = getCategoryTargetAmount(
-          worksAmount,
-          categoryPercentages.variantes,
-        );
-      }
-
-      // Utiliser la nouvelle fonction avec les catégories
-      const result = await estimateMissionDaysWithCategories(
-        missionCategories,
-        companies,
-        categoryTargetAmounts,
-      );
-      updateCurrentProject({ missionEstimations: result });
-    } catch (err) {
-      console.error(err);
-    }
-    setEstimating(false);
-  };
 
   if (!missions.length || !companies.length) {
     return <EmptyState />;
@@ -372,7 +252,9 @@ export default function Missions() {
                   </span>
                 </h4>
                 <AsyncPrimaryButton
-                  onClick={handleEstimate}
+                  onClick={() =>
+                    handleEstimate(missionCategories!, companies, worksAmount)
+                  }
                   disabled={estimating}
                   className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:px-6"
                 >

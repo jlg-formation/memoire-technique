@@ -11,5 +11,4 @@ export { default as MissionsList } from "./MissionsList";
 
 // State component exports
 export { default as NoProjectSelected } from "./states/NoProjectSelected";
-export { default as MissingRatesWarning } from "./states/MissingRatesWarning";
 export { default as EmptyState } from "./states/EmptyState";
