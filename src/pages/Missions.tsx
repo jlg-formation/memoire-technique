@@ -6,8 +6,6 @@ import type {
   MissionEstimation,
   ParticipatingCompany,
   MobilizedPerson,
-  Mission,
-  MissionCategories,
   CategoryPercentages,
 } from "../types/project";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
@@ -20,86 +18,20 @@ import {
   missionTotal,
   allMissionsTotal,
 } from "../lib/missions/missionCalculations";
+// Import des helpers pour les missions et catégories
+import { getAllMissions } from "../lib/missions/missionHelpers";
+import {
+  getNonEmptyCategories,
+  getCategoryTargetAmount,
+  getTotalTargetAmount,
+} from "../lib/missions/categoryHelpers";
 // Import du composant EmptyState
 import EmptyState from "../components/missions/states/EmptyState";
+// Import du composant NoProjectSelected
+import NoProjectSelected from "../components/missions/states/NoProjectSelected";
 // Import des composants communs
 import MissionHeader from "../components/missions/MissionHeader";
 import InformationPanel from "../components/missions/InformationPanel";
-
-// Helper functions (conservées pour compatibilité)
-const getAllMissions = (missionCategories?: MissionCategories): Mission[] => {
-  if (!missionCategories) return [];
-  return [
-    ...missionCategories.base,
-    ...missionCategories.pse,
-    ...missionCategories.tranchesConditionnelles,
-    ...missionCategories.variantes,
-  ];
-};
-
-const getNonEmptyCategories = (missionCategories?: MissionCategories) => {
-  if (!missionCategories) return [];
-  const categories: Array<{
-    key: keyof MissionCategories;
-    name: string;
-    missions: Mission[];
-    color: string;
-  }> = [];
-
-  if (missionCategories.base.length > 0) {
-    categories.push({
-      key: "base",
-      name: "Missions de Base",
-      missions: missionCategories.base,
-      color: "bg-blue-100 text-blue-700",
-    });
-  }
-  if (missionCategories.pse.length > 0) {
-    categories.push({
-      key: "pse",
-      name: "Prestations Supplémentaires Éventuelles (PSE)",
-      missions: missionCategories.pse,
-      color: "bg-amber-100 text-amber-700",
-    });
-  }
-  if (missionCategories.tranchesConditionnelles.length > 0) {
-    categories.push({
-      key: "tranchesConditionnelles",
-      name: "Tranches Conditionnelles",
-      missions: missionCategories.tranchesConditionnelles,
-      color: "bg-purple-100 text-purple-700",
-    });
-  }
-  if (missionCategories.variantes.length > 0) {
-    categories.push({
-      key: "variantes",
-      name: "Variantes",
-      missions: missionCategories.variantes,
-      color: "bg-green-100 text-green-700",
-    });
-  }
-  return categories;
-};
-
-const getCategoryTargetAmount = (
-  worksAmount: number,
-  percentage: number,
-): number => {
-  return worksAmount * (percentage / 100);
-};
-
-const getTotalTargetAmount = (
-  worksAmount: number,
-  categoryPercentages: CategoryPercentages,
-): number => {
-  const base = categoryPercentages.base || 0;
-  const pse = categoryPercentages.pse || 0;
-  const tranchesConditionnelles =
-    categoryPercentages.tranchesConditionnelles || 0;
-  const variantes = categoryPercentages.variantes || 0;
-  const totalPercentage = base + pse + tranchesConditionnelles + variantes;
-  return worksAmount * (totalPercentage / 100);
-};
 
 export default function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
@@ -123,41 +55,7 @@ export default function Missions() {
   };
 
   if (!currentProject) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
-        <div className="mx-auto max-w-4xl space-y-4 sm:space-y-6">
-          <MissionHeader />
-          <InformationPanel />
-          <div className="rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-pink-50 p-3 shadow-sm sm:p-6">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:h-12 sm:w-12">
-                <svg
-                  className="h-5 w-5 text-red-600 sm:h-6 sm:w-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
-                  />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-red-900 sm:text-lg">
-                  Aucun projet sélectionné
-                </h3>
-                <p className="text-sm text-red-800 sm:text-base">
-                  Veuillez sélectionner un projet pour consulter les missions.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <NoProjectSelected />;
   }
 
   const missionEstimation: MissionEstimation =
