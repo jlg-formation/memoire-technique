@@ -206,92 +206,146 @@ export default function CompanyAccordionWithConstraint({
         </div>
       )}
 
-      {!isConstrained && (
-        <div className="space-y-2 sm:space-y-3">
-          {people.map((person) => {
-            const days = getDays(mission.id, company.id, person.id);
-            const cost = personCost(mission.id, company, person);
-            const justification = getJustification(
-              mission.id,
-              company.id,
-              person.id,
-            );
-            return (
-              <Accordion
-                key={person.id}
-                variant="tertiary"
-                title={
-                  <div className="flex w-full items-center justify-between">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-800 sm:h-8 sm:w-8">
-                        {person.name
-                          .split(" ")
-                          .map((n) => n.charAt(0))
-                          .join("")}
-                      </div>
-                      <span className="text-sm font-medium text-slate-700 sm:text-base">
-                        {person.name}
+      <div className="space-y-2 sm:space-y-3">
+        {people.map((person) => {
+          const days = getDays(mission.id, company.id, person.id);
+          const cost = personCost(mission.id, company, person);
+          const justification = getJustification(
+            mission.id,
+            company.id,
+            person.id,
+          );
+          return (
+            <Accordion
+              key={person.id}
+              variant="tertiary"
+              title={
+                <div className="flex w-full items-center justify-between">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-xs font-medium text-amber-800 sm:h-8 sm:w-8">
+                      {person.name
+                        .split(" ")
+                        .map((n) => n.charAt(0))
+                        .join("")}
+                    </div>
+                    <span
+                      className={`text-sm font-medium sm:text-base ${
+                        isConstrained ? "text-orange-700" : "text-slate-700"
+                      }`}
+                    >
+                      {person.name}
+                    </span>
+                    {isConstrained && (
+                      <span className="rounded bg-orange-100 px-1 py-0.5 text-xs text-orange-700">
+                        contraint
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 sm:gap-3">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <input
+                        type="number"
+                        className={`w-12 rounded border px-1 py-1 text-right text-xs focus:ring-2 sm:w-16 sm:px-2 sm:text-sm ${
+                          isConstrained
+                            ? "border-orange-300 bg-orange-50 text-orange-700 focus:border-orange-400 focus:ring-orange-400"
+                            : "border-slate-300 focus:border-amber-400 focus:ring-amber-400"
+                        }`}
+                        value={days}
+                        onChange={(e) =>
+                          handleChange(
+                            mission.id,
+                            company.id,
+                            person.id,
+                            Number(e.target.value),
+                          )
+                        }
+                        disabled={estimating || isConstrained}
+                        title={
+                          isConstrained
+                            ? "Les jours sont calculés automatiquement pour respecter le prix imposé"
+                            : ""
+                        }
+                      />
+                      <span
+                        className={`hidden text-xs sm:inline ${
+                          isConstrained ? "text-orange-500" : "text-slate-500"
+                        }`}
+                      >
+                        jours
+                      </span>
+                      <span
+                        className={`text-xs sm:hidden ${
+                          isConstrained ? "text-orange-500" : "text-slate-500"
+                        }`}
+                      >
+                        j
                       </span>
                     </div>
-                    <div className="flex items-center gap-1 sm:gap-3">
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <input
-                          type="number"
-                          className="w-12 rounded border border-slate-300 px-1 py-1 text-right text-xs focus:border-amber-400 focus:ring-2 focus:ring-amber-400 sm:w-16 sm:px-2 sm:text-sm"
-                          value={days}
-                          onChange={(e) =>
-                            handleChange(
-                              mission.id,
-                              company.id,
-                              person.id,
-                              Number(e.target.value),
-                            )
-                          }
-                          disabled={estimating}
-                        />
-                        <span className="hidden text-xs text-slate-500 sm:inline">
-                          jours
-                        </span>
-                        <span className="text-xs text-slate-500 sm:hidden">
-                          j
-                        </span>
-                      </div>
-                      <div className="rounded bg-slate-50 px-1 py-1 text-xs text-slate-600 sm:px-2 sm:text-sm">
-                        {person.dailyRate ?? 0}&nbsp;€/j
-                      </div>
-                      <div className="rounded-full bg-amber-50 px-2 py-1 text-sm font-bold text-amber-700 sm:px-3 sm:text-lg">
-                        {cost.toFixed(2)}&nbsp;€
-                      </div>
+                    <div
+                      className={`rounded px-1 py-1 text-xs sm:px-2 sm:text-sm ${
+                        isConstrained
+                          ? "bg-orange-100 text-orange-600"
+                          : "bg-slate-50 text-slate-600"
+                      }`}
+                    >
+                      {person.dailyRate ?? 0}&nbsp;€/j
+                    </div>
+                    <div
+                      className={`rounded-full px-2 py-1 text-sm font-bold sm:px-3 sm:text-lg ${
+                        isConstrained
+                          ? "bg-orange-100 text-orange-700"
+                          : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {cost.toFixed(2)}&nbsp;€
                     </div>
                   </div>
-                }
-              >
-                <div className="mt-2 sm:mt-3">
-                  <label className="mb-1 block text-xs font-medium text-slate-600 sm:mb-2 sm:text-sm">
-                    Justification du nombre de jours
-                  </label>
-                  <EditableTextArea
-                    value={justification}
-                    onChange={(value) =>
-                      handleJustificationChange(
-                        mission.id,
-                        company.id,
-                        person.id,
-                        value,
-                      )
-                    }
-                    placeholder="Expliquez pourquoi ce nombre de jours est nécessaire pour cette mission..."
-                    className="min-h-[60px] w-full resize-none rounded-lg border border-slate-300 px-2 py-2 text-sm focus:border-amber-400 focus:ring-2 focus:ring-amber-400 sm:min-h-[80px] sm:px-3"
-                  />
                 </div>
-              </Accordion>
-            );
-          })}
-        </div>
-      )}
+              }
+            >
+              <div className="mt-2 sm:mt-3">
+                <label
+                  className={`mb-1 block text-xs font-medium sm:mb-2 sm:text-sm ${
+                    isConstrained ? "text-orange-600" : "text-slate-600"
+                  }`}
+                >
+                  Justification du nombre de jours
+                  {isConstrained && (
+                    <span className="ml-2 text-xs font-normal italic">
+                      (calculé pour respecter le prix imposé)
+                    </span>
+                  )}
+                </label>
+                <EditableTextArea
+                  value={justification}
+                  onChange={(value) =>
+                    handleJustificationChange(
+                      mission.id,
+                      company.id,
+                      person.id,
+                      value,
+                    )
+                  }
+                  placeholder={
+                    isConstrained
+                      ? "Justification générée automatiquement par l'IA pour respecter le prix imposé..."
+                      : "Expliquez pourquoi ce nombre de jours est nécessaire pour cette mission..."
+                  }
+                  className={`min-h-[60px] w-full resize-none rounded-lg border px-2 py-2 text-sm focus:ring-2 sm:min-h-[80px] sm:px-3 ${
+                    isConstrained
+                      ? "border-orange-300 bg-orange-50 focus:border-orange-400 focus:ring-orange-400"
+                      : "border-slate-300 focus:border-amber-400 focus:ring-amber-400"
+                  }`}
+                  disabled={isConstrained}
+                />
+              </div>
+            </Accordion>
+          );
+        })}
+      </div>
 
       {isConstrained && (
-        <div className="rounded-lg border border-orange-200 bg-orange-50 p-3">
+        <div className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-3">
           <div className="flex items-center gap-2 text-orange-800">
             <svg
               className="h-5 w-5"
@@ -314,8 +368,8 @@ export default function CompanyAccordionWithConstraint({
             </div>
           </div>
           <div className="mt-2 text-xs text-orange-700">
-            Cette mission a un prix fixe. L'estimation détaillée par personne
-            n'est pas affichée.
+            La répartition des jours ci-dessus a été calculée automatiquement
+            par l'IA pour respecter ce prix imposé.
           </div>
         </div>
       )}

@@ -77,21 +77,9 @@ export async function estimateMissionDaysWithCategories(
     0,
   );
 
-  // Ajuster les budgets par catégorie en déduisant les contraintes
+  // Les budgets par catégorie restent inchangés car l'IA doit respecter le budget total
+  // en ajustant les jours pour les contraintes
   const adjustedCategoryTargetAmounts = { ...categoryTargetAmounts };
-  if (totalConstrainedAmount > 0) {
-    // Répartir proportionnellement la réduction sur chaque catégorie
-    const adjustmentRatio = Math.max(
-      0,
-      (totalTargetAmount - totalConstrainedAmount) / totalTargetAmount,
-    );
-    Object.keys(adjustedCategoryTargetAmounts).forEach((category) => {
-      const key = category as keyof CategoryTargetAmounts;
-      if (adjustedCategoryTargetAmounts[key]) {
-        adjustedCategoryTargetAmounts[key]! *= adjustmentRatio;
-      }
-    });
-  }
 
   // Prompt utilisateur markdown multiligne avec informations par catégorie
   let userPrompt = `# Répartition par catégories de missions
@@ -154,17 +142,18 @@ ${companies
     userPrompt += `
 # Contraintes de prix imposées
 
-**IMPORTANT** : Les missions suivantes ont des prix FIXES imposés par les entreprises. NE PAS estimer ces missions :
+**IMPORTANT** : Les missions suivantes ont des prix FIXES imposés par les entreprises. 
+Tu DOIS QUAND MÊME estimer la décomposition par personne pour ces missions, mais en adaptant les jours pour respecter le montant imposé :
 
 ${priceConstraints
   .map((constraint) => {
     const company = companies.find((c) => c.id === constraint.companyId);
-    return `- Mission ${constraint.missionId} par ${company?.name}: ${constraint.imposedAmount.toLocaleString()} € (${constraint.justification})`;
+    return `- Mission ${constraint.missionId} par ${company?.name}: **EXACTEMENT ${constraint.imposedAmount.toLocaleString()} €** (${constraint.justification})`;
   })
   .join("\n")}
 
 **Total des contraintes**: ${totalConstrainedAmount.toLocaleString()} €
-**Budget restant à estimer**: ${(totalTargetAmount - totalConstrainedAmount).toLocaleString()} €
+**Budget restant à estimer pour les autres missions**: ${(totalTargetAmount - totalConstrainedAmount).toLocaleString()} €
 
 `;
   }
@@ -173,8 +162,8 @@ ${priceConstraints
 **CONTRAINTE PRINCIPALE** : Respecte les budgets par catégorie de missions${priceConstraints.length > 0 ? " ET les contraintes de prix imposées" : ""}. 
 - Le coût total des missions de chaque catégorie doit correspondre exactement au budget alloué à cette catégorie.
 - Répartis les jours de missions en tenant compte des taux journaliers pour atteindre ces budgets.
-${priceConstraints.length > 0 ? "- IGNORE complètement les missions avec des contraintes de prix imposées (ne les estime PAS)." : ""}
-- Budget total à atteindre pour l'estimation : ${(totalTargetAmount - totalConstrainedAmount).toLocaleString()} €
+${priceConstraints.length > 0 ? "- Pour les missions avec contraintes de prix : estime QUAND MÊME la répartition des jours par personne, mais ajuste pour que le total de la mission/entreprise = montant imposé EXACTEMENT." : ""}
+- Budget total à atteindre pour l'estimation : ${totalTargetAmount.toLocaleString()} €
 `;
 
   userPrompt += `
