@@ -74,7 +74,7 @@ function Settings() {
               onClick={handleTest}
               disabled={!tempKey.trim()}
               icon={FlaskConical}
-              className="bg-green-600 border-green-600 hover:bg-green-700 hover:border-green-700"
+              className="border-green-600 bg-green-600 hover:border-green-700 hover:bg-green-700"
             >
               Tester
             </AsyncPrimaryButton>
