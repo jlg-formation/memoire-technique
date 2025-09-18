@@ -14,6 +14,12 @@ import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
 
 // Import du composant pour le rendu des catégories
 import { renderMissionCategory } from "../components/missions/MissionCategoryRenderer.tsx";
+// Import des fonctions de calcul
+import {
+  personCost,
+  missionTotal,
+  allMissionsTotal,
+} from "../lib/missions/missionCalculations";
 
 // Helper functions (conservées pour compatibilité)
 const getAllMissions = (missionCategories?: MissionCategories): Mission[] => {
@@ -291,6 +297,16 @@ export default function Missions() {
   ): number =>
     missionEstimation[missionId]?.[companyId]?.[personId]?.nombreDeJours ?? 0;
 
+  // Calculs avec les fonctions importées
+  const totalAllMissions = allMissionsTotal(missions, companies, getDays);
+  const getMissionTotal = (missionId: string) =>
+    missionTotal(missionId, companies, getDays);
+  const getPersonCost = (
+    missionId: string,
+    company: ParticipatingCompany,
+    person: MobilizedPerson,
+  ) => personCost(missionId, company, person, getDays);
+
   const handleChange = (
     missionId: string,
     companyId: string,
@@ -341,28 +357,6 @@ export default function Missions() {
     };
     updateCurrentProject({ missionEstimations: updated });
   };
-
-  const personCost = (
-    missionId: string,
-    company: ParticipatingCompany,
-    person: MobilizedPerson,
-  ): number =>
-    getDays(missionId, company.id, person.id) * (person.dailyRate ?? 0);
-
-  const missionTotal = (missionId: string): number => {
-    return companies.reduce((total, company) => {
-      const people = company.mobilizedPeople ?? [];
-      return (
-        total +
-        people.reduce((sum, p) => sum + personCost(missionId, company, p), 0)
-      );
-    }, 0);
-  };
-
-  const allMissionsTotal = missions.reduce(
-    (sum: number, mission) => sum + missionTotal(mission.id),
-    0,
-  );
 
   const handleEstimate = async (): Promise<void> => {
     setEstimating(true);
@@ -643,7 +637,7 @@ export default function Missions() {
                   <div className="text-xl font-bold text-blue-700 sm:text-2xl">
                     {estimating
                       ? "Calcul..."
-                      : `${allMissionsTotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}\u00A0€`}
+                      : `${totalAllMissions.toLocaleString(undefined, { maximumFractionDigits: 2 })}\u00A0€`}
                   </div>
                 </div>
                 <div>
@@ -653,7 +647,7 @@ export default function Missions() {
                   <div className="text-xl font-bold text-blue-700 sm:text-2xl">
                     {estimating
                       ? "..."
-                      : `${((allMissionsTotal / worksAmount) * 100).toFixed(2)}\u00A0%`}
+                      : `${((totalAllMissions / worksAmount) * 100).toFixed(2)}\u00A0%`}
                   </div>
                 </div>
               </div>
@@ -686,52 +680,52 @@ export default function Missions() {
                 "Missions de Base",
                 missionCategories.base || [],
                 "bg-blue-100 text-blue-700",
-                missionTotal,
+                getMissionTotal,
                 companies,
                 getDays,
                 handleChange,
                 getJustification,
                 handleJustificationChange,
-                personCost,
+                getPersonCost,
                 estimating,
               )}
               {renderMissionCategory(
                 "Prestations Supplémentaires Éventuelles (PSE)",
                 missionCategories.pse || [],
                 "bg-amber-100 text-amber-700",
-                missionTotal,
+                getMissionTotal,
                 companies,
                 getDays,
                 handleChange,
                 getJustification,
                 handleJustificationChange,
-                personCost,
+                getPersonCost,
                 estimating,
               )}
               {renderMissionCategory(
                 "Tranches Conditionnelles",
                 missionCategories.tranchesConditionnelles || [],
                 "bg-purple-100 text-purple-700",
-                missionTotal,
+                getMissionTotal,
                 companies,
                 getDays,
                 handleChange,
                 getJustification,
                 handleJustificationChange,
-                personCost,
+                getPersonCost,
                 estimating,
               )}
               {renderMissionCategory(
                 "Variantes",
                 missionCategories.variantes || [],
                 "bg-green-100 text-green-700",
-                missionTotal,
+                getMissionTotal,
                 companies,
                 getDays,
                 handleChange,
                 getJustification,
                 handleJustificationChange,
-                personCost,
+                getPersonCost,
                 estimating,
               )}
             </>
@@ -758,7 +752,7 @@ export default function Missions() {
               Total général
             </h3>
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-2xl font-bold text-slate-800 shadow-sm sm:px-6 sm:py-3 sm:text-3xl">
-              {allMissionsTotal.toFixed(2)}&nbsp;€
+              {totalAllMissions.toFixed(2)}&nbsp;€
             </div>
           </div>
         </div>
