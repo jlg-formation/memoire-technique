@@ -7,8 +7,8 @@
 Avant de commiter toujours tester
 
 ```
-bun run format
-bun run lint
+bun run format:changed
+bun run lint:changed
 ```
 
 ### ✅ Builder
