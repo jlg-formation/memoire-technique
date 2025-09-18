@@ -30,3 +30,12 @@ l'utilisateur ecrit en petit negre ses commentaire et l'IA reformule
 ## Generation Memoire
 
 en markdown, en docx à partir d'un template.
+
+## Gerer les gros fichiers
+
+ajouter dans lint une regle pour se proteger des gros fichiers.
+
+## Etat globaux
+
+Quand l'IA est appelee il faut signaler par des etats globaux.
+ex: extraction des missions en cours...

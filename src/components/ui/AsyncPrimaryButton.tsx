@@ -40,7 +40,7 @@ export default function AsyncPrimaryButton({
       }
     >
       {loading && (
-        <Loader2 className="mr-2 inline-block h-4 w-4 animate-spin align-middle" />
+        <Loader2 className="inline-block h-4 w-4 animate-spin align-middle" />
       )}
       {children}
     </ButtonPrimary>

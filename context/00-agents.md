@@ -22,6 +22,12 @@ cela build avec succès.
 
 ---
 
+## Git
+
+Ne pas faire de commande git qui modifie le repository.
+(ex: stager, commiter, etc.)
+Par contre les commande git pour lire le repository sont autorisées.
+
 ## ✅ Convention de commit
 
 Utiliser les **conventional commits** :

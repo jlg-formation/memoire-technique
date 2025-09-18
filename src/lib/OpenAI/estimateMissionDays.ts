@@ -93,14 +93,14 @@ export async function estimateMissionDaysWithCategories(
 
   if (missionCategories.base.length > 0 && adjustedCategoryTargetAmounts.base) {
     userPrompt += `## Missions de Base (Budget: ${adjustedCategoryTargetAmounts.base.toLocaleString()} €)
-${missionCategories.base.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.base.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
 
 `;
   }
 
   if (missionCategories.pse.length > 0 && adjustedCategoryTargetAmounts.pse) {
     userPrompt += `## Prestations Supplémentaires Éventuelles (Budget: ${adjustedCategoryTargetAmounts.pse.toLocaleString()} €)
-${missionCategories.pse.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.pse.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
 
 `;
   }
@@ -110,7 +110,7 @@ ${missionCategories.pse.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
     adjustedCategoryTargetAmounts.tranchesConditionnelles
   ) {
     userPrompt += `## Tranches Conditionnelles (Budget: ${adjustedCategoryTargetAmounts.tranchesConditionnelles.toLocaleString()} €)
-${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
 
 `;
   }
@@ -120,7 +120,7 @@ ${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (id: ${m.id}
     adjustedCategoryTargetAmounts.variantes
   ) {
     userPrompt += `## Variantes (Budget: ${adjustedCategoryTargetAmounts.variantes.toLocaleString()} €)
-${missionCategories.variantes.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.variantes.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
 
 `;
   }

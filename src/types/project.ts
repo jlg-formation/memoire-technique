@@ -36,6 +36,8 @@ export interface NotationItem {
 export interface Mission {
   id: string;
   name: string;
+  /** Sigle de la mission (ex: APS, APD, VISA, etc.) */
+  sigle: string;
 }
 
 export interface MissionCategories {

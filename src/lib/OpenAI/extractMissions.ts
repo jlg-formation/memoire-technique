@@ -17,14 +17,26 @@ export default async function extractMissions(
 - Tranches Conditionnelles : missions qui dépendent de conditions spécifiques
 - Variantes : alternatives aux missions de base
 
+Pour chaque mission identifiée, extrait aussi son sigle/acronyme (ex: APS, APD, VISA, EXE, DET, ACT, etc.) si mentionné dans le texte.
+
 Réponds uniquement en JSON au format :
 {
-  "base": ["mission base 1", "mission base 2"],
-  "pse": ["PSE 1", "PSE 2"],
-  "tranchesConditionnelles": ["tranche 1", "tranche 2"],
-  "variantes": ["variante 1", "variante 2"]
+  "base": [
+    {"name": "Avant-Projet Sommaire", "sigle": "APS"},
+    {"name": "Avant-Projet Détaillé", "sigle": "APD"}
+  ],
+  "pse": [
+    {"name": "Mission diagnostic", "sigle": "DIAG"}
+  ],
+  "tranchesConditionnelles": [
+    {"name": "Tranche conditionnelle 1", "sigle": null}
+  ],
+  "variantes": [
+    {"name": "Variante béton", "sigle": null}
+  ]
 }
 
+Si tu ne trouves pas de sigle pour une mission, utilise null pour la propriété sigle.
 Si une catégorie n'a pas de missions, utilise un tableau vide []`,
       },
       {
@@ -38,12 +50,27 @@ Si une catégorie n'a pas de missions, utilise un tableau vide []`,
   try {
     const parsed = JSON.parse(content);
 
-    // Fonction helper pour convertir les noms en objets Mission
-    const createMissions = (names: string[], categoryPrefix: string) =>
-      names.map((name, index) => ({
-        id: `${categoryPrefix}-${index + 1}`,
-        name: name,
-      }));
+    // Fonction helper pour convertir les objets ou noms en objets Mission
+    const createMissions = (
+      items: Array<string | { name: string; sigle?: string | null }>,
+      categoryPrefix: string,
+    ) =>
+      items.map((item, index) => {
+        // Support des deux formats pour compatibilité descendante
+        if (typeof item === "string") {
+          return {
+            id: `${categoryPrefix}-${index + 1}`,
+            name: item,
+            sigle: "XXX", // Valeur par défaut quand pas de sigle
+          };
+        } else {
+          return {
+            id: `${categoryPrefix}-${index + 1}`,
+            name: item.name,
+            sigle: item.sigle || "XXX", // Initialiser à XXX si null/undefined
+          };
+        }
+      });
 
     return {
       base: createMissions(parsed.base || [], "base"),

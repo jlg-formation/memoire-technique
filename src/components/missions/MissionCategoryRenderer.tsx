@@ -107,12 +107,14 @@ export const renderMissionCategory = (
               title={
                 <div className="flex w-full items-center justify-between">
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800 sm:h-8 sm:w-8 sm:text-sm">
-                      {mission.name.charAt(0)}
+                    <span className="inline-flex items-center justify-center rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 sm:text-sm">
+                      {mission.sigle}
                     </span>
-                    <span className="text-base font-semibold text-slate-800 sm:text-lg">
-                      {mission.name}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-base font-semibold text-slate-800 sm:text-lg">
+                        {mission.name}
+                      </span>
+                    </div>
                   </div>
                   <span className="rounded-full bg-blue-50 px-2 py-1 text-base font-bold text-blue-700 sm:px-3 sm:text-xl">
                     {missionCost.toFixed(2)}&nbsp;€

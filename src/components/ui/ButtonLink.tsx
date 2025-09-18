@@ -13,7 +13,7 @@ export function ButtonLink({
 }: ButtonLinkProps) {
   return (
     <button
-      className={`bg-transparent px-4 py-2 font-semibold text-blue-600 transition-colors hover:text-blue-800 hover:underline focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none ${
+      className={`flex items-center justify-center gap-2 bg-transparent px-4 py-2 font-semibold text-blue-600 transition-colors hover:text-blue-800 hover:underline focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none ${
         disabled
           ? "cursor-not-allowed text-gray-400 hover:no-underline"
           : "cursor-pointer"
