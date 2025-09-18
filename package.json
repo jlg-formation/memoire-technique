@@ -7,8 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "lint:changed": "bun ./scripts/lint-changed.ts",
     "preview": "vite preview",
-    "format": "prettier -w ."
+    "format": "prettier -w .",
+    "format:changed": "bun ./scripts/format-changed.ts"
   },
   "dependencies": {
     "localforage": "^1.10.0",
