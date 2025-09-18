@@ -8,6 +8,7 @@ export { default as EstimationPanel } from "./EstimationPanel";
 export { default as CategoryPercentageCard } from "./CategoryPercentageCard";
 export { default as TotalSummary } from "./TotalSummary";
 export { default as MissionsList } from "./MissionsList";
+export { MissionCategoriesDisplay } from "./MissionCategoriesDisplay";
 
 // State component exports
 export { default as NoProjectSelected } from "./states/NoProjectSelected";

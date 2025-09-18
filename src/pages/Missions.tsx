@@ -1,25 +1,16 @@
 import InformationPanel from "../components/missions/InformationPanel";
 import EstimationPanel from "../components/missions/EstimationPanel";
 import TotalSummary from "../components/missions/TotalSummary";
-import { renderMissionCategory } from "../components/missions/MissionCategoryRenderer.tsx";
+import { MissionCategoriesDisplay } from "../components/missions/MissionCategoriesDisplay";
 import MissionHeader from "../components/missions/MissionHeader";
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
 import NoProjectSelected from "../components/missions/states/NoProjectSelected";
 import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
-import {
-  allMissionsTotal,
-  missionTotal,
-  personCost,
-} from "../lib/missions/missionCalculations";
+import { allMissionsTotal } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
-import {
-  useMissionData,
-  useMissionEstimation,
-  useMissionChanges,
-} from "../hooks/missions";
+import { useMissionData, useMissionEstimation } from "../hooks/missions";
 import { useProjectStore } from "../store/useProjectStore";
-import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 export default function Missions() {
   const { currentProject } = useProjectStore();
@@ -37,11 +28,7 @@ export default function Missions() {
     worksAmount,
     missingRates,
     getDays,
-    getJustification,
   } = useMissionData(currentProject);
-
-  const { handleChange, handleJustificationChange } =
-    useMissionChanges(missionEstimation);
 
   if (!currentProject) {
     return <NoProjectSelected />;
@@ -64,13 +51,6 @@ export default function Missions() {
 
   // Calculs avec les fonctions importées
   const totalAllMissions = allMissionsTotal(missions, companies, getDays);
-  const getMissionTotal = (missionId: string) =>
-    missionTotal(missionId, companies, getDays);
-  const getPersonCost = (
-    missionId: string,
-    company: ParticipatingCompany,
-    person: MobilizedPerson,
-  ) => personCost(missionId, company, person, getDays);
 
   if (!missions.length || !companies.length) {
     return <EmptyState />;
@@ -114,60 +94,7 @@ export default function Missions() {
           </h2>
 
           {missionCategories && (
-            <>
-              {renderMissionCategory(
-                "Missions de Base",
-                missionCategories.base || [],
-                "bg-blue-100 text-blue-700",
-                getMissionTotal,
-                companies,
-                getDays,
-                handleChange,
-                getJustification,
-                handleJustificationChange,
-                getPersonCost,
-                estimating,
-              )}
-              {renderMissionCategory(
-                "Prestations Supplémentaires Éventuelles (PSE)",
-                missionCategories.pse || [],
-                "bg-amber-100 text-amber-700",
-                getMissionTotal,
-                companies,
-                getDays,
-                handleChange,
-                getJustification,
-                handleJustificationChange,
-                getPersonCost,
-                estimating,
-              )}
-              {renderMissionCategory(
-                "Tranches Conditionnelles",
-                missionCategories.tranchesConditionnelles || [],
-                "bg-purple-100 text-purple-700",
-                getMissionTotal,
-                companies,
-                getDays,
-                handleChange,
-                getJustification,
-                handleJustificationChange,
-                getPersonCost,
-                estimating,
-              )}
-              {renderMissionCategory(
-                "Variantes",
-                missionCategories.variantes || [],
-                "bg-green-100 text-green-700",
-                getMissionTotal,
-                companies,
-                getDays,
-                handleChange,
-                getJustification,
-                handleJustificationChange,
-                getPersonCost,
-                estimating,
-              )}
-            </>
+            <MissionCategoriesDisplay missionEstimation={missionEstimation} />
           )}
         </div>
 
