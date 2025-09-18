@@ -75,16 +75,13 @@ export function useMissionEstimation() {
         );
       }
 
-      // Utiliser la nouvelle fonction avec les catégories
-      const result = await estimateMissionDaysWithCategories(
+      const missionEstimations = await estimateMissionDaysWithCategories(
         missionCategories,
         companies,
         categoryTargetAmounts,
       );
 
-      updateCurrentProject({
-        missionEstimations: result,
-      });
+      updateCurrentProject({ missionEstimations });
     } catch (err) {
       console.error(err);
     }
