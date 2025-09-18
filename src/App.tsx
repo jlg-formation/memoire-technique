@@ -7,6 +7,7 @@ import ProjectEditRoute from "./pages/ProjectEditRoute";
 import Equipes from "./pages/Equipes";
 import MarketDocs from "./pages/MarketDocs";
 import Missions from "./pages/Missions";
+import MissionPercentages from "./pages/MissionPercentages";
 import Planning from "./pages/Planning";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
@@ -70,6 +71,10 @@ function App() {
             />
             <Route path="/documents" element={<MarketDocs />} />
             <Route path="/missions" element={<Missions />} />
+            <Route
+              path="/missions/pourcentages"
+              element={<MissionPercentages />}
+            />
             <Route path="/planning" element={<Planning />} />
             <Route path="/notation" element={<Notation />} />
             <Route path="/parametres" element={<Settings />} />

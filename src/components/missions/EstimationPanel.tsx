@@ -6,6 +6,8 @@ import {
   getTotalTargetAmount,
 } from "../../lib/missions";
 import { Sparkles, BarChart3 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { ButtonPrimary } from "../ui";
 
 interface EstimationPanelProps {
   worksAmount: number;
@@ -23,8 +25,6 @@ interface EstimationPanelProps {
   onEstimate: () => Promise<void>;
   estimating: boolean;
   allMissionsTotal: number;
-  onEstimatePercentages: () => Promise<void>;
-  estimatingPercentages: boolean;
 }
 
 export default function EstimationPanel({
@@ -35,9 +35,8 @@ export default function EstimationPanel({
   onEstimate,
   estimating,
   allMissionsTotal,
-  onEstimatePercentages,
-  estimatingPercentages,
 }: EstimationPanelProps) {
+  const navigate = useNavigate();
   const totalTargetAmount = getTotalTargetAmount(
     worksAmount,
     categoryPercentages,
@@ -129,16 +128,15 @@ export default function EstimationPanel({
             </div>
           </div>
 
-          {/* Bouton Estimer pourcentages IA */}
+          {/* Bouton Estimer pourcentages */}
           <div className="flex justify-center">
-            <AsyncPrimaryButton
-              onClick={onEstimatePercentages}
-              disabled={estimatingPercentages}
+            <ButtonPrimary
+              onClick={() => navigate("/missions/pourcentages")}
               className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 sm:px-6"
-              icon={BarChart3}
             >
-              Estimer pourcentages IA
-            </AsyncPrimaryButton>
+              <BarChart3 className="mr-2 h-4 w-4" />
+              Estimer pourcentage
+            </ButtonPrimary>
           </div>
         </div>
 
