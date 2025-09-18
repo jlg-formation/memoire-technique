@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 // import supprimé, la clé est gérée par la fonction utilitaire
-import { estimateMissionDays } from "../lib/OpenAI";
+import { estimateMissionDaysWithCategories } from "../lib/OpenAI";
+import type { CategoryTargetAmounts } from "../lib/OpenAI";
 import type {
   MissionEstimation,
   ParticipatingCompany,
   MobilizedPerson,
   Mission,
   MissionCategories,
+  CategoryPercentages,
 } from "../types/project";
 import { EditableTextArea } from "../components/ui";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
@@ -23,6 +25,79 @@ const getAllMissions = (missionCategories?: MissionCategories): Mission[] => {
     ...missionCategories.tranchesConditionnelles,
     ...missionCategories.variantes,
   ];
+};
+
+// Helper function pour obtenir les catégories non vides
+const getNonEmptyCategories = (missionCategories?: MissionCategories) => {
+  if (!missionCategories) return [];
+
+  const categories: Array<{
+    key: keyof MissionCategories;
+    name: string;
+    missions: Mission[];
+    color: string;
+  }> = [];
+
+  if (missionCategories.base.length > 0) {
+    categories.push({
+      key: "base",
+      name: "Missions de Base",
+      missions: missionCategories.base,
+      color: "bg-blue-100 text-blue-700",
+    });
+  }
+
+  if (missionCategories.pse.length > 0) {
+    categories.push({
+      key: "pse",
+      name: "Prestations Supplémentaires Éventuelles (PSE)",
+      missions: missionCategories.pse,
+      color: "bg-amber-100 text-amber-700",
+    });
+  }
+
+  if (missionCategories.tranchesConditionnelles.length > 0) {
+    categories.push({
+      key: "tranchesConditionnelles",
+      name: "Tranches Conditionnelles",
+      missions: missionCategories.tranchesConditionnelles,
+      color: "bg-purple-100 text-purple-700",
+    });
+  }
+
+  if (missionCategories.variantes.length > 0) {
+    categories.push({
+      key: "variantes",
+      name: "Variantes",
+      missions: missionCategories.variantes,
+      color: "bg-green-100 text-green-700",
+    });
+  }
+
+  return categories;
+};
+
+// Helper function pour calculer le montant cible d'une catégorie
+const getCategoryTargetAmount = (
+  worksAmount: number,
+  percentage: number,
+): number => {
+  return worksAmount * (percentage / 100);
+};
+
+// Helper function pour calculer le montant cible total
+const getTotalTargetAmount = (
+  worksAmount: number,
+  categoryPercentages: CategoryPercentages,
+): number => {
+  const base = categoryPercentages.base || 0;
+  const pse = categoryPercentages.pse || 0;
+  const tranchesConditionnelles =
+    categoryPercentages.tranchesConditionnelles || 0;
+  const variantes = categoryPercentages.variantes || 0;
+
+  const totalPercentage = base + pse + tranchesConditionnelles + variantes;
+  return worksAmount * (totalPercentage / 100);
 };
 
 // Helper function pour afficher les missions d'une catégorie
@@ -246,7 +321,23 @@ function Missions() {
   const { currentProject, updateCurrentProject } = useProjectStore();
   // apiKey est maintenant géré par la fonction utilitaire
   const [estimating, setEstimating] = useState(false);
-  const [percentage, setPercentage] = useState<number>(8);
+
+  // Initialiser les pourcentages par catégorie avec des valeurs par défaut
+  const categoryPercentages = currentProject?.categoryPercentages || {};
+  const nonEmptyCategories = currentProject?.missions
+    ? getNonEmptyCategories(currentProject.missions)
+    : [];
+
+  const updateCategoryPercentage = (
+    category: keyof CategoryPercentages,
+    percentage: number,
+  ) => {
+    const updated: CategoryPercentages = {
+      ...categoryPercentages,
+      [category]: percentage,
+    };
+    updateCurrentProject({ categoryPercentages: updated });
+  };
 
   if (!currentProject) {
     return (
@@ -349,7 +440,10 @@ function Missions() {
   const missions = getAllMissions(missionCategories);
   const companies = currentProject.participatingCompanies ?? [];
   const worksAmount = currentProject.worksAmount ?? 0;
-  const targetAmount = worksAmount * (percentage / 100);
+  const totalTargetAmount = getTotalTargetAmount(
+    worksAmount,
+    categoryPercentages,
+  );
   const missingRates = companies.flatMap((company) =>
     (company.mobilizedPeople ?? []).filter((p) => !p.dailyRate),
   );
@@ -554,12 +648,54 @@ function Missions() {
   const handleEstimate = async (): Promise<void> => {
     setEstimating(true);
     try {
-      // On transmet le montant cible à l'IA via le prompt
-      const result = await estimateMissionDays(
-        missions,
+      if (!missionCategories) {
+        throw new Error("Aucune catégorie de missions disponible");
+      }
+
+      // Construire les montants cibles par catégorie
+      const categoryTargetAmounts: CategoryTargetAmounts = {};
+
+      if (missionCategories.base.length > 0 && categoryPercentages.base) {
+        categoryTargetAmounts.base = getCategoryTargetAmount(
+          worksAmount,
+          categoryPercentages.base,
+        );
+      }
+
+      if (missionCategories.pse.length > 0 && categoryPercentages.pse) {
+        categoryTargetAmounts.pse = getCategoryTargetAmount(
+          worksAmount,
+          categoryPercentages.pse,
+        );
+      }
+
+      if (
+        missionCategories.tranchesConditionnelles.length > 0 &&
+        categoryPercentages.tranchesConditionnelles
+      ) {
+        categoryTargetAmounts.tranchesConditionnelles = getCategoryTargetAmount(
+          worksAmount,
+          categoryPercentages.tranchesConditionnelles,
+        );
+      }
+
+      if (
+        missionCategories.variantes.length > 0 &&
+        categoryPercentages.variantes
+      ) {
+        categoryTargetAmounts.variantes = getCategoryTargetAmount(
+          worksAmount,
+          categoryPercentages.variantes,
+        );
+      }
+
+      // Utiliser la nouvelle fonction avec les catégories
+      const result = await estimateMissionDaysWithCategories(
+        missionCategories,
         companies,
-        targetAmount,
+        categoryTargetAmounts,
       );
+
       updateCurrentProject({
         missionEstimations: result,
       });
@@ -730,7 +866,7 @@ function Missions() {
 
         {/* Estimation Panel */}
         <div className="rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 p-3 shadow-sm sm:p-6">
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-4 sm:space-y-6">
             <h3 className="flex items-center gap-2 text-lg font-semibold text-emerald-900 sm:text-xl">
               <svg
                 className="h-5 w-5 sm:h-6 sm:w-6"
@@ -748,57 +884,138 @@ function Missions() {
               Estimation financière
             </h3>
 
-            <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {/* Montant des travaux */}
-              <div className="rounded-lg border border-emerald-100 bg-white p-3 sm:p-4">
-                <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
-                  Montant global des travaux
-                </label>
-                <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
-                  {worksAmount.toLocaleString()}&nbsp;€
-                </div>
+            {/* Montant des travaux */}
+            <div className="rounded-lg border border-emerald-100 bg-white p-4 sm:p-6">
+              <label className="mb-2 block text-sm font-medium text-slate-600">
+                Montant global des travaux
+              </label>
+              <div className="text-2xl font-bold text-emerald-700 sm:text-3xl">
+                {worksAmount.toLocaleString()}&nbsp;€
+              </div>
+            </div>
+
+            {/* Pourcentages par catégorie */}
+            <div className="space-y-4">
+              <h4 className="text-base font-semibold text-emerald-800 sm:text-lg">
+                Pourcentages par catégorie de missions
+              </h4>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2">
+                {nonEmptyCategories.map((category) => {
+                  const percentage = categoryPercentages[category.key] || 0;
+                  const targetAmount = getCategoryTargetAmount(
+                    worksAmount,
+                    percentage,
+                  );
+
+                  return (
+                    <div
+                      key={category.key}
+                      className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+                    >
+                      <div className="mb-3 flex items-center gap-2">
+                        <div className={`rounded-lg p-2 ${category.color}`}>
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex-1">
+                          <h5 className="text-sm font-semibold text-slate-800">
+                            {category.name}
+                          </h5>
+                          <p className="text-xs text-slate-500">
+                            {category.missions.length} mission
+                            {category.missions.length > 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div>
+                          <label className="mb-1 block text-xs font-medium text-slate-600">
+                            Pourcentage de l'offre
+                          </label>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              step={0.01}
+                              value={percentage}
+                              onChange={(e) =>
+                                updateCategoryPercentage(
+                                  category.key,
+                                  Number(e.target.value),
+                                )
+                              }
+                              className="flex-1 rounded-md border border-slate-300 px-3 py-2 text-right text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500"
+                              placeholder="0.00"
+                            />
+                            <span className="text-sm font-medium text-slate-600">
+                              %
+                            </span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="mb-1 block text-xs font-medium text-slate-600">
+                            Montant cible
+                          </label>
+                          <div className="text-lg font-bold text-emerald-700">
+                            {targetAmount.toLocaleString(undefined, {
+                              maximumFractionDigits: 2,
+                            })}
+                            &nbsp;€
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
-              {/* Pourcentage */}
-              <div className="rounded-lg border border-emerald-100 bg-white p-3 sm:p-4">
-                <label
-                  htmlFor="percentage"
-                  className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm"
-                >
-                  Pourcentage de l'offre
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    id="percentage"
-                    type="number"
-                    min={0.001}
-                    max={100}
-                    step={0.001}
-                    value={percentage}
-                    onChange={(e) => setPercentage(Number(e.target.value))}
-                    className="w-16 rounded-md border border-slate-300 px-2 py-1 text-right text-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 sm:w-20 sm:px-3 sm:py-2"
-                  />
-                  <span className="text-sm font-medium text-slate-600">%</span>
-                </div>
-              </div>
-
-              {/* Montant cible */}
-              <div className="rounded-lg border border-emerald-100 bg-white p-3 sm:p-4">
-                <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
-                  Montant cible de l'offre
-                </label>
-                <div className="text-xl font-bold text-emerald-700 sm:text-2xl">
-                  {targetAmount.toLocaleString(undefined, {
-                    maximumFractionDigits: 2,
-                  })}
-                  &nbsp;€
+              {/* Total des pourcentages et montants */}
+              <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-emerald-800">
+                      Pourcentage total
+                    </label>
+                    <div className="text-xl font-bold text-emerald-700">
+                      {Object.values(categoryPercentages)
+                        .reduce((sum, p) => sum + (p || 0), 0)
+                        .toFixed(2)}
+                      &nbsp;%
+                    </div>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-emerald-800">
+                      Montant cible total
+                    </label>
+                    <div className="text-xl font-bold text-emerald-700">
+                      {totalTargetAmount.toLocaleString(undefined, {
+                        maximumFractionDigits: 2,
+                      })}
+                      &nbsp;€
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Estimation IA */}
-            <div className="rounded-lg border border-blue-200 bg-white p-3 sm:p-4">
-              <div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="rounded-lg border border-blue-200 bg-white p-4 sm:p-6">
+              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h4 className="flex items-center gap-2 text-base font-semibold text-blue-900 sm:text-lg">
                   <svg
                     className="h-4 w-4 sm:h-5 sm:w-5"
@@ -826,7 +1043,7 @@ function Missions() {
                 </AsyncPrimaryButton>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-slate-600 sm:text-sm">
                     Montant estimé IA

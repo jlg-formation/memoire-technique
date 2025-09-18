@@ -6,8 +6,14 @@ export type { MethodologyScore } from "./extractMethodologyScores";
 export { default as extractConsultationInfo } from "./extractConsultationInfo";
 export type { ConsultationInfo } from "./extractConsultationInfo";
 export { default as extractMissions } from "./extractMissions";
-export { estimateMissionDays } from "./estimateMissionDays";
-export type { MissionDayEstimation } from "./estimateMissionDays";
+export {
+  estimateMissionDays,
+  estimateMissionDaysWithCategories,
+} from "./estimateMissionDays";
+export type {
+  MissionDayEstimation,
+  CategoryTargetAmounts,
+} from "./estimateMissionDays";
 export { default as generateMemoire } from "./generateMemoire";
 export { default as extractPlanningConstraints } from "./extractPlanningConstraints";
 export { default as generatePlanning } from "./generatePlanning";

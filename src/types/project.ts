@@ -45,6 +45,13 @@ export interface MissionCategories {
   variantes: Mission[];
 }
 
+export interface CategoryPercentages {
+  base?: number;
+  pse?: number;
+  tranchesConditionnelles?: number;
+  variantes?: number;
+}
+
 export type MissionEstimation = {
   [missionId: string]: {
     [companyId: string]: {
@@ -86,6 +93,8 @@ export interface Project {
   missions?: MissionCategories;
   /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
   missionEstimations?: MissionEstimation;
+  /** Pourcentages de l'offre par catégorie de missions */
+  categoryPercentages?: CategoryPercentages;
   /** Texte résumant les contraintes de planning extraites de l'AE */
   planningSummary?: string;
   /** Planning généré par l'IA en Markdown */
