@@ -129,7 +129,8 @@ export default function FileAIUpload({
         }
       `}</style>
 
-      <div className="flex items-center gap-2">
+      {/* Zone d'icône avec espace réservé permanent */}
+      <div className="flex h-6 min-w-[32px] items-center justify-center gap-2">
         {isExtracting ? (
           <span
             className="text-2xl font-bold text-gray-600"
@@ -144,7 +145,9 @@ export default function FileAIUpload({
           <span className="text-sm font-medium text-gray-800">✗</span>
         ) : analysisStep && analysisStep.startsWith("Analyse terminée") ? (
           <Check className="h-6 w-6 text-gray-700" />
-        ) : null}
+        ) : (
+          <div className="h-6 w-6"></div>
+        )}
       </div>
 
       {isExtracting && (

@@ -5,6 +5,7 @@ import {
   getCategoryTargetAmount,
   getTotalTargetAmount,
 } from "../../lib/missions";
+import { Sparkles, BarChart3 } from "lucide-react";
 
 interface EstimationPanelProps {
   worksAmount: number;
@@ -82,10 +83,9 @@ export default function EstimationPanel({
               onClick={onEstimatePercentages}
               disabled={estimatingPercentages}
               className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 sm:px-6"
+              icon={BarChart3}
             >
-              {estimatingPercentages
-                ? "Estimation IA..."
-                : "Estimer pourcentages IA"}
+              Estimer pourcentages IA
             </AsyncPrimaryButton>
           </div>
 
@@ -165,8 +165,9 @@ export default function EstimationPanel({
               onClick={onEstimate}
               disabled={estimating}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:px-6"
+              icon={Sparkles}
             >
-              {estimating ? "Estimation..." : "Estimer par IA"}
+              Estimer par IA
             </AsyncPrimaryButton>
           </div>
 

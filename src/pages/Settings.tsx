@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useOpenAIKeyStore } from "../store/useOpenAIKeyStore";
 import { testKey } from "../lib/OpenAI";
-import { ButtonPrimary, AccentButton } from "../components/ui";
+import { ButtonPrimary } from "../components/ui";
+import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
+import { TestTube } from "lucide-react";
 
 function Settings() {
   const { apiKey, setApiKey } = useOpenAIKeyStore(); // gestion locale uniquement
@@ -16,7 +18,6 @@ function Settings() {
   };
 
   const handleTest = async () => {
-    setStatus("testing");
     try {
       const ok = await testKey();
       setStatus(ok ? "success" : "error");
@@ -69,37 +70,41 @@ function Settings() {
             <ButtonPrimary type="button" onClick={handleSave}>
               Enregistrer
             </ButtonPrimary>
-            <AccentButton
-              type="button"
+            <AsyncPrimaryButton
               onClick={handleTest}
-              disabled={status === "testing" || !tempKey.trim()}
+              disabled={!tempKey.trim()}
+              icon={TestTube}
             >
-              {status === "testing" ? "Test en cours..." : "Tester"}
-            </AccentButton>
+              Tester
+            </AsyncPrimaryButton>
           </div>
         </div>
       </div>
 
-      {(status === "success" || status === "error") && (
-        <div className="mt-4 rounded-md border p-4">
-          {status === "success" && (
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded-full bg-green-500"></div>
-              <span className="text-sm font-medium text-green-800">
-                Clé API valide et fonctionnelle
-              </span>
-            </div>
-          )}
-          {status === "error" && (
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded-full bg-red-500"></div>
-              <span className="text-sm font-medium text-red-800">
-                Impossible de vérifier la clé API
-              </span>
-            </div>
-          )}
-        </div>
-      )}
+      {/* Zone de statut avec espace réservé permanent */}
+      <div className="mt-4 flex min-h-[60px] items-center rounded-md border p-4">
+        {status === "success" && (
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-4 rounded-full bg-green-500"></div>
+            <span className="text-sm font-medium text-green-800">
+              Clé API valide et fonctionnelle
+            </span>
+          </div>
+        )}
+        {status === "error" && (
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-4 rounded-full bg-red-500"></div>
+            <span className="text-sm font-medium text-red-800">
+              Impossible de vérifier la clé API
+            </span>
+          </div>
+        )}
+        {status === "idle" && (
+          <span className="text-sm text-gray-500">
+            Cliquez sur "Tester" pour vérifier votre clé API
+          </span>
+        )}
+      </div>
     </div>
   );
 }
