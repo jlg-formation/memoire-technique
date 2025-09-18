@@ -2,14 +2,14 @@ import type {
   Mission,
   MissionCategories,
   CategoryPercentages,
+  Project,
 } from "../../types/project";
 
 /**
  * Obtient les catégories non vides avec leurs métadonnées
  */
-export const getNonEmptyCategories = (
-  missionCategories?: MissionCategories,
-) => {
+export const getNonEmptyCategories = (currentProject: Project | null) => {
+  const missionCategories = currentProject?.missions;
   if (!missionCategories) return [];
 
   const categories: Array<{
