@@ -81,14 +81,12 @@ export default function MissionPercentages() {
   };
 
   const nonEmptyCategories = useMemo(
-    () => (currentProject ? getNonEmptyCategories(currentProject) : []),
+    () => getNonEmptyCategories(currentProject),
     [currentProject],
   );
 
   // Initialiser les pourcentages équitables au montage du composant
   useEffect(() => {
-    if (!currentProject) return;
-
     const initializeEqualPercentages = () => {
       const initialized: CategoryMissionPercentageInputs = {
         base: {},
@@ -137,25 +135,6 @@ export default function MissionPercentages() {
       initializeEqualPercentages();
     }
   }, [currentProject, nonEmptyCategories]);
-
-  // Si pas de projet, redirection
-  if (!currentProject) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-        <div className="mx-auto max-w-4xl">
-          <div className="rounded-lg bg-white p-8 text-center">
-            <p className="text-lg text-gray-600">Aucun projet sélectionné</p>
-            <ButtonPrimary
-              onClick={() => navigate("/projects")}
-              className="mt-4"
-            >
-              Sélectionner un projet
-            </ButtonPrimary>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // Fonction pour mettre à jour une valeur d'entrée (string)
   const updateInputValue = (

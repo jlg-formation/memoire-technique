@@ -28,8 +28,8 @@ export const findMissionCategory = (
 /**
  * Obtient les catégories non vides avec leurs métadonnées
  */
-export const getNonEmptyCategories = (currentProject: Project | null) => {
-  const missionCategories = currentProject?.missions;
+export const getNonEmptyCategories = (currentProject: Project) => {
+  const missionCategories = currentProject.missions;
   if (!missionCategories) return [];
 
   const categories: Array<{

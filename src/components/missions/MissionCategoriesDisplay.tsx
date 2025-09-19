@@ -2,7 +2,7 @@ import { renderMissionCategory } from "./MissionCategoryRenderer";
 import { useMissionData } from "../../hooks/missions/useMissionData";
 import { useMissionChanges } from "../../hooks/missions/useMissionChanges";
 import { useMissionEstimation } from "../../hooks/missions/useMissionEstimation";
-import { useProjectStore } from "../../store/useProjectStore";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import {
   missionTotalWithConstraints,
   personCost,
@@ -56,7 +56,7 @@ export function MissionCategoriesDisplay({
   constraints,
   onUpdateConstraints,
 }: MissionCategoriesDisplayProps) {
-  const { currentProject } = useProjectStore();
+  const { currentProject } = useCurrentProject();
 
   // Utilisation des hooks existants pour récupérer les données et fonctions
   const { missionCategories, companies, getDays, getJustification } =

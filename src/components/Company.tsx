@@ -9,7 +9,7 @@ import type { ParticipatingCompany, Project } from "../types/project";
 interface CompanyProps {
   company: ParticipatingCompany;
   companies: ParticipatingCompany[];
-  currentProject: Project | null;
+  currentProject: Project;
   summaryWords: number;
   onUpdate: (updatedCompany: ParticipatingCompany) => void;
   onDelete: (companyId: string) => void;
@@ -37,13 +37,13 @@ function Company({
 
   const showMandataireRadio =
     companies.length > 1 &&
-    currentProject?.groupType !== undefined &&
-    currentProject?.groupType !== "seule";
+    currentProject.groupType !== undefined &&
+    currentProject.groupType !== "seule";
 
   const showMandataireContact =
-    currentProject?.mandataireId === company.id &&
-    currentProject?.groupType !== undefined &&
-    currentProject?.groupType !== "seule";
+    currentProject.mandataireId === company.id &&
+    currentProject.groupType !== undefined &&
+    currentProject.groupType !== "seule";
 
   return (
     <li className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
@@ -52,7 +52,7 @@ function Company({
           <input
             type="radio"
             name="mandataire"
-            checked={currentProject?.mandataireId === company.id}
+            checked={currentProject.mandataireId === company.id}
             onChange={() => onMandataireChange(company.id)}
             className="h-4 w-4 cursor-pointer text-blue-600 focus:ring-blue-500"
           />
@@ -146,7 +146,7 @@ function Company({
           </label>
           <select
             className="w-full cursor-pointer rounded-md border border-gray-300 p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:text-base"
-            value={currentProject?.mandataireContactId ?? ""}
+            value={currentProject.mandataireContactId ?? ""}
             onChange={(e) =>
               onMandataireContactChange(e.target.value || undefined)
             }
