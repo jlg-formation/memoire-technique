@@ -83,64 +83,68 @@ function Sidebar({ isOpen, onClose }: SidebarProps) {
                 ? `Projet : ${currentProject.nomCourt}`
                 : "Projets"}
             </NavLink>
-            <NavLink
-              to="/documents"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Pièces marché
-            </NavLink>
-            <NavLink
-              to="/notation"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Notation
-            </NavLink>
-            <NavLink
-              to="/equipes"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Equipes
-            </NavLink>
+            {currentProject && (
+              <>
+                <NavLink
+                  to="/documents"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Pièces marché
+                </NavLink>
+                <NavLink
+                  to="/notation"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Notation
+                </NavLink>
+                <NavLink
+                  to="/equipes"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Equipes
+                </NavLink>
 
-            <NavLink
-              to="/missions"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Missions
-            </NavLink>
-            <NavLink
-              to="/planning"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Planning
-            </NavLink>
+                <NavLink
+                  to="/missions"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Missions
+                </NavLink>
+                <NavLink
+                  to="/planning"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Planning
+                </NavLink>
 
-            <NavLink
-              to="/memoire"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Mémoire
-            </NavLink>
-            <NavLink
-              to="/debug"
-              className={({ isActive }) =>
-                `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
-              }
-            >
-              Debug
-            </NavLink>
+                <NavLink
+                  to="/memoire"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Mémoire
+                </NavLink>
+                <NavLink
+                  to="/debug"
+                  className={({ isActive }) =>
+                    `mb-2 cursor-pointer rounded px-2 py-1 ${isActive ? "bg-blue-500 text-white" : "text-blue-500"}`
+                  }
+                >
+                  Debug
+                </NavLink>
+              </>
+            )}
           </>
         )}
       </nav>

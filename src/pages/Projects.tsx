@@ -28,8 +28,13 @@ import {
 } from "lucide-react";
 
 function Projects() {
-  const { projects, currentProject, deleteProject, setProject } =
-    useProjectStore();
+  const {
+    projects,
+    currentProject,
+    deleteProject,
+    setProject,
+    clearCurrentProject,
+  } = useProjectStore();
   const navigate = useNavigate();
 
   const [currentView, setCurrentView] = useState<"list" | "import" | "edit">(
@@ -50,6 +55,16 @@ function Projects() {
 
   const handleEditProject = (project: Project): void => {
     navigate(`/projects/${project.slug}/edit`);
+  };
+
+  const handleProjectClick = (project: Project): void => {
+    if (currentProject?.id === project.id) {
+      // Si le projet est déjà sélectionné, le désélectionner
+      clearCurrentProject();
+    } else {
+      // Sinon, le sélectionner
+      setProject(project);
+    }
   };
 
   // Suppression de handleCloseEdit, non utilisé
@@ -159,7 +174,7 @@ function Projects() {
                     ? "border-blue-500 ring-2 ring-blue-200"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
-                onClick={() => setProject(project)}
+                onClick={() => handleProjectClick(project)}
               >
                 <div className="mb-4">
                   <h3 className="mb-2 line-clamp-2 font-semibold text-gray-900">
