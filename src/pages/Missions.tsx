@@ -86,9 +86,7 @@ export default function Missions() {
           categoryPercentages={categoryPercentages}
           nonEmptyCategories={nonEmptyCategories}
           updateCategoryPercentage={updateCategoryPercentage}
-          onEstimate={() =>
-            handleEstimate(missionCategories!, companies, worksAmount)
-          }
+          onEstimate={() => handleEstimate(missionCategories!)}
           estimating={estimating}
           allMissionsTotal={totalAllMissions}
         />

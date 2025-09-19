@@ -14,6 +14,14 @@ export function useMissionData(currentProject: Project | null) {
       tranchesConditionnelles: {},
       variantes: {},
     };
+
+  // Debug logs
+  console.log("🔍 Hook useMissionData - missionEstimation:", missionEstimation);
+  console.log(
+    "🔍 Hook useMissionData - currentProject?.missionEstimations:",
+    currentProject?.missionEstimations,
+  );
+
   const missionCategories = currentProject?.missions;
   const companies = currentProject?.participatingCompanies ?? [];
   const worksAmount = currentProject?.worksAmount ?? 0;

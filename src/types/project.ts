@@ -98,6 +98,77 @@ export interface MissionPriceConstraint {
   justification: string;
 }
 
+// Pipeline types for mission estimation refactoring
+export interface ProjectAnalysis {
+  /** Type d'ouvrage identifié (ex: "scolaire", "renovation-patrimoniale", "logement-social") */
+  buildingType: string;
+  /** Complexités techniques spécifiques identifiées */
+  technicalComplexities: string[];
+  /** Enjeux particuliers mentionnés dans le CCTP */
+  specificChallenges: string[];
+  /** Phases critiques du projet */
+  criticalPhases: string[];
+  /** Compétences clés requises par mission */
+  requiredSkillsByMission: { [missionId: string]: string[] };
+  /** Contraintes réglementaires spécifiques */
+  regulatoryConstraints: string[];
+  /** Technologies ou méthodes imposées */
+  mandatedTechnologies: string[];
+}
+
+export interface PersonAllocation {
+  personId: string;
+  /** Nombre de jours attribués à cette personne */
+  days: number;
+  /** Montant correspondant (jours × taux journalier) */
+  amount: number;
+  /** Justification technique de l'attribution */
+  technicalReason: string;
+}
+
+export interface CompanyMissionAllocation {
+  companyId: string;
+  /** Répartition par personne mobilisée */
+  people: PersonAllocation[];
+  /** Montant total pour cette entreprise sur cette mission */
+  totalAmount: number;
+}
+
+export interface MissionAllocation {
+  missionId: string;
+  /** Répartition par entreprise */
+  companies: CompanyMissionAllocation[];
+  /** Montant total de la mission */
+  totalAmount: number;
+}
+
+export interface CategoryAllocation {
+  /** Missions de cette catégorie */
+  missions: MissionAllocation[];
+  /** Montant total de la catégorie */
+  totalAmount: number;
+  /** Montant cible pour cette catégorie */
+  targetAmount: number;
+}
+
+export interface BaseBudgetAllocation {
+  base?: CategoryAllocation;
+  pse?: CategoryAllocation;
+  tranchesConditionnelles?: CategoryAllocation;
+  variantes?: CategoryAllocation;
+}
+
+export interface OptimizedBudgetAllocation extends BaseBudgetAllocation {
+  /** Ajustements appliqués pour respecter les contraintes */
+  appliedAdjustments: {
+    missionId: string;
+    companyId: string;
+    originalAmount: number;
+    constrainedAmount: number;
+    adjustment: number;
+  }[];
+}
+
 export interface Project {
   id: string;
   /** Titre de la consultation extrait du RC */
