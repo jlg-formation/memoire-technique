@@ -44,14 +44,43 @@ function MobilizedPersonCreate({
     }
   };
 
+  // Fonction utilitaire pour valider le representativeId
+  const validateRepresentativeId = (
+    representativeId: string | undefined,
+    mobilizedPeople: MobilizedPerson[],
+  ): string | undefined => {
+    if (!representativeId) return undefined;
+
+    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
+    const isValid = mobilizedPeople.some(
+      (person) => person.id === representativeId,
+    );
+
+    return isValid ? representativeId : undefined;
+  };
+
   const handleSave = (person: MobilizedPerson) => {
     if (onSave) {
       onSave(person);
     } else {
       // Logique de sauvegarde par défaut pour le routage
+      const updatedPeople = [...(company.mobilizedPeople ?? []), person];
+
+      // Valider le representativeId existant et l'effacer s'il n'est pas valide
+      let representativeId = validateRepresentativeId(
+        company.representativeId,
+        updatedPeople,
+      );
+
+      // Si pas de représentant valide et qu'il y a des personnes mobilisées, assigner la nouvelle personne
+      if (!representativeId && updatedPeople.length > 0) {
+        representativeId = person.id;
+      }
+
       const updated = {
         ...company,
-        mobilizedPeople: [...(company.mobilizedPeople ?? []), person],
+        mobilizedPeople: updatedPeople,
+        representativeId,
       };
       updateCurrentProject({
         participatingCompanies: currentProject?.participatingCompanies?.map(
