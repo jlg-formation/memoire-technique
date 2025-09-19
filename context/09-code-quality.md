@@ -65,6 +65,7 @@
 - Maintain consistent design system
 - Implement responsive design
 - Avoid inline styles
+- use only Lucide React icons. Avoid inline SVG.
 
 ## 10. Testing
 

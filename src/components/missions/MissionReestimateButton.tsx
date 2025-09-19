@@ -21,19 +21,7 @@ export function MissionReestimateButton({
     <div className="mb-4 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-3">
       <div className="flex items-center gap-3">
         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
-          <svg
-            className="h-4 w-4 text-emerald-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
+          <CheckCircle className="h-4 w-4 text-emerald-600" />
         </div>
         <div>
           <h4 className="text-sm font-medium text-emerald-900">

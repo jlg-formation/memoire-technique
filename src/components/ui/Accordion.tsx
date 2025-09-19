@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { ChevronDown } from "lucide-react";
 
 type AccordionProps = {
   title: React.ReactNode; // Updated to accept JSX elements
@@ -61,22 +62,11 @@ const Accordion: React.FC<AccordionProps> = ({
         onClick={toggleAccordion}
       >
         {title}
-        <svg
+        <ChevronDown
           className={`h-4 w-4 flex-shrink-0 text-slate-500 transition-transform duration-200 sm:h-5 sm:w-5 ${
             isOpen ? "rotate-180" : ""
           }`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        />
       </div>
       {isOpen && (
         <div

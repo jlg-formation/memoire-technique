@@ -7,6 +7,7 @@ import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton"
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
 import NoProjectSelected from "../components/missions/states/NoProjectSelected";
+import { Briefcase } from "lucide-react";
 import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
 import { allMissionsTotalWithConstraints } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
@@ -94,19 +95,7 @@ export default function Missions() {
         {/* Missions List - Utilise les composants décomposés */}
         <div className="space-y-3 sm:space-y-4">
           <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-800 sm:text-2xl">
-            <svg
-              className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              />
-            </svg>
+            <Briefcase className="h-5 w-5 text-blue-600 sm:h-6 sm:w-6" />
             Détail des missions par catégories
           </h2>
 

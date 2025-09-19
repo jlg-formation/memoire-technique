@@ -8,7 +8,7 @@ import {
 import { estimateRecommendedPercentages } from "../lib/OpenAI";
 import { ButtonPrimary, Button } from "../components/ui";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
-import { ArrowLeft, Sparkles, Save } from "lucide-react";
+import { ArrowLeft, Sparkles, Save, BarChart3 } from "lucide-react";
 import type {
   CategoryMissionPercentages,
   RecommendedMissionPercentages,
@@ -298,19 +298,7 @@ export default function MissionPercentages() {
           </Button>
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-emerald-100 p-2">
-              <svg
-                className="h-6 w-6 text-emerald-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"
-                />
-              </svg>
+              <BarChart3 className="h-6 w-6 text-emerald-600" />
             </div>
             <h1 className="text-2xl font-bold text-slate-800 sm:text-3xl">
               Pourcentages par Mission
