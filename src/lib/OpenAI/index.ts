@@ -16,3 +16,4 @@ export { default as generateMemoire } from "./generateMemoire";
 export { default as extractPlanningConstraints } from "./extractPlanningConstraints";
 export { default as generatePlanning } from "./generatePlanning";
 export { default as generateDocumentTitle } from "./generateDocumentTitle";
+export { default as extractMissionDescriptions } from "./extractMissionDescriptions";

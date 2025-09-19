@@ -3,6 +3,7 @@ import EstimationPanel from "../components/missions/EstimationPanel";
 import TotalSummary from "../components/missions/TotalSummary";
 import { MissionCategoriesDisplay } from "../components/missions/MissionCategoriesDisplay";
 import MissionHeader from "../components/missions/MissionHeader";
+import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton";
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
 import NoProjectSelected from "../components/missions/states/NoProjectSelected";
@@ -71,6 +72,14 @@ export default function Missions() {
       <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
         <MissionHeader />
         <InformationPanel />
+
+        {/* Bouton CCTP - placé juste après le panneau informatif */}
+        {missionCategories && (
+          <CCTPDescriptionButton
+            missionCategories={missionCategories}
+            marketDocuments={currentProject?.marketDocuments || []}
+          />
+        )}
 
         <EstimationPanel
           worksAmount={worksAmount}

@@ -38,6 +38,8 @@ export interface Mission {
   name: string;
   /** Sigle de la mission (ex: APS, APD, VISA, etc.) */
   sigle: string;
+  /** Description détaillée extraite du CCTP */
+  description?: string;
 }
 
 export interface MissionCategories {
