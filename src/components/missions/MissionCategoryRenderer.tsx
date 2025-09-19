@@ -1,6 +1,7 @@
 import Accordion from "../ui/Accordion";
 import CompanyAccordionWithConstraint from "./CompanyAccordionWithConstraint";
 import PercentageComparison from "./PercentageComparison";
+import { EditableTextArea } from "../ui/EditableTextArea";
 import type {
   Mission,
   ParticipatingCompany,
@@ -44,6 +45,10 @@ export const renderMissionCategory = (
   onUpdateConstraints: (constraints: MissionPriceConstraint[]) => void,
   aiRecommendedPercentages?: AIRecommendedPercentages,
   categoryKey?: keyof AIRecommendedPercentages,
+  handleMissionDescriptionChange?: (
+    missionId: string,
+    description: string,
+  ) => void,
 ) => {
   if (categoryMissions.length === 0) return null;
 
@@ -180,6 +185,21 @@ export const renderMissionCategory = (
                     );
                   })}
                 </div>
+                {/* Description de la mission */}
+                {handleMissionDescriptionChange && (
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <EditableTextArea
+                      value={mission.description || ""}
+                      onChange={(description) =>
+                        handleMissionDescriptionChange(mission.id, description)
+                      }
+                      placeholder="Saisir la description de la mission..."
+                      rows={3}
+                      label="Description de la mission"
+                      className="bg-white"
+                    />
+                  </div>
+                )}
               </div>
             </Accordion>
           );

@@ -65,8 +65,29 @@ export function useMissionChanges(missionEstimation: MissionEstimation) {
     updateCurrentProject({ missionEstimations: updated });
   };
 
+  const handleMissionDescriptionChange = (
+    missionId: string,
+    description: string,
+  ): void => {
+    if (!currentProject?.missions) return;
+
+    const updatedMissions = { ...currentProject.missions };
+
+    // Trouve la catégorie contenant la mission
+    const category = findMissionCategory(missionId, currentProject.missions);
+    if (!category) return;
+
+    // Met à jour la description de la mission dans la catégorie appropriée
+    updatedMissions[category] = updatedMissions[category].map((mission) =>
+      mission.id === missionId ? { ...mission, description } : mission,
+    );
+
+    updateCurrentProject({ missions: updatedMissions });
+  };
+
   return {
     handleChange,
     handleJustificationChange,
+    handleMissionDescriptionChange,
   };
 }

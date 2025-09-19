@@ -62,8 +62,11 @@ export function MissionCategoriesDisplay({
   const { missionCategories, companies, getDays, getJustification } =
     useMissionData(currentProject);
 
-  const { handleChange, handleJustificationChange } =
-    useMissionChanges(missionEstimation);
+  const {
+    handleChange,
+    handleJustificationChange,
+    handleMissionDescriptionChange,
+  } = useMissionChanges(missionEstimation);
 
   const { estimating } = useMissionEstimation();
 
@@ -103,6 +106,7 @@ export function MissionCategoriesDisplay({
           onUpdateConstraints,
           currentProject?.aiRecommendedPercentages,
           categoryConfig.key,
+          handleMissionDescriptionChange,
         );
       })}
     </>
