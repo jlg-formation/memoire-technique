@@ -16,7 +16,7 @@ import type {
 } from "../../types/project";
 
 interface MissionCategoriesDisplayProps {
-  missionEstimation: ProjectEstimation;
+  projectEstimation: ProjectEstimation;
   constraints: MissionPriceConstraint[];
   onUpdateConstraints: (constraints: MissionPriceConstraint[]) => void;
 }
@@ -52,7 +52,7 @@ const CATEGORY_CONFIG: CategoryConfig[] = [
 ];
 
 export function MissionCategoriesDisplay({
-  missionEstimation,
+  projectEstimation: missionEstimation,
   constraints,
   onUpdateConstraints,
 }: MissionCategoriesDisplayProps) {

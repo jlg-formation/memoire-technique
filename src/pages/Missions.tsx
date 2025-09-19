@@ -101,7 +101,7 @@ export default function Missions() {
 
           {missionCategories && (
             <MissionCategoriesDisplay
-              missionEstimation={missionEstimation}
+              projectEstimation={missionEstimation}
               constraints={currentProject?.missionPriceConstraints || []}
               onUpdateConstraints={handleUpdateConstraints}
             />

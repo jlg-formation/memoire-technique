@@ -2,7 +2,7 @@ import { useProjectStore } from "../../store/useProjectStore";
 import type { ProjectEstimation } from "../../types/project";
 import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
-export function useMissionChanges(missionEstimation: ProjectEstimation) {
+export function useMissionChanges(projectEstimation: ProjectEstimation) {
   const { updateCurrentProject, currentProject } = useProjectStore();
 
   const handleChange = (
@@ -15,23 +15,23 @@ export function useMissionChanges(missionEstimation: ProjectEstimation) {
     if (!category) return;
 
     const updated: ProjectEstimation = {
-      ...missionEstimation,
+      ...projectEstimation,
       [category]: {
-        ...missionEstimation[category],
+        ...projectEstimation[category],
         missions: {
-          ...missionEstimation[category]?.missions,
+          ...projectEstimation[category]?.missions,
           [missionId]: {
-            ...missionEstimation[category]?.missions?.[missionId],
+            ...projectEstimation[category]?.missions?.[missionId],
             companies: {
-              ...missionEstimation[category]?.missions?.[missionId]?.companies,
+              ...projectEstimation[category]?.missions?.[missionId]?.companies,
               [companyId]: {
-                ...missionEstimation[category]?.missions?.[missionId]
+                ...projectEstimation[category]?.missions?.[missionId]
                   ?.companies?.[companyId],
                 persons: {
-                  ...missionEstimation[category]?.missions?.[missionId]
+                  ...projectEstimation[category]?.missions?.[missionId]
                     ?.companies?.[companyId]?.persons,
                   [personId]: {
-                    ...missionEstimation[category]?.missions?.[missionId]
+                    ...projectEstimation[category]?.missions?.[missionId]
                       ?.companies?.[companyId]?.persons?.[personId],
                     nombreDeJours: days,
                   },
@@ -55,23 +55,23 @@ export function useMissionChanges(missionEstimation: ProjectEstimation) {
     if (!category) return;
 
     const updated: ProjectEstimation = {
-      ...missionEstimation,
+      ...projectEstimation,
       [category]: {
-        ...missionEstimation[category],
+        ...projectEstimation[category],
         missions: {
-          ...missionEstimation[category]?.missions,
+          ...projectEstimation[category]?.missions,
           [missionId]: {
-            ...missionEstimation[category]?.missions?.[missionId],
+            ...projectEstimation[category]?.missions?.[missionId],
             companies: {
-              ...missionEstimation[category]?.missions?.[missionId]?.companies,
+              ...projectEstimation[category]?.missions?.[missionId]?.companies,
               [companyId]: {
-                ...missionEstimation[category]?.missions?.[missionId]
+                ...projectEstimation[category]?.missions?.[missionId]
                   ?.companies?.[companyId],
                 persons: {
-                  ...missionEstimation[category]?.missions?.[missionId]
+                  ...projectEstimation[category]?.missions?.[missionId]
                     ?.companies?.[companyId]?.persons,
                   [personId]: {
-                    ...missionEstimation[category]?.missions?.[missionId]
+                    ...projectEstimation[category]?.missions?.[missionId]
                       ?.companies?.[companyId]?.persons?.[personId],
                     justification: text,
                   },
