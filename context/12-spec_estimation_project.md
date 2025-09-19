@@ -27,16 +27,27 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 ## 🔹 Étape 2 – Intégration des contraintes
 
 ### Input
-- Les entreprises ayant déjà chiffré certaines missions.
+- Liste des entreprises ayant transmis des chiffrages contraints.
+- Pour chaque mission : montant imposé pour l’entreprise.
 
 ### Output
-- Dans `missionEstimations`, les personnes concernées reçoivent :
+- Dans `missionEstimations`, au niveau de `companyAllocations` :
   ```ts
-  { days: X, amount: Y, justification: "...", locked: true }
+  {
+    companyId: "BET-STRUC",
+    totalAmount: 5000,       // imposé par l’entreprise
+    locked: true             // verrouillage au niveau entreprise
+  }
   ```
 
+- Les `personAllocations` internes à cette entreprise restent **libres**.
+- L’IA doit donc :
+  - répartir ce montant entre les personnes (`days × dailyRate`),
+  - **s’assurer que la somme = totalAmount**.
+
 ### Objectif
-- **Verrouiller les chiffrages imposés** par certaines entreprises → l’IA ne peut pas les modifier.
+- Respecter strictement les contraintes de prix des cotraitants.
+- Préserver la liberté de la MOE dans la justification interne (qui fait quoi et combien de jours).
 
 ---
 
@@ -79,6 +90,12 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
   \]
 - **Pourcentage par catégorie** = somme des missions d’une catégorie.
 - **Écart** = % obtenu – % attendu.
+
+### Contrôles supplémentaires
+- Pour chaque entreprise contrainte :
+  \[
+  \sum personAllocations.amount = companyAllocation.totalAmount
+  \]
 
 ### Output
 - Mise à jour des champs :
