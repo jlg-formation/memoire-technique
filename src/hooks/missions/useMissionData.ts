@@ -1,5 +1,5 @@
 import type {
-  MissionEstimation,
+  ProjectEstimation,
   ParticipatingCompany,
   MobilizedPerson,
   Project,
@@ -7,7 +7,7 @@ import type {
 import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
 export function useMissionData(currentProject: Project | null) {
-  const missionEstimation: MissionEstimation =
+  const missionEstimation: ProjectEstimation =
     currentProject?.missionEstimations ?? {
       base: {},
       pse: {},

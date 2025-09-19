@@ -1,4 +1,4 @@
-import type { MissionEstimation, Project } from "../../types/project";
+import type { ProjectEstimation, Project } from "../../types/project";
 import { estimateMissionDaysWithCategoriesPipeline } from "./missionEstimationPipeline";
 
 export type MissionDayEstimation = {
@@ -36,7 +36,7 @@ export interface CategoryTargetAmounts {
  */
 export async function estimateMissionDaysWithCategories(
   currentProject: Project,
-): Promise<MissionEstimation> {
+): Promise<ProjectEstimation> {
   console.log("🚀 Estimation des missions avec le pipeline conforme à la spec");
 
   try {

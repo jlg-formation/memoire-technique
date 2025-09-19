@@ -76,17 +76,23 @@ export interface RecommendedMissionPercentages {
   variantes?: CategoryMissionPercentages;
 }
 
-export type MissionEstimation = {
-  [category in keyof MissionCategories]: {
-    [missionId: string]: {
-      [companyId: string]: {
-        [personId: string]: {
-          nombreDeJours: number;
-          justification: string;
-        };
-      };
-    };
+export type CompanyEstimation = {
+  [personId: string]: {
+    nombreDeJours: number;
+    justification: string;
   };
+};
+
+export type MissionEstimation = {
+  [companyId: string]: CompanyEstimation;
+};
+
+export type CategoryEstimation = {
+  [missionId: string]: MissionEstimation;
+};
+
+export type ProjectEstimation = {
+  [category in keyof MissionCategories]: CategoryEstimation;
 };
 
 export interface MissionPriceConstraint {
@@ -198,7 +204,7 @@ export interface Project {
   /** Liste des missions du projet organisées par catégories */
   missions?: MissionCategories;
   /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
-  missionEstimations?: MissionEstimation;
+  missionEstimations?: ProjectEstimation;
   /** Pourcentages de l'offre par catégorie de missions */
   categoryPercentages?: CategoryPercentages;
   /** Pourcentages recommandés par l'IA selon l'état de l'art du métier */

@@ -1,5 +1,5 @@
 import type {
-  MissionEstimation,
+  ProjectEstimation,
   Project,
   MissionCategories,
 } from "../../types/project";
@@ -46,7 +46,7 @@ interface EnhancedEstimationResult {
 
 export async function estimateMissionDaysWithCategoriesPipeline(
   project: Project,
-): Promise<MissionEstimation> {
+): Promise<ProjectEstimation> {
   // Étape 1: Initialisation de la structure
   const enhancedEstimation = initializeEstimationStructure(project);
 
@@ -474,8 +474,8 @@ function generateFinalSynthesis(
 // Conversion vers le format legacy pour compatibilité
 function convertToLegacyFormat(
   estimation: EnhancedEstimationResult,
-): MissionEstimation {
-  const result: MissionEstimation = {
+): ProjectEstimation {
+  const result: ProjectEstimation = {
     base: {},
     pse: {},
     tranchesConditionnelles: {},

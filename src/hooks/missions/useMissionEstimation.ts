@@ -7,7 +7,7 @@ import {
 import type {
   CategoryPercentages,
   MissionCategories,
-  MissionEstimation,
+  ProjectEstimation,
 } from "../../types/project";
 
 export function useMissionEstimation() {
@@ -116,7 +116,7 @@ export function useMissionEstimation() {
       };
 
       // Créer une copie des estimations actuelles
-      const updatedEstimations: MissionEstimation = {
+      const updatedEstimations: ProjectEstimation = {
         base: { ...currentEstimations.base },
         pse: { ...currentEstimations.pse },
         tranchesConditionnelles: {

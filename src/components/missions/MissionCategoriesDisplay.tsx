@@ -8,7 +8,7 @@ import {
   personCost,
 } from "../../lib/missions/missionCalculations";
 import type {
-  MissionEstimation,
+  ProjectEstimation,
   MissionCategories,
   MissionPriceConstraint,
   MobilizedPerson,
@@ -16,7 +16,7 @@ import type {
 } from "../../types/project";
 
 interface MissionCategoriesDisplayProps {
-  missionEstimation: MissionEstimation;
+  missionEstimation: ProjectEstimation;
   constraints: MissionPriceConstraint[];
   onUpdateConstraints: (constraints: MissionPriceConstraint[]) => void;
 }

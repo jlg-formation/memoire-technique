@@ -1,7 +1,7 @@
 import type {
   Project,
   MissionCategories,
-  MissionEstimation,
+  ProjectEstimation,
   Mission,
 } from "../../types/project";
 import createClient from "./client";
@@ -41,7 +41,7 @@ interface RigorousEstimationResponse {
 export async function performRigorousEstimation(
   project: Project,
   missionId?: string, // Si fourni, ne réestime que cette mission
-): Promise<MissionEstimation> {
+): Promise<ProjectEstimation> {
   if (!project) {
     throw new Error("Projet requis pour l'estimation rigoureuse");
   }
@@ -330,7 +330,7 @@ FORMAT DE RÉPONSE REQUIS: JSON strictement conforme au schéma suivant`;
     }
 
     // Conversion vers le format MissionEstimation
-    const missionEstimation: MissionEstimation = {
+    const missionEstimation: ProjectEstimation = {
       base: {},
       pse: {},
       tranchesConditionnelles: {},
