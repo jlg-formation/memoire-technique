@@ -114,7 +114,15 @@ Pour chaque mission, fournis :
     userPrompt += `### Missions de Base
 Les missions de base représentent généralement 70-80% du total du projet selon la loi MOP.
 Liste des missions :
-${missionCategories.base.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.base
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -123,7 +131,15 @@ ${missionCategories.base.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
     userPrompt += `### Prestations Supplémentaires Éventuelles (PSE)
 Les PSE représentent généralement 10-20% du total du projet selon les standards du métier.
 Liste des missions :
-${missionCategories.pse.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.pse
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -132,7 +148,15 @@ ${missionCategories.pse.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
     userPrompt += `### Tranches Conditionnelles
 Les tranches conditionnelles varient selon le projet mais représentent généralement 5-15% du total.
 Liste des missions :
-${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.tranchesConditionnelles
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -141,7 +165,15 @@ ${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (id: ${m.id}
     userPrompt += `### Variantes
 Les variantes représentent généralement 2-10% du total du projet selon la complexité.
 Liste des missions :
-${missionCategories.variantes.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")}
+${missionCategories.variantes
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -168,8 +200,9 @@ ${missionCategories.variantes.map((m) => `- ${m.name} (id: ${m.id})`).join("\n")
 
 1. **Cohérence** : Les pourcentages doivent être cohérents avec l'état de l'art du métier
 2. **Total par catégorie** : La somme des categoryPercentage d'une catégorie doit être proche de 100%
-3. **Justification précise** : Chaque pourcentage doit être justifié par une référence aux standards du métier
-4. **Réalisme** : Les pourcentages doivent refléter la charge de travail réelle de chaque mission
+3. **Justification spécifique** : Chaque pourcentage doit être justifié en tenant compte des descriptions CCTP quand elles sont disponibles, et adapté aux spécificités du projet
+4. **Réalisme** : Les pourcentages doivent refléter la charge de travail réelle de chaque mission telle qu'elle apparaît dans le CCTP
+5. **Éviter les généralités** : Au lieu de justifications génériques, référence les aspects techniques particuliers du projet
 
 ## Format de réponse attendu
 
@@ -200,7 +233,8 @@ Réponds au format JSON suivant :
     {
       role: "system",
       content: `Tu es un expert économiste de la construction avec 20 ans d'expérience dans la répartition budgétaire selon la loi MOP et les standards du métier.
-Tu connais parfaitement les pourcentages types pour chaque phase de mission et peux les adapter selon le contexte du projet.`,
+Tu connais parfaitement les pourcentages types pour chaque phase de mission et peux les adapter selon le contexte et les spécificités techniques du projet.
+IMPORTANT : Quand des descriptions CCTP sont fournies, adapte tes estimations et justifications aux particularités du projet décrites dans ces textes.`,
     },
     {
       role: "user",

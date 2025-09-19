@@ -290,10 +290,7 @@ export default function MissionPercentages() {
       <div className="mx-auto max-w-5xl space-y-4 sm:space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Button
-            onClick={() => navigate("/missions")}
-            className="flex items-center gap-2 rounded-lg bg-gray-600 px-3 py-2 text-white hover:bg-gray-700"
-          >
+          <Button onClick={() => navigate("/missions")}>
             <ArrowLeft className="h-4 w-4" />
             Retour
           </Button>

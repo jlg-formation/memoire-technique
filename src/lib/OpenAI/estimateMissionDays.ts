@@ -93,14 +93,30 @@ export async function estimateMissionDaysWithCategories(
 
   if (missionCategories.base.length > 0 && adjustedCategoryTargetAmounts.base) {
     userPrompt += `## Missions de Base (Budget: ${adjustedCategoryTargetAmounts.base.toLocaleString()} €)
-${missionCategories.base.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
+${missionCategories.base
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
 
   if (missionCategories.pse.length > 0 && adjustedCategoryTargetAmounts.pse) {
     userPrompt += `## Prestations Supplémentaires Éventuelles (Budget: ${adjustedCategoryTargetAmounts.pse.toLocaleString()} €)
-${missionCategories.pse.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
+${missionCategories.pse
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -110,7 +126,15 @@ ${missionCategories.pse.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).joi
     adjustedCategoryTargetAmounts.tranchesConditionnelles
   ) {
     userPrompt += `## Tranches Conditionnelles (Budget: ${adjustedCategoryTargetAmounts.tranchesConditionnelles.toLocaleString()} €)
-${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
+${missionCategories.tranchesConditionnelles
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -120,7 +144,15 @@ ${missionCategories.tranchesConditionnelles.map((m) => `- ${m.name} (${m.sigle})
     adjustedCategoryTargetAmounts.variantes
   ) {
     userPrompt += `## Variantes (Budget: ${adjustedCategoryTargetAmounts.variantes.toLocaleString()} €)
-${missionCategories.variantes.map((m) => `- ${m.name} (${m.sigle}) (id: ${m.id})`).join("\n")}
+${missionCategories.variantes
+  .map((m) => {
+    let missionInfo = `- ${m.name} (${m.sigle}) (id: ${m.id})`;
+    if (m.description) {
+      missionInfo += `\n  **Description CCTP**: ${m.description}`;
+    }
+    return missionInfo;
+  })
+  .join("\n")}
 
 `;
   }
@@ -175,10 +207,14 @@ ${priceConstraints.length > 0 ? "- Pour les missions avec contraintes de prix : 
 IMPORTANT : Respecte strictement les contraintes suivantes :
 - Chaque mission peut être réalisée par plusieurs personnes. Répartis les jours de manière optimale entre les intervenants disponibles.
 - Évite d'attribuer zéro jour à une personne mobilisée, sauf si cela est clairement justifié par un manque de pertinence ou de compétence pour la mission.
-- Fournis des justifications détaillées pour chaque attribution, en mentionnant les compétences, l'expérience ou la pertinence de chaque personne pour la mission.
+- Fournis des justifications détaillées et spécifiques pour chaque attribution, en tenant compte de :
+  * Les descriptions CCTP de chaque mission (si disponibles) pour adapter l'estimation aux spécificités du projet
+  * Les compétences particulières, l'expérience ou la pertinence de chaque personne pour les exigences spécifiques de la mission
+  * Les aspects techniques ou complexités particulières mentionnées dans le CCTP
 - Dans les justifications, mentionne toujours le prénom et le nom complet de chaque salarié mobilisé. Évite les familiarités ou les formulations informelles.
 - Les représentants des entreprises doivent être préférés aux autres personnes mobilisées pour les missions, car ils sont les interlocuteurs principaux.
-- Pour l'entreprise mandataire d'un groupement, l'architecte doit être priorisé pour les missions de coordination et de communication avec le maître d'ouvrage (MOA).`;
+- Pour l'entreprise mandataire d'un groupement, l'architecte doit être priorisé pour les missions de coordination et de communication avec le maître d'ouvrage (MOA).
+- ÉVITE LES JUSTIFICATIONS GÉNÉRIQUES : au lieu de dire "expérience en maîtrise d'œuvre", mentionne les aspects spécifiques du projet ou de la mission tels qu'ils apparaissent dans le CCTP.`;
 
   userPrompt += `
 Pour t'aider dans le chiffrage, voici une répartition moyenne des rémunérations dans une mission complète de maîtrise d'œuvre loi MOP :
@@ -257,7 +293,8 @@ Réponds au format JSON suivant :
     {
       role: "system",
       content: `Tu es un économiste de la construction spécialisé dans la répartition budgétaire par catégories de missions.
-Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification détaillée en respectant les budgets par catégorie.`,
+Pour chaque mission, chaque entreprise, chaque personne mobilisée de l'entreprise, propose un nombre de jours et une justification détaillée en respectant les budgets par catégorie.
+IMPORTANT : Base tes justifications sur les spécificités du projet et les descriptions techniques fournies dans le CCTP. Évite les formulations génériques et adapte ton raisonnement aux particularités de chaque mission telles qu'elles sont décrites.`,
     },
     {
       role: "user",
