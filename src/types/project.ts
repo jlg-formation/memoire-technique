@@ -190,39 +190,39 @@ export interface Project {
   /** Titre de la consultation extrait du RC */
   consultationTitle: string;
   /** Nom court du projet généré par l'IA */
-  nomCourt?: string;
+  nomCourt: string;
   /** Date limite de remise des offres au format ISO */
   submissionDeadline: string;
   /** Heure limite de remise des offres au format HH:mm */
-  submissionTime?: string;
+  submissionTime: string;
   /** Montant global des travaux en euros HT */
-  worksAmount?: number;
+  worksAmount: number;
   creationDate: string;
   lastUpdateDate: string;
   /** Slug lisible pour l'URL */
   slug: string;
-  groupType?: "solidaire" | "conjoint" | "seule";
-  participatingCompanies?: ParticipatingCompany[];
+  groupType: "solidaire" | "conjoint" | "seule";
+  participatingCompanies: ParticipatingCompany[];
   mandataireId?: string;
   /** Identifiant de la personne mobilisée responsable pour la mission */
-  mandataireContactId?: string;
-  marketDocuments?: MarketDocument[];
+  mandataireContactId: string | undefined;
+  marketDocuments: MarketDocument[];
   /** Contenu HTML du mémoire technique généré */
-  memoHtml?: string;
+  memoHtml: string;
   /** Barème de la note méthodologique extrait du RC */
-  notation?: NotationItem[];
+  notation: NotationItem[];
   /** Liste des missions du projet organisées par catégories */
-  missions?: MissionCategories;
+  missions: MissionCategories;
   /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
-  projectEstimation?: ProjectEstimation;
+  projectEstimation: ProjectEstimation;
   /** Pourcentages de l'offre par catégorie de missions */
-  categoryPercentages?: CategoryPercentages;
+  categoryPercentages: CategoryPercentages;
   /** Pourcentages recommandés par l'IA selon l'état de l'art du métier */
-  recommendedPercentages?: RecommendedMissionPercentages;
+  recommendedPercentages: RecommendedMissionPercentages;
   /** Contraintes de prix imposées par les entreprises */
-  missionPriceConstraints?: MissionPriceConstraint[];
+  missionPriceConstraints: MissionPriceConstraint[];
   /** Texte résumant les contraintes de planning extraites de l'AE */
-  planningSummary?: string;
+  planningSummary: string;
   /** Planning généré par l'IA en Markdown */
-  planningText?: string;
+  planningText: string;
 }

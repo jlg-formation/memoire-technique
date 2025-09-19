@@ -71,10 +71,10 @@ function ProjectEdit({ project: projectProp, onClose }: ProjectEditProps) {
       ...project,
       consultationTitle,
       submissionDeadline,
-      submissionTime: submissionTime || undefined,
+      submissionTime: submissionTime || "16:00",
       worksAmount: +worksAmount,
       lastUpdateDate: new Date().toISOString(),
-      notation,
+      notation: notation || [],
     };
     updateProject(updatedProject);
     handleClose();
@@ -106,8 +106,10 @@ function ProjectEdit({ project: projectProp, onClose }: ProjectEditProps) {
     updateProject({
       ...project,
       ...info,
-      worksAmount: info.worksAmount ? Number(info.worksAmount) : undefined,
-      notation: info.extractedNotation ?? notation,
+      worksAmount: info.worksAmount
+        ? Number(info.worksAmount)
+        : project.worksAmount,
+      notation: info.extractedNotation ?? notation ?? [],
     });
     setProcessing(false);
   };

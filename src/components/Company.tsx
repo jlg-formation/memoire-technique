@@ -1,10 +1,10 @@
 import { Trash2 } from "lucide-react";
-import { ButtonLink, EditableTextArea } from "./ui";
-import FileAIUpload from "./ui/FileAIUpload";
-import MobilizedPeopleList from "./MobilizedPeopleList";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
 import type { ParticipatingCompany, Project } from "../types/project";
+import MobilizedPeopleList from "./MobilizedPeopleList";
+import { ButtonLink, EditableTextArea } from "./ui";
+import FileAIUpload from "./ui/FileAIUpload";
 
 interface CompanyProps {
   company: ParticipatingCompany;

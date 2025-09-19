@@ -1,19 +1,19 @@
-import { renderMissionCategory } from "./MissionCategoryRenderer";
-import { useMissionData } from "../../hooks/missions/useMissionData";
 import { useMissionChanges } from "../../hooks/missions/useMissionChanges";
+import { useMissionData } from "../../hooks/missions/useMissionData";
 import { useMissionEstimation } from "../../hooks/missions/useMissionEstimation";
-import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import {
   missionTotalWithConstraints,
   personCost,
 } from "../../lib/missions/missionCalculations";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import type {
-  ProjectEstimation,
   MissionCategories,
   MissionPriceConstraint,
   MobilizedPerson,
   ParticipatingCompany,
+  ProjectEstimation,
 } from "../../types/project";
+import { renderMissionCategory } from "./MissionCategoryRenderer";
 
 interface MissionCategoriesDisplayProps {
   projectEstimation: ProjectEstimation;

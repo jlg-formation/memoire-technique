@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import {
   estimateMissionDaysWithCategories,
   performRigorousEstimation,
 } from "../../lib/OpenAI";
 import { updateTargetAmountsInEstimations } from "../../lib/missions/categoryHelpers";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import type {
   CategoryPercentages,
   MissionCategories,

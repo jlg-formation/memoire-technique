@@ -1,18 +1,18 @@
-import { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, BarChart3, Save, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCurrentProject } from "../store/useCurrentProjectStore";
+import { Button, ButtonPrimary } from "../components/ui";
+import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
 import {
-  getNonEmptyCategories,
   getMissionAmount,
+  getNonEmptyCategories,
 } from "../lib/missions/categoryHelpers";
 import { estimateRecommendedPercentages } from "../lib/OpenAI";
-import { ButtonPrimary, Button } from "../components/ui";
-import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
-import { ArrowLeft, Sparkles, Save, BarChart3 } from "lucide-react";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type {
   CategoryMissionPercentages,
-  RecommendedMissionPercentages,
   CategoryPercentages,
+  RecommendedMissionPercentages,
 } from "../types/project";
 
 // Type pour les pourcentages en cours d'édition (valeurs locales)

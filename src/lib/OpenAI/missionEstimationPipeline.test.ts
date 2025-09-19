@@ -5,26 +5,14 @@ import type { Project } from "../../types/project";
 const testProject: Project = {
   id: "test-project",
   consultationTitle: "Test Consultation",
+  nomCourt: "Test Project",
   submissionDeadline: "2024-12-31",
+  submissionTime: "16:00",
+  worksAmount: 1000000, // 1M€ de travaux
   creationDate: new Date().toISOString(),
   lastUpdateDate: new Date().toISOString(),
   slug: "test-project",
-  worksAmount: 1000000, // 1M€ de travaux
-  categoryPercentages: {
-    base: 8, // 8%
-    pse: 2, // 2%
-    tranchesConditionnelles: 1, // 1%
-    variantes: 1, // 1%
-  },
-  missions: {
-    base: [
-      { id: "aps", name: "Avant-Projet Sommaire", sigle: "APS" },
-      { id: "apd", name: "Avant-Projet Définitif", sigle: "APD" },
-    ],
-    pse: [{ id: "dqe", name: "Devis Quantitatif Estimatif", sigle: "DQE" }],
-    tranchesConditionnelles: [],
-    variantes: [],
-  },
+  groupType: "conjoint",
   participatingCompanies: [
     {
       id: "archi1",
@@ -34,6 +22,35 @@ const testProject: Project = {
       ],
     },
   ],
+  mandataireContactId: undefined,
+  marketDocuments: [],
+  memoHtml: "",
+  notation: [],
+  missions: {
+    base: [
+      { id: "aps", name: "Avant-Projet Sommaire", sigle: "APS" },
+      { id: "apd", name: "Avant-Projet Définitif", sigle: "APD" },
+    ],
+    pse: [{ id: "dqe", name: "Devis Quantitatif Estimatif", sigle: "DQE" }],
+    tranchesConditionnelles: [],
+    variantes: [],
+  },
+  projectEstimation: {
+    base: { montantCible: 0, missions: {} },
+    pse: { montantCible: 0, missions: {} },
+    tranchesConditionnelles: { montantCible: 0, missions: {} },
+    variantes: { montantCible: 0, missions: {} },
+  },
+  categoryPercentages: {
+    base: 8, // 8%
+    pse: 2, // 2%
+    tranchesConditionnelles: 1, // 1%
+    variantes: 1, // 1%
+  },
+  recommendedPercentages: {},
+  missionPriceConstraints: [],
+  planningSummary: "",
+  planningText: "",
 };
 
 async function testPipeline() {
