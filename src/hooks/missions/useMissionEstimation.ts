@@ -4,6 +4,7 @@ import { estimateMissionDaysWithCategories } from "../../lib/OpenAI";
 import type {
   CategoryPercentages,
   MissionCategories,
+  MissionEstimation,
 } from "../../types/project";
 
 export function useMissionEstimation() {
@@ -84,6 +85,57 @@ export function useMissionEstimation() {
     setEstimating(false);
   };
 
+  const handleReestimateSingleMission = async (
+    missionId: string,
+  ): Promise<void> => {
+    setEstimating(true);
+    try {
+      if (!currentProject) {
+        throw new Error("Aucun projet courant disponible");
+      }
+
+      // Pour la réestimation d'une seule mission, on utilise la même fonction
+      // qui réestime toutes les missions mais on ne mettra à jour que celle demandée
+      const missionEstimations =
+        await estimateMissionDaysWithCategories(currentProject);
+
+      // Récupérer les estimations actuelles
+      const currentEstimations = currentProject.missionEstimations || {
+        base: {},
+        pse: {},
+        tranchesConditionnelles: {},
+        variantes: {},
+      };
+
+      // Trouver et mettre à jour uniquement la mission demandée dans toutes les catégories
+      const updatedEstimations: MissionEstimation = {
+        base: { ...currentEstimations.base },
+        pse: { ...currentEstimations.pse },
+        tranchesConditionnelles: {
+          ...currentEstimations.tranchesConditionnelles,
+        },
+        variantes: { ...currentEstimations.variantes },
+      };
+
+      // Mettre à jour la mission dans la catégorie appropriée
+      Object.keys(missionEstimations).forEach((category) => {
+        const categoryKey = category as keyof MissionCategories;
+        if (missionEstimations[categoryKey][missionId]) {
+          updatedEstimations[categoryKey][missionId] =
+            missionEstimations[categoryKey][missionId];
+        }
+      });
+
+      updateCurrentProject({ missionEstimations: updatedEstimations });
+
+      console.log(`✅ Mission ${missionId} réestimée avec succès`);
+    } catch (err) {
+      console.error("Erreur lors de la réestimation de la mission:", err);
+      throw err; // Propager l'erreur pour que le bouton puisse l'afficher
+    }
+    setEstimating(false);
+  };
+
   return {
     currentProject,
     updateCurrentProject,
@@ -91,5 +143,6 @@ export function useMissionEstimation() {
     updateCategoryPercentage,
     estimating,
     handleEstimate,
+    handleReestimateSingleMission,
   };
 }
