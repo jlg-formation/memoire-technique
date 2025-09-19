@@ -415,6 +415,8 @@ export async function generateDetailedJustifications(
   const openai = createClient();
 
   const companies = project.participatingCompanies ?? [];
+  const categoryPercentages = project.categoryPercentages ?? {};
+  const worksAmount = project.worksAmount ?? 0;
 
   // Construction du contexte détaillé
   let contextPrompt = `# Génération de justifications pour mémoire technique
@@ -426,6 +428,21 @@ export async function generateDetailedJustifications(
 - **Phases critiques** : ${projectAnalysis.criticalPhases.join(", ")}
 - **Contraintes réglementaires** : ${projectAnalysis.regulatoryConstraints.join(", ")}
 - **Technologies imposées** : ${projectAnalysis.mandatedTechnologies.join(", ")}
+
+## Pourcentages à respecter IMPÉRATIVEMENT
+**CONTRAINTE ABSOLUE** : Les totaux par catégorie doivent respecter ces pourcentages du montant des travaux (${worksAmount.toLocaleString()} € HT) :
+`;
+
+  // Ajouter les pourcentages définis avec les montants correspondants
+  Object.entries(categoryPercentages).forEach(([category, percentage]) => {
+    if (percentage && percentage > 0) {
+      const categoryAmount = (worksAmount * percentage) / 100;
+      contextPrompt += `- **${category}** : ${percentage}% = ${categoryAmount.toLocaleString()} € HT (OBLIGATOIRE)\n`;
+    }
+  });
+
+  contextPrompt += `
+**IMPORTANT** : Le total des jours × taux journaliers par catégorie DOIT correspondre exactement à ces montants.
 
 ## Compétences requises par mission
 `;
@@ -492,11 +509,16 @@ export async function generateDetailedJustifications(
 Ta mission est de générer des justifications détaillées et professionnelles pour chaque attribution de jours,
 en t'appuyant sur l'analyse du projet et les spécificités techniques identifiées.
 
+CONTRAINTE BUDGÉTAIRE ABSOLUE :
+- Tu DOIS respecter exactement les pourcentages par catégorie définis dans le projet
+- Si les montants calculés (jours × taux journaliers) ne correspondent pas aux pourcentages, tu DOIS ajuster le nombre de jours
+- Cette contrainte est PRIORITAIRE sur toute autre considération
+
 CRITÈRES POUR UNE BONNE JUSTIFICATION :
 - Mentionner les aspects spécifiques du projet (type d'ouvrage, contraintes, complexités)
 - Expliquer pourquoi cette personne est pertinente pour cette mission précise
 - Faire référence aux compétences techniques requises
-- Justifier le nombre de jours par rapport aux enjeux identifiés
+- Justifier le nombre de jours par rapport aux enjeux identifiés ET aux contraintes budgétaires
 - Utiliser un vocabulaire professionnel adapté à un jury d'appel d'offres
 - Éviter les généralités et les formulations creuses
 
@@ -506,11 +528,13 @@ Réponds UNIQUEMENT au format JSON demandé.`;
 
 À partir de cette répartition et de l'analyse du projet, génère des justifications détaillées et spécifiques pour chaque attribution.
 
+**CONTRAINTE PRIORITAIRE** : Les totaux par catégorie doivent IMPÉRATIVEMENT respecter les pourcentages définis ci-dessus. Ajuste le nombre de jours si nécessaire pour que les montants correspondent exactement.
+
 Chaque justification doit :
 1. Faire référence aux spécificités du projet identifiées dans l'analyse
 2. Expliquer concrètement pourquoi cette personne est adaptée à cette mission
 3. Mentionner les aspects techniques ou méthodologiques particuliers
-4. Justifier le volume de jours par rapport à la complexité identifiée
+4. Justifier le volume de jours par rapport à la complexité identifiée ET aux contraintes budgétaires
 5. Utiliser le nom complet de la personne dans la justification (pas de familiarités)
 
 RÈGLE CRUCIALE POUR LES CLÉS JSON :
@@ -518,6 +542,10 @@ RÈGLE CRUCIALE POUR LES CLÉS JSON :
 - Ne jamais utiliser les noms comme clés JSON
 - Exemple : utilise l'ID de l'entreprise au lieu de "Cabinet d'architecture DEMETRESCU"
 - Exemple : utilise l'ID de la personne au lieu de "Suzana DEMETRESCU"
+
+RÈGLE BUDGÉTAIRE ABSOLUE :
+- Vérifie que la somme des montants (jours × taux journaliers) par catégorie respecte exactement les pourcentages définis
+- Si nécessaire, ajuste le nombre de jours pour respecter cette contrainte
 
 CORRESPONDANCES DES IDS :
 ## Missions par catégorie
@@ -712,26 +740,181 @@ function cleanMissionData(
 }
 
 /**
+ * Étape 5: Validation et correction automatique des pourcentages
+ * pour s'assurer que le résultat respecte exactement les contraintes
+ */
+export function validateAndAdjustPercentages(
+  estimation: MissionEstimation,
+  project: Project,
+): MissionEstimation {
+  const categoryPercentages = project.categoryPercentages ?? {};
+  const worksAmount = project.worksAmount ?? 0;
+  const companies = project.participatingCompanies ?? [];
+
+  console.log("🔧 Validation et ajustement des pourcentages...");
+
+  // Calculer les totaux actuels par catégorie
+  const actualTotals: Record<string, number> = {};
+
+  Object.entries(estimation).forEach(([categoryKey, categoryData]) => {
+    if (!categoryData || typeof categoryData !== "object") return;
+
+    let categoryTotal = 0;
+
+    Object.entries(categoryData).forEach(([, missionData]) => {
+      if (!missionData || typeof missionData !== "object") return;
+
+      Object.entries(missionData).forEach(([companyId, companyData]) => {
+        if (!companyData || typeof companyData !== "object") return;
+
+        Object.entries(companyData).forEach(([personId, personData]) => {
+          if (personData && typeof personData === "object") {
+            const person = personData as {
+              nombreDeJours: number;
+              justification: string;
+            };
+
+            // Trouver le taux journalier de cette personne
+            const company = companies.find((c) => c.id === companyId);
+            const personDetails = company?.mobilizedPeople?.find(
+              (p) => p.id === personId,
+            );
+            const dailyRate = personDetails?.dailyRate ?? 0;
+
+            categoryTotal += person.nombreDeJours * dailyRate;
+          }
+        });
+      });
+    });
+
+    actualTotals[categoryKey] = categoryTotal;
+  });
+
+  // Calculer les totaux attendus
+  const expectedTotals: Record<string, number> = {};
+  Object.entries(categoryPercentages).forEach(([category, percentage]) => {
+    if (percentage && percentage > 0) {
+      expectedTotals[category] = (worksAmount * percentage) / 100;
+    }
+  });
+
+  // Afficher les écarts détectés
+  console.log("📊 Analyse des écarts:");
+  Object.entries(expectedTotals).forEach(([category, expectedAmount]) => {
+    const actualAmount = actualTotals[category] ?? 0;
+    const difference = actualAmount - expectedAmount;
+    const percentageDiff =
+      expectedAmount > 0 ? (difference / expectedAmount) * 100 : 0;
+
+    console.log(
+      `  - ${category}: ${actualAmount.toLocaleString()}€ (attendu: ${expectedAmount.toLocaleString()}€) - Écart: ${percentageDiff.toFixed(1)}%`,
+    );
+  });
+
+  // Si les écarts sont acceptables (< 2%), on garde l'estimation actuelle
+  const hasSignificantDeviation = Object.entries(expectedTotals).some(
+    ([category, expectedAmount]) => {
+      const actualAmount = actualTotals[category] ?? 0;
+      const percentageDiff =
+        expectedAmount > 0
+          ? (Math.abs(actualAmount - expectedAmount) / expectedAmount) * 100
+          : 0;
+      return percentageDiff > 2;
+    },
+  );
+
+  if (!hasSignificantDeviation) {
+    console.log("✅ Écarts acceptables, pas d'ajustement nécessaire");
+    return estimation;
+  }
+
+  console.log("⚠️ Écarts significatifs détectés, ajustement automatique...");
+
+  // Créer une copie pour ajustement
+  const adjustedEstimation: MissionEstimation = JSON.parse(
+    JSON.stringify(estimation),
+  );
+
+  // Ajuster proportionnellement chaque catégorie
+  Object.entries(expectedTotals).forEach(([categoryKey, expectedAmount]) => {
+    const actualAmount = actualTotals[categoryKey] ?? 0;
+
+    if (
+      actualAmount > 0 &&
+      Math.abs(actualAmount - expectedAmount) / expectedAmount > 0.02
+    ) {
+      const adjustmentRatio = expectedAmount / actualAmount;
+
+      console.log(
+        `  🔧 Ajustement de ${categoryKey}: ratio ${adjustmentRatio.toFixed(3)}`,
+      );
+
+      // Appliquer le ratio à toutes les personnes de cette catégorie
+      const categoryData =
+        adjustedEstimation[categoryKey as keyof MissionEstimation];
+      if (categoryData && typeof categoryData === "object") {
+        Object.entries(categoryData).forEach(([, missionData]) => {
+          if (!missionData || typeof missionData !== "object") return;
+
+          Object.entries(missionData).forEach(([, companyData]) => {
+            if (!companyData || typeof companyData !== "object") return;
+
+            Object.entries(companyData).forEach(([, personData]) => {
+              if (personData && typeof personData === "object") {
+                const person = personData as {
+                  nombreDeJours: number;
+                  justification: string;
+                };
+                const adjustedDays = Math.round(
+                  person.nombreDeJours * adjustmentRatio,
+                );
+
+                // Mettre à jour le nombre de jours et ajouter une note dans la justification
+                person.nombreDeJours = Math.max(1, adjustedDays);
+
+                const categoryPercentage =
+                  categoryPercentages[
+                    categoryKey as keyof typeof categoryPercentages
+                  ];
+                if (
+                  !person.justification.includes("[Ajusté automatiquement]") &&
+                  categoryPercentage
+                ) {
+                  person.justification += ` [Ajusté automatiquement pour respecter le pourcentage de ${categoryPercentage}% de la catégorie ${categoryKey}]`;
+                }
+              }
+            });
+          });
+        });
+      }
+    }
+  });
+
+  console.log("✅ Ajustement automatique terminé");
+  return adjustedEstimation;
+}
+
+/**
  * Pipeline principal : nouvelle version de estimateMissionDaysWithCategories
- * utilisant l'approche en 4 étapes séquentielles
+ * utilisant l'approche en 5 étapes séquentielles
  */
 export async function estimateMissionDaysWithCategoriesPipeline(
   project: Project,
 ): Promise<MissionEstimation> {
   try {
     // Étape 1: Analyser le projet pour identifier les spécificités
-    console.log("🔍 Étape 1/4: Analyse du projet...");
+    console.log("🔍 Étape 1/5: Analyse du projet...");
     const projectAnalysis = await analyzeProjectSpecifics(project);
 
     // Étape 2: Générer la répartition budgétaire de base
-    console.log("💰 Étape 2/4: Génération de la répartition budgétaire...");
+    console.log("💰 Étape 2/5: Génération de la répartition budgétaire...");
     const baseBudget = await generateBaseBudgetAllocation(
       project,
       projectAnalysis,
     );
 
     // Étape 3: Appliquer les contraintes de prix imposées
-    console.log("⚖️ Étape 3/4: Application des contraintes...");
+    console.log("⚖️ Étape 3/5: Application des contraintes...");
     const constraints = project.missionPriceConstraints ?? [];
     const optimizedBudget = applyConstraintsAndOptimize(
       baseBudget,
@@ -739,12 +922,16 @@ export async function estimateMissionDaysWithCategoriesPipeline(
     );
 
     // Étape 4: Générer les justifications détaillées
-    console.log("✍️ Étape 4/4: Génération des justifications...");
-    const finalEstimation = await generateDetailedJustifications(
+    console.log("✍️ Étape 4/5: Génération des justifications...");
+    const aiEstimation = await generateDetailedJustifications(
       optimizedBudget,
       projectAnalysis,
       project,
     );
+
+    // Étape 5: Validation et ajustement automatique des pourcentages
+    console.log("🔧 Étape 5/5: Validation et ajustement des pourcentages...");
+    const finalEstimation = validateAndAdjustPercentages(aiEstimation, project);
 
     console.log("✅ Pipeline terminé avec succès");
     return finalEstimation;
