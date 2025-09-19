@@ -27,22 +27,17 @@ export function useMissionEstimation() {
       [category]: percentage,
     };
 
-    // Mettre à jour les montants cibles dans les estimations si on a un montant de travaux
-    if (currentProject.worksAmount) {
-      const updatedEstimations = updateTargetAmountsInEstimations(
-        currentProject.projectEstimation,
-        currentProject.worksAmount,
-        updated,
-      );
+    // Mettre à jour les montants cibles dans les estimations
+    const updatedEstimations = updateTargetAmountsInEstimations(
+      currentProject.projectEstimation,
+      currentProject.worksAmount,
+      updated,
+    );
 
-      updateCurrentProject({
-        categoryPercentages: updated,
-        projectEstimation: updatedEstimations,
-      });
-    } else {
-      // Si pas de montant de travaux, mise à jour seulement des pourcentages
-      updateCurrentProject({ categoryPercentages: updated });
-    }
+    updateCurrentProject({
+      categoryPercentages: updated,
+      projectEstimation: updatedEstimations,
+    });
   };
 
   const handleEstimate = async (
