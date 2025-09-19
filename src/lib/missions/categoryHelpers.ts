@@ -103,3 +103,19 @@ export const getTotalTargetAmount = (
   const totalPercentage = base + pse + tranchesConditionnelles + variantes;
   return worksAmount * (totalPercentage / 100);
 };
+
+/**
+ * Calcule le montant en euros d'une mission spécifique
+ * basé sur son pourcentage dans la catégorie et le montant global de la catégorie
+ */
+export const getMissionAmount = (
+  worksAmount: number,
+  categoryPercentage: number,
+  missionPercentageInCategory: number,
+): number => {
+  const categoryAmount = getCategoryTargetAmount(
+    worksAmount,
+    categoryPercentage,
+  );
+  return categoryAmount * (missionPercentageInCategory / 100);
+};

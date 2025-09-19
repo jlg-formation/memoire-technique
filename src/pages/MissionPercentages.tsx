@@ -1,7 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProjectStore } from "../store/useProjectStore";
-import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
+import {
+  getNonEmptyCategories,
+  getMissionAmount,
+} from "../lib/missions/categoryHelpers";
 import { estimateRecommendedPercentages } from "../lib/OpenAI";
 import { ButtonPrimary, Button } from "../components/ui";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
@@ -255,11 +258,21 @@ export default function MissionPercentages() {
       category.missions.forEach((mission) => {
         const categoryPercentage =
           localPercentages[category.key][mission.id] || 0;
+
+        // Récupérer la justification existante de l'IA si elle existe
+        const existingAiEstimation =
+          currentProject.aiRecommendedPercentages?.[category.key]?.[mission.id];
+        const existingJustification = existingAiEstimation?.justification;
+
+        // Utiliser la justification IA existante ou une justification par défaut
+        const justification =
+          existingJustification || "Défini manuellement par l'utilisateur";
+
         // Le pourcentage par rapport au projet sera calculé dans la logique métier
         categoryPercentages[mission.id] = {
           categoryPercentage,
           projectPercentage: 0, // Sera calculé plus tard
-          justification: "Défini manuellement par l'utilisateur",
+          justification,
         };
       });
 
@@ -332,6 +345,8 @@ export default function MissionPercentages() {
           {nonEmptyCategories.map((category) => {
             const total = getCategoryTotal(category.key);
             const isValid = Math.abs(total - 100) < 0.01; // Tolérance de 0.01%
+            const categoryPercentage =
+              currentProject.categoryPercentages?.[category.key] || 0;
 
             return (
               <div
@@ -358,6 +373,15 @@ export default function MissionPercentages() {
                     const currentPercentage =
                       localPercentages[category.key][mission.id] || 0;
 
+                    // Calculer le montant en euros pour cette mission
+                    const missionAmount = currentProject.worksAmount
+                      ? getMissionAmount(
+                          currentProject.worksAmount,
+                          categoryPercentage,
+                          currentPercentage,
+                        )
+                      : 0;
+
                     // Récupérer la valeur IA et la justification si disponibles
                     const aiCategoryPercentages =
                       currentProject.aiRecommendedPercentages?.[category.key];
@@ -370,59 +394,85 @@ export default function MissionPercentages() {
                         key={mission.id}
                         className="rounded-lg border border-gray-100 bg-gray-50 p-4"
                       >
-                        {/* Ligne du haut : titre et champ de saisie alignés */}
+                        {/* Ligne du haut : titre et champs de saisie alignés */}
                         <div className="mb-3 flex items-center justify-between gap-4">
                           <label className="flex-1 text-sm font-medium text-gray-700">
                             {mission.name} ({mission.sigle})
                           </label>
 
-                          {/* Champ de saisie aligné à droite */}
-                          <div className="flex flex-shrink-0 items-center gap-2">
-                            <input
-                              type="text"
-                              placeholder="0"
-                              value={
-                                inputValues[category.key][mission.id] ||
-                                currentPercentage.toString()
-                              }
-                              onChange={(e) => {
-                                updateInputValue(
-                                  category.key,
-                                  mission.id,
-                                  e.target.value,
-                                );
-                              }}
-                              onBlur={(e) => {
-                                commitInputValue(
-                                  category.key,
-                                  mission.id,
-                                  e.target.value,
-                                );
-                              }}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
+                          {/* Champs de saisie et montant alignés à droite */}
+                          <div className="flex flex-shrink-0 items-center gap-4">
+                            {/* Pourcentage */}
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                placeholder="0"
+                                value={
+                                  inputValues[category.key][mission.id] ||
+                                  currentPercentage.toString()
+                                }
+                                onChange={(e) => {
+                                  updateInputValue(
+                                    category.key,
+                                    mission.id,
+                                    e.target.value,
+                                  );
+                                }}
+                                onBlur={(e) => {
                                   commitInputValue(
                                     category.key,
                                     mission.id,
-                                    e.currentTarget.value,
+                                    e.target.value,
                                   );
-                                  e.currentTarget.blur();
-                                }
-                              }}
-                              className="w-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-center text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                            />
-                            <span className="text-sm text-gray-500">%</span>
-                          </div>
-                        </div>
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    commitInputValue(
+                                      category.key,
+                                      mission.id,
+                                      e.currentTarget.value,
+                                    );
+                                    e.currentTarget.blur();
+                                  }
+                                }}
+                                className="w-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-center text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                              />
+                              <span className="text-sm text-gray-500">%</span>
+                            </div>
 
+                            {/* Montant en euros */}
+                            <div className="text-right">
+                              <div className="text-sm font-semibold text-emerald-700">
+                                {missionAmount.toLocaleString(undefined, {
+                                  maximumFractionDigits: 0,
+                                })}
+                                &nbsp;€&nbsp;HT
+                              </div>
+                            </div>
+                          </div>
+                        </div>{" "}
                         {/* Suggestion IA en dessous si disponible */}
                         {aiPercentage !== undefined && (
                           <div className="rounded-md border border-blue-200 bg-blue-50 p-3">
-                            <div className="mb-1 flex items-center gap-2">
-                              <Sparkles className="h-4 w-4 text-blue-600" />
-                              <span className="text-sm font-medium text-blue-800">
-                                Suggestion IA: {aiPercentage.toFixed(1)}%
-                              </span>
+                            <div className="mb-1 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Sparkles className="h-4 w-4 text-blue-600" />
+                                <span className="text-sm font-medium text-blue-800">
+                                  Suggestion IA: {aiPercentage.toFixed(1)}%
+                                </span>
+                              </div>
+                              {currentProject.worksAmount && (
+                                <div className="text-sm font-semibold text-blue-700">
+                                  {getMissionAmount(
+                                    currentProject.worksAmount,
+                                    categoryPercentage,
+                                    aiPercentage,
+                                  ).toLocaleString(undefined, {
+                                    maximumFractionDigits: 0,
+                                  })}
+                                  &nbsp;€ HT
+                                </div>
+                              )}
                             </div>
                             {aiJustification && (
                               <p className="text-xs leading-relaxed text-blue-700">
