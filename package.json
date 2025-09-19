@@ -10,7 +10,8 @@
     "lint:changed": "bun ./scripts/lint-changed.ts",
     "preview": "vite preview",
     "format": "prettier -w .",
-    "format:changed": "bun ./scripts/format-changed.ts"
+    "format:changed": "bun ./scripts/format-changed.ts",
+    "code:stats": "bun ./scripts/code-stats.ts"
   },
   "dependencies": {
     "localforage": "^1.10.0",
