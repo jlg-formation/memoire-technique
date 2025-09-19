@@ -109,28 +109,39 @@ export function useMissionEstimation() {
 
       // Récupérer les estimations actuelles
       const currentEstimations = currentProject.missionEstimations || {
-        base: {},
-        pse: {},
-        tranchesConditionnelles: {},
-        variantes: {},
+        base: { montantCible: 0, missions: {} },
+        pse: { montantCible: 0, missions: {} },
+        tranchesConditionnelles: { montantCible: 0, missions: {} },
+        variantes: { montantCible: 0, missions: {} },
       };
 
       // Créer une copie des estimations actuelles
       const updatedEstimations: ProjectEstimation = {
-        base: { ...currentEstimations.base },
-        pse: { ...currentEstimations.pse },
-        tranchesConditionnelles: {
-          ...currentEstimations.tranchesConditionnelles,
+        base: {
+          montantCible: currentEstimations.base?.montantCible ?? 0,
+          missions: { ...currentEstimations.base?.missions },
         },
-        variantes: { ...currentEstimations.variantes },
+        pse: {
+          montantCible: currentEstimations.pse?.montantCible ?? 0,
+          missions: { ...currentEstimations.pse?.missions },
+        },
+        tranchesConditionnelles: {
+          montantCible:
+            currentEstimations.tranchesConditionnelles?.montantCible ?? 0,
+          missions: { ...currentEstimations.tranchesConditionnelles?.missions },
+        },
+        variantes: {
+          montantCible: currentEstimations.variantes?.montantCible ?? 0,
+          missions: { ...currentEstimations.variantes?.missions },
+        },
       };
 
       // Mettre à jour uniquement la mission réestimée dans toutes les catégories
       Object.keys(rigorousEstimation).forEach((category) => {
         const categoryKey = category as keyof MissionCategories;
-        if (rigorousEstimation[categoryKey][missionId]) {
-          updatedEstimations[categoryKey][missionId] =
-            rigorousEstimation[categoryKey][missionId];
+        if (rigorousEstimation[categoryKey]?.missions?.[missionId]) {
+          updatedEstimations[categoryKey].missions[missionId] =
+            rigorousEstimation[categoryKey].missions[missionId];
           console.log(
             `✅ Mission ${missionId} mise à jour dans la catégorie ${categoryKey}`,
           );

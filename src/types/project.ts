@@ -77,18 +77,28 @@ export interface RecommendedMissionPercentages {
 }
 
 export type CompanyEstimation = {
-  [personId: string]: {
-    nombreDeJours: number;
-    justification: string;
+  montantCible: number;
+  isLocked: boolean; // une entreprise peut verrouiller son estimation
+  persons: {
+    [personId: string]: {
+      nombreDeJours: number;
+      justification: string;
+    };
   };
 };
 
 export type MissionEstimation = {
-  [companyId: string]: CompanyEstimation;
+  montantCible: number;
+  companies: {
+    [companyId: string]: CompanyEstimation;
+  };
 };
 
 export type CategoryEstimation = {
-  [missionId: string]: MissionEstimation;
+  montantCible: number;
+  missions: {
+    [missionId: string]: MissionEstimation;
+  };
 };
 
 export type ProjectEstimation = {

@@ -9,10 +9,10 @@ import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 export function useMissionData(currentProject: Project | null) {
   const missionEstimation: ProjectEstimation =
     currentProject?.missionEstimations ?? {
-      base: {},
-      pse: {},
-      tranchesConditionnelles: {},
-      variantes: {},
+      base: { montantCible: 0, missions: {} },
+      pse: { montantCible: 0, missions: {} },
+      tranchesConditionnelles: { montantCible: 0, missions: {} },
+      variantes: { montantCible: 0, missions: {} },
     };
 
   const missionCategories = currentProject?.missions;
@@ -33,8 +33,8 @@ export function useMissionData(currentProject: Project | null) {
     const category = findMissionCategory(missionId, missionCategories);
     if (!category) return 0;
     return (
-      missionEstimation[category]?.[missionId]?.[companyId]?.[personId]
-        ?.nombreDeJours ?? 0
+      missionEstimation[category]?.missions?.[missionId]?.companies?.[companyId]
+        ?.persons?.[personId]?.nombreDeJours ?? 0
     );
   };
 
@@ -46,8 +46,8 @@ export function useMissionData(currentProject: Project | null) {
     const category = findMissionCategory(missionId, missionCategories);
     if (!category) return "";
     return (
-      missionEstimation[category]?.[missionId]?.[companyId]?.[personId]
-        ?.justification ?? ""
+      missionEstimation[category]?.missions?.[missionId]?.companies?.[companyId]
+        ?.persons?.[personId]?.justification ?? ""
     );
   };
 

@@ -17,16 +17,26 @@ export function useMissionChanges(missionEstimation: ProjectEstimation) {
     const updated: ProjectEstimation = {
       ...missionEstimation,
       [category]: {
-        ...(missionEstimation[category] ?? {}),
-        [missionId]: {
-          ...(missionEstimation[category]?.[missionId] ?? {}),
-          [companyId]: {
-            ...(missionEstimation[category]?.[missionId]?.[companyId] ?? {}),
-            [personId]: {
-              ...(missionEstimation[category]?.[missionId]?.[companyId]?.[
-                personId
-              ] ?? {}),
-              nombreDeJours: days,
+        ...missionEstimation[category],
+        missions: {
+          ...missionEstimation[category]?.missions,
+          [missionId]: {
+            ...missionEstimation[category]?.missions?.[missionId],
+            companies: {
+              ...missionEstimation[category]?.missions?.[missionId]?.companies,
+              [companyId]: {
+                ...missionEstimation[category]?.missions?.[missionId]
+                  ?.companies?.[companyId],
+                persons: {
+                  ...missionEstimation[category]?.missions?.[missionId]
+                    ?.companies?.[companyId]?.persons,
+                  [personId]: {
+                    ...missionEstimation[category]?.missions?.[missionId]
+                      ?.companies?.[companyId]?.persons?.[personId],
+                    nombreDeJours: days,
+                  },
+                },
+              },
             },
           },
         },
@@ -47,16 +57,26 @@ export function useMissionChanges(missionEstimation: ProjectEstimation) {
     const updated: ProjectEstimation = {
       ...missionEstimation,
       [category]: {
-        ...(missionEstimation[category] ?? {}),
-        [missionId]: {
-          ...(missionEstimation[category]?.[missionId] ?? {}),
-          [companyId]: {
-            ...(missionEstimation[category]?.[missionId]?.[companyId] ?? {}),
-            [personId]: {
-              ...(missionEstimation[category]?.[missionId]?.[companyId]?.[
-                personId
-              ] ?? {}),
-              justification: text,
+        ...missionEstimation[category],
+        missions: {
+          ...missionEstimation[category]?.missions,
+          [missionId]: {
+            ...missionEstimation[category]?.missions?.[missionId],
+            companies: {
+              ...missionEstimation[category]?.missions?.[missionId]?.companies,
+              [companyId]: {
+                ...missionEstimation[category]?.missions?.[missionId]
+                  ?.companies?.[companyId],
+                persons: {
+                  ...missionEstimation[category]?.missions?.[missionId]
+                    ?.companies?.[companyId]?.persons,
+                  [personId]: {
+                    ...missionEstimation[category]?.missions?.[missionId]
+                      ?.companies?.[companyId]?.persons?.[personId],
+                    justification: text,
+                  },
+                },
+              },
             },
           },
         },

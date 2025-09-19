@@ -167,27 +167,27 @@ export async function performRigorousEstimation(
   if (project.missionEstimations && missionId) {
     contextBuilder.push("## ESTIMATION ACTUELLE (pour comparaison):");
     Object.entries(project.missionEstimations).forEach(
-      ([categoryKey, categoryEstimations]) => {
-        if (categoryEstimations[missionId]) {
+      ([categoryKey, categoryEstimation]) => {
+        if (categoryEstimation.missions[missionId]) {
           contextBuilder.push(
             `### ${categoryKey.toUpperCase()} - Mission ${missionId}:`,
           );
-          Object.entries(categoryEstimations[missionId]).forEach(
-            ([companyId, companyEstimation]) => {
-              const company = companies.find((c) => c.id === companyId);
-              contextBuilder.push(`**${company?.name || companyId}:**`);
-              Object.entries(companyEstimation).forEach(
-                ([personId, personEstimation]) => {
-                  const person = company?.mobilizedPeople?.find(
-                    (p) => p.id === personId,
-                  );
-                  contextBuilder.push(
-                    `- ${person?.name || personId}: ${personEstimation.nombreDeJours} jours`,
-                  );
-                },
-              );
-            },
-          );
+          Object.entries(
+            categoryEstimation.missions[missionId].companies,
+          ).forEach(([companyId, companyEstimation]) => {
+            const company = companies.find((c) => c.id === companyId);
+            contextBuilder.push(`**${company?.name || companyId}:**`);
+            Object.entries(companyEstimation.persons).forEach(
+              ([personId, personEstimation]) => {
+                const person = company?.mobilizedPeople?.find(
+                  (p) => p.id === personId,
+                );
+                contextBuilder.push(
+                  `- ${person?.name || personId}: ${personEstimation.nombreDeJours} jours`,
+                );
+              },
+            );
+          });
         }
       },
     );
@@ -331,30 +331,46 @@ FORMAT DE RÉPONSE REQUIS: JSON strictement conforme au schéma suivant`;
 
     // Conversion vers le format MissionEstimation
     const missionEstimation: ProjectEstimation = {
-      base: {},
-      pse: {},
-      tranchesConditionnelles: {},
-      variantes: {},
+      base: { montantCible: 0, missions: {} },
+      pse: { montantCible: 0, missions: {} },
+      tranchesConditionnelles: { montantCible: 0, missions: {} },
+      variantes: { montantCible: 0, missions: {} },
     };
 
     Object.entries(result.estimations).forEach(
       ([categoryKey, categoryEstimations]) => {
         const category = categoryKey as keyof MissionCategories;
-        missionEstimation[category] = {};
 
         Object.entries(categoryEstimations).forEach(
           ([missionIdKey, missionEstimations]) => {
-            missionEstimation[category][missionIdKey] = {};
+            if (!missionEstimation[category].missions[missionIdKey]) {
+              missionEstimation[category].missions[missionIdKey] = {
+                montantCible: 0,
+                companies: {},
+              };
+            }
 
             Object.entries(missionEstimations).forEach(
               ([companyId, companyEstimations]) => {
-                missionEstimation[category][missionIdKey][companyId] = {};
+                if (
+                  !missionEstimation[category].missions[missionIdKey].companies[
+                    companyId
+                  ]
+                ) {
+                  missionEstimation[category].missions[missionIdKey].companies[
+                    companyId
+                  ] = {
+                    montantCible: 0,
+                    isLocked: false,
+                    persons: {},
+                  };
+                }
 
                 Object.entries(companyEstimations).forEach(
                   ([personId, personEstimation]) => {
-                    missionEstimation[category][missionIdKey][companyId][
-                      personId
-                    ] = {
+                    missionEstimation[category].missions[
+                      missionIdKey
+                    ].companies[companyId].persons[personId] = {
                       nombreDeJours: personEstimation.nombreDeJours,
                       justification: `${personEstimation.justificationTechnique} | Budget: ${personEstimation.justificationBudgetaire}`,
                     };

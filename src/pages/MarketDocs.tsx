@@ -89,10 +89,10 @@ function MarketDocs() {
         },
         planningSummary: "",
         missionEstimations: {
-          base: {},
-          pse: {},
-          tranchesConditionnelles: {},
-          variantes: {},
+          base: { montantCible: 0, missions: {} },
+          pse: { montantCible: 0, missions: {} },
+          tranchesConditionnelles: { montantCible: 0, missions: {} },
+          variantes: { montantCible: 0, missions: {} },
         },
       });
     } else {

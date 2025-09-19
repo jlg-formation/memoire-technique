@@ -476,10 +476,10 @@ function convertToLegacyFormat(
   estimation: EnhancedEstimationResult,
 ): ProjectEstimation {
   const result: ProjectEstimation = {
-    base: {},
-    pse: {},
-    tranchesConditionnelles: {},
-    variantes: {},
+    base: { montantCible: 0, missions: {} },
+    pse: { montantCible: 0, missions: {} },
+    tranchesConditionnelles: { montantCible: 0, missions: {} },
+    variantes: { montantCible: 0, missions: {} },
   };
 
   Object.entries(estimation).forEach(([categoryKey, categoryEstimation]) => {
@@ -495,19 +495,34 @@ function convertToLegacyFormat(
       ([missionId, missionEstimation]) => {
         const typedMissionEstimation =
           missionEstimation as EnhancedMissionEstimation;
-        result[category][missionId] = {};
+
+        if (!result[category].missions[missionId]) {
+          result[category].missions[missionId] = {
+            montantCible: 0,
+            companies: {},
+          };
+        }
 
         Object.entries(typedMissionEstimation.companyAllocations).forEach(
           ([companyId, companyAllocation]) => {
             const typedCompanyAllocation =
               companyAllocation as CompanyAllocation;
-            result[category][missionId][companyId] = {};
+
+            if (!result[category].missions[missionId].companies[companyId]) {
+              result[category].missions[missionId].companies[companyId] = {
+                montantCible: 0,
+                isLocked: false,
+                persons: {},
+              };
+            }
 
             Object.entries(typedCompanyAllocation.personAllocations).forEach(
               ([personId, personAllocation]) => {
                 const typedPersonAllocation =
                   personAllocation as PersonAllocation;
-                result[category][missionId][companyId][personId] = {
+                result[category].missions[missionId].companies[
+                  companyId
+                ].persons[personId] = {
                   nombreDeJours: typedPersonAllocation.days,
                   justification: typedPersonAllocation.justification,
                 };
