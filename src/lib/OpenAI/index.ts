@@ -17,3 +17,4 @@ export { default as extractPlanningConstraints } from "./extractPlanningConstrai
 export { default as generatePlanning } from "./generatePlanning";
 export { default as generateDocumentTitle } from "./generateDocumentTitle";
 export { default as extractMissionDescriptions } from "./extractMissionDescriptions";
+export { performRigorousEstimation } from "./rigorousEstimation";

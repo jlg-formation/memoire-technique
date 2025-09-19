@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useProjectStore } from "../../store/useProjectStore";
-import { estimateMissionDaysWithCategories } from "../../lib/OpenAI";
+import {
+  estimateMissionDaysWithCategories,
+  performRigorousEstimation,
+} from "../../lib/OpenAI";
 import type {
   CategoryPercentages,
   MissionCategories,
@@ -94,10 +97,15 @@ export function useMissionEstimation() {
         throw new Error("Aucun projet courant disponible");
       }
 
-      // Pour la réestimation d'une seule mission, on utilise la même fonction
-      // qui réestime toutes les missions mais on ne mettra à jour que celle demandée
-      const missionEstimations =
-        await estimateMissionDaysWithCategories(currentProject);
+      console.log(
+        `🎯 Début de la réestimation rigoureuse pour la mission ${missionId}`,
+      );
+
+      // Utiliser la nouvelle estimation rigoureuse pour cette mission
+      const rigorousEstimation = await performRigorousEstimation(
+        currentProject,
+        missionId,
+      );
 
       // Récupérer les estimations actuelles
       const currentEstimations = currentProject.missionEstimations || {
@@ -107,7 +115,7 @@ export function useMissionEstimation() {
         variantes: {},
       };
 
-      // Trouver et mettre à jour uniquement la mission demandée dans toutes les catégories
+      // Créer une copie des estimations actuelles
       const updatedEstimations: MissionEstimation = {
         base: { ...currentEstimations.base },
         pse: { ...currentEstimations.pse },
@@ -117,20 +125,28 @@ export function useMissionEstimation() {
         variantes: { ...currentEstimations.variantes },
       };
 
-      // Mettre à jour la mission dans la catégorie appropriée
-      Object.keys(missionEstimations).forEach((category) => {
+      // Mettre à jour uniquement la mission réestimée dans toutes les catégories
+      Object.keys(rigorousEstimation).forEach((category) => {
         const categoryKey = category as keyof MissionCategories;
-        if (missionEstimations[categoryKey][missionId]) {
+        if (rigorousEstimation[categoryKey][missionId]) {
           updatedEstimations[categoryKey][missionId] =
-            missionEstimations[categoryKey][missionId];
+            rigorousEstimation[categoryKey][missionId];
+          console.log(
+            `✅ Mission ${missionId} mise à jour dans la catégorie ${categoryKey}`,
+          );
         }
       });
 
       updateCurrentProject({ missionEstimations: updatedEstimations });
 
-      console.log(`✅ Mission ${missionId} réestimée avec succès`);
+      console.log(
+        `🎉 Mission ${missionId} réestimée avec succès via l'estimation rigoureuse`,
+      );
     } catch (err) {
-      console.error("Erreur lors de la réestimation de la mission:", err);
+      console.error(
+        "❌ Erreur lors de la réestimation rigoureuse de la mission:",
+        err,
+      );
       throw err; // Propager l'erreur pour que le bouton puisse l'afficher
     }
     setEstimating(false);
