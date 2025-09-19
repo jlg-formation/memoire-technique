@@ -9,6 +9,7 @@ import {
   extractPlanningConstraints,
   generateDocumentTitle,
 } from "../lib/OpenAI";
+import { initProjectEstimation } from "../lib/missions";
 import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
@@ -56,8 +57,13 @@ function MarketDocs() {
     if (docType === "AE") {
       try {
         const missions = await extractMissions(text);
+        // Initialiser l'estimation à vide pour toutes les missions
+        const projectEstimation = initProjectEstimation(
+          currentProject,
+          missions,
+        );
         const planningSummary = await extractPlanningConstraints(text);
-        updateCurrentProject({ missions, planningSummary });
+        updateCurrentProject({ missions, planningSummary, projectEstimation });
       } catch (err) {
         console.error(err);
       }
