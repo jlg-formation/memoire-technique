@@ -7,7 +7,7 @@ import type {
   ParticipatingCompany,
   MobilizedPerson,
   MissionPriceConstraint,
-  AIRecommendedPercentages,
+  RecommendedMissionPercentages,
 } from "../../types/project";
 
 // Helper function pour afficher les missions d'une catégorie
@@ -43,8 +43,8 @@ export const renderMissionCategory = (
   estimating: boolean,
   constraints: MissionPriceConstraint[],
   onUpdateConstraints: (constraints: MissionPriceConstraint[]) => void,
-  aiRecommendedPercentages?: AIRecommendedPercentages,
-  categoryKey?: keyof AIRecommendedPercentages,
+  aiRecommendedPercentages?: RecommendedMissionPercentages,
+  categoryKey?: keyof RecommendedMissionPercentages,
   handleMissionDescriptionChange?: (
     missionId: string,
     description: string,

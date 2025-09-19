@@ -11,7 +11,7 @@ import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
 import { ArrowLeft, Sparkles, Save } from "lucide-react";
 import type {
   CategoryMissionPercentages,
-  AIRecommendedPercentages,
+  RecommendedMissionPercentages,
   CategoryPercentages,
 } from "../types/project";
 
@@ -111,7 +111,7 @@ export default function MissionPercentages() {
     };
 
     // Vérifier s'il y a déjà des pourcentages recommandés par l'IA
-    if (currentProject.aiRecommendedPercentages) {
+    if (currentProject.recommendedPercentages) {
       const fromAI: CategoryMissionPercentageInputs = {
         base: {},
         pse: {},
@@ -121,7 +121,7 @@ export default function MissionPercentages() {
 
       nonEmptyCategories.forEach((category) => {
         const aiCategoryPercentages =
-          currentProject.aiRecommendedPercentages?.[category.key];
+          currentProject.recommendedPercentages?.[category.key];
         if (aiCategoryPercentages) {
           category.missions.forEach((mission) => {
             const aiEstimation = aiCategoryPercentages[mission.id];
@@ -240,7 +240,9 @@ export default function MissionPercentages() {
       syncInputValues(fromAI);
 
       // Sauvegarder aussi dans le projet
-      updateCurrentProject({ aiRecommendedPercentages });
+      updateCurrentProject({
+        recommendedPercentages: aiRecommendedPercentages,
+      });
     } catch (error) {
       console.error("Erreur lors de l'estimation IA:", error);
     }
@@ -250,7 +252,7 @@ export default function MissionPercentages() {
   // Fonction pour appliquer les pourcentages et retourner à /missions
   const handleApply = () => {
     // Convertir les pourcentages locaux en format AIRecommendedPercentages
-    const aiRecommendedPercentages: AIRecommendedPercentages = {};
+    const aiRecommendedPercentages: RecommendedMissionPercentages = {};
 
     nonEmptyCategories.forEach((category) => {
       const categoryPercentages: CategoryMissionPercentages = {};
@@ -261,7 +263,7 @@ export default function MissionPercentages() {
 
         // Récupérer la justification existante de l'IA si elle existe
         const existingAiEstimation =
-          currentProject.aiRecommendedPercentages?.[category.key]?.[mission.id];
+          currentProject.recommendedPercentages?.[category.key]?.[mission.id];
         const existingJustification = existingAiEstimation?.justification;
 
         // Utiliser la justification IA existante ou une justification par défaut
@@ -281,7 +283,7 @@ export default function MissionPercentages() {
       }
     });
 
-    updateCurrentProject({ aiRecommendedPercentages });
+    updateCurrentProject({ recommendedPercentages: aiRecommendedPercentages });
     navigate("/missions");
   };
 
@@ -381,7 +383,7 @@ export default function MissionPercentages() {
 
                     // Récupérer la valeur IA et la justification si disponibles
                     const aiCategoryPercentages =
-                      currentProject.aiRecommendedPercentages?.[category.key];
+                      currentProject.recommendedPercentages?.[category.key];
                     const aiEstimation = aiCategoryPercentages?.[mission.id];
                     const aiPercentage = aiEstimation?.categoryPercentage;
                     const aiJustification = aiEstimation?.justification;

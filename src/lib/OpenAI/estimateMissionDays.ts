@@ -1,5 +1,4 @@
 import type { MissionEstimation, Project } from "../../types/project";
-import { estimateMissionDaysWithCategoriesPipeline } from "./missionEstimationPipeline";
 
 export type MissionDayEstimation = {
   [mission: string]: {
@@ -20,11 +19,21 @@ export interface CategoryTargetAmounts {
 }
 
 /**
- * Version refactorisée utilisant le pipeline en 4 étapes séquentielles
- * pour une meilleure qualité de génération et une approche plus robuste
+ * Stub temporaire - à réimplémenter
  */
 export async function estimateMissionDaysWithCategories(
   currentProject: Project,
 ): Promise<MissionEstimation> {
-  return estimateMissionDaysWithCategoriesPipeline(currentProject);
+  // TODO: Réimplémenter cette fonction
+  console.log(
+    "🔧 Fonction estimateMissionDaysWithCategories appelée (stub temporaire)",
+  );
+  console.log("currentProject: ", currentProject);
+
+  return {
+    base: {},
+    pse: {},
+    tranchesConditionnelles: {},
+    variantes: {},
+  };
 }

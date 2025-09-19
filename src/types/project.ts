@@ -69,7 +69,7 @@ export interface CategoryMissionPercentages {
   [missionId: string]: MissionPercentageEstimation;
 }
 
-export interface AIRecommendedPercentages {
+export interface RecommendedMissionPercentages {
   base?: CategoryMissionPercentages;
   pse?: CategoryMissionPercentages;
   tranchesConditionnelles?: CategoryMissionPercentages;
@@ -202,7 +202,7 @@ export interface Project {
   /** Pourcentages de l'offre par catégorie de missions */
   categoryPercentages?: CategoryPercentages;
   /** Pourcentages recommandés par l'IA selon l'état de l'art du métier */
-  aiRecommendedPercentages?: AIRecommendedPercentages;
+  recommendedPercentages?: RecommendedMissionPercentages;
   /** Contraintes de prix imposées par les entreprises */
   missionPriceConstraints?: MissionPriceConstraint[];
   /** Texte résumant les contraintes de planning extraites de l'AE */

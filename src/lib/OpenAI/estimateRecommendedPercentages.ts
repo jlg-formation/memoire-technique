@@ -2,7 +2,7 @@ import type { ChatCompletionMessageParam } from "openai/resources";
 import { useIAHistoryStore } from "../../store/useIAHistoryStore";
 import type { MissionCategories } from "../../types/project";
 import type {
-  AIRecommendedPercentages,
+  RecommendedMissionPercentages,
   CategoryMissionPercentages,
 } from "../../types/project";
 import createClient from "./client";
@@ -90,7 +90,7 @@ const responseFormat = {
  */
 export default async function estimateRecommendedPercentages(
   missionCategories: MissionCategories,
-): Promise<AIRecommendedPercentages> {
+): Promise<RecommendedMissionPercentages> {
   const openai = createClient();
 
   // Construction du prompt utilisateur
@@ -253,7 +253,7 @@ IMPORTANT : Quand des descriptions CCTP sont fournies, adapte tes estimations et
     throw new Error("content is null");
   }
 
-  const result: AIRecommendedPercentages = JSON.parse(content);
+  const result: RecommendedMissionPercentages = JSON.parse(content);
 
   // Validation des totaux par catégorie
   const validateCategoryTotals = (
