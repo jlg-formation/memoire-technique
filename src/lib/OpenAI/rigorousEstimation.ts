@@ -164,9 +164,9 @@ export async function performRigorousEstimation(
   }
 
   // Estimation actuelle (pour comparaison si c'est une réestimation)
-  if (project.missionEstimations && missionId) {
+  if (project.projectEstimation && missionId) {
     contextBuilder.push("## ESTIMATION ACTUELLE (pour comparaison):");
-    Object.entries(project.missionEstimations).forEach(
+    Object.entries(project.projectEstimation).forEach(
       ([categoryKey, categoryEstimation]) => {
         if (categoryEstimation.missions[missionId]) {
           contextBuilder.push(

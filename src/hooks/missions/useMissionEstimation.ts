@@ -4,6 +4,7 @@ import {
   estimateMissionDaysWithCategories,
   performRigorousEstimation,
 } from "../../lib/OpenAI";
+import { updateTargetAmountsInEstimations } from "../../lib/missions/categoryHelpers";
 import type {
   CategoryPercentages,
   MissionCategories,
@@ -25,7 +26,23 @@ export function useMissionEstimation() {
       ...categoryPercentages,
       [category]: percentage,
     };
-    updateCurrentProject({ categoryPercentages: updated });
+
+    // Mettre à jour les montants cibles dans les estimations si on a un montant de travaux
+    if (currentProject?.worksAmount) {
+      const updatedEstimations = updateTargetAmountsInEstimations(
+        currentProject.projectEstimation,
+        currentProject.worksAmount,
+        updated,
+      );
+
+      updateCurrentProject({
+        categoryPercentages: updated,
+        projectEstimation: updatedEstimations,
+      });
+    } else {
+      // Si pas de montant de travaux, mise à jour seulement des pourcentages
+      updateCurrentProject({ categoryPercentages: updated });
+    }
   };
 
   const handleEstimate = async (
@@ -76,10 +93,10 @@ export function useMissionEstimation() {
       console.log("📋 Résultat de l'estimation:", missionEstimations);
       console.log(
         "📊 Données avant mise à jour:",
-        currentProject.missionEstimations,
+        currentProject.projectEstimation,
       );
 
-      updateCurrentProject({ missionEstimations });
+      updateCurrentProject({ projectEstimation: missionEstimations });
 
       console.log("✅ Projet mis à jour avec les nouvelles estimations");
     } catch (err) {
@@ -108,7 +125,7 @@ export function useMissionEstimation() {
       );
 
       // Récupérer les estimations actuelles
-      const currentEstimations = currentProject.missionEstimations || {
+      const currentEstimations = currentProject.projectEstimation || {
         base: { montantCible: 0, missions: {} },
         pse: { montantCible: 0, missions: {} },
         tranchesConditionnelles: { montantCible: 0, missions: {} },
@@ -148,7 +165,7 @@ export function useMissionEstimation() {
         }
       });
 
-      updateCurrentProject({ missionEstimations: updatedEstimations });
+      updateCurrentProject({ projectEstimation: updatedEstimations });
 
       console.log(
         `🎉 Mission ${missionId} réestimée avec succès via l'estimation rigoureuse`,

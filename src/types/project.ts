@@ -214,7 +214,7 @@ export interface Project {
   /** Liste des missions du projet organisées par catégories */
   missions?: MissionCategories;
   /** Estimation des missions (jours et justification) par mission, entreprise et personne mobilisée */
-  missionEstimations?: ProjectEstimation;
+  projectEstimation?: ProjectEstimation;
   /** Pourcentages de l'offre par catégorie de missions */
   categoryPercentages?: CategoryPercentages;
   /** Pourcentages recommandés par l'IA selon l'état de l'art du métier */

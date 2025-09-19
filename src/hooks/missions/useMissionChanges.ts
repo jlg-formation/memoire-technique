@@ -42,7 +42,7 @@ export function useMissionChanges(projectEstimation: ProjectEstimation) {
         },
       },
     };
-    updateCurrentProject({ missionEstimations: updated });
+    updateCurrentProject({ projectEstimation: updated });
   };
 
   const handleJustificationChange = (
@@ -82,7 +82,7 @@ export function useMissionChanges(projectEstimation: ProjectEstimation) {
         },
       },
     };
-    updateCurrentProject({ missionEstimations: updated });
+    updateCurrentProject({ projectEstimation: updated });
   };
 
   const handleMissionDescriptionChange = (

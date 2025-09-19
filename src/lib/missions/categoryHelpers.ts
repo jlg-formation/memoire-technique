@@ -3,6 +3,7 @@ import type {
   MissionCategories,
   CategoryPercentages,
   Project,
+  ProjectEstimation,
 } from "../../types/project";
 
 /**
@@ -118,4 +119,76 @@ export const getMissionAmount = (
     categoryPercentage,
   );
   return categoryAmount * (missionPercentageInCategory / 100);
+};
+
+/**
+ * Met à jour les montants cibles de toutes les catégories dans les estimations de missions
+ * basé sur le montant des travaux et les pourcentages de catégories
+ */
+export const updateTargetAmountsInEstimations = (
+  currentEstimations: ProjectEstimation | undefined,
+  worksAmount: number,
+  categoryPercentages: CategoryPercentages,
+): ProjectEstimation => {
+  if (!currentEstimations || !worksAmount) {
+    // Retourner une structure par défaut si pas d'estimations existantes
+    return {
+      base: { montantCible: 0, missions: {} },
+      pse: { montantCible: 0, missions: {} },
+      tranchesConditionnelles: { montantCible: 0, missions: {} },
+      variantes: { montantCible: 0, missions: {} },
+    };
+  }
+
+  const updatedEstimations: ProjectEstimation = {
+    base: {
+      montantCible: currentEstimations.base?.montantCible ?? 0,
+      missions: { ...currentEstimations.base?.missions },
+    },
+    pse: {
+      montantCible: currentEstimations.pse?.montantCible ?? 0,
+      missions: { ...currentEstimations.pse?.missions },
+    },
+    tranchesConditionnelles: {
+      montantCible:
+        currentEstimations.tranchesConditionnelles?.montantCible ?? 0,
+      missions: { ...currentEstimations.tranchesConditionnelles?.missions },
+    },
+    variantes: {
+      montantCible: currentEstimations.variantes?.montantCible ?? 0,
+      missions: { ...currentEstimations.variantes?.missions },
+    },
+  };
+
+  // Mettre à jour le montant cible pour chaque catégorie
+  if (categoryPercentages.base !== undefined) {
+    updatedEstimations.base.montantCible = getCategoryTargetAmount(
+      worksAmount,
+      categoryPercentages.base,
+    );
+  }
+
+  if (categoryPercentages.pse !== undefined) {
+    updatedEstimations.pse.montantCible = getCategoryTargetAmount(
+      worksAmount,
+      categoryPercentages.pse,
+    );
+  }
+
+  if (categoryPercentages.tranchesConditionnelles !== undefined) {
+    updatedEstimations.tranchesConditionnelles.montantCible =
+      getCategoryTargetAmount(
+        worksAmount,
+        categoryPercentages.tranchesConditionnelles,
+      );
+  }
+
+  if (categoryPercentages.variantes !== undefined) {
+    updatedEstimations.variantes.montantCible = getCategoryTargetAmount(
+      worksAmount,
+      categoryPercentages.variantes,
+    );
+  }
+
+  return updatedEstimations;
 };

@@ -8,7 +8,7 @@ import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
 export function useMissionData(currentProject: Project | null) {
   const missionEstimation: ProjectEstimation =
-    currentProject?.missionEstimations ?? {
+    currentProject?.projectEstimation ?? {
       base: { montantCible: 0, missions: {} },
       pse: { montantCible: 0, missions: {} },
       tranchesConditionnelles: { montantCible: 0, missions: {} },
