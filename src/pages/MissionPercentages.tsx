@@ -434,13 +434,13 @@ export default function MissionPercentages() {
                                     e.currentTarget.blur();
                                   }
                                 }}
-                                className="w-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-center text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                className="w-20 rounded-md border border-gray-300 bg-white px-3 py-2 text-end text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                               />
                               <span className="text-sm text-gray-500">%</span>
                             </div>
 
                             {/* Montant en euros */}
-                            <div className="text-right">
+                            <div className="w-20 text-right">
                               <div className="text-sm font-semibold text-emerald-700">
                                 {missionAmount.toLocaleString(undefined, {
                                   maximumFractionDigits: 0,
