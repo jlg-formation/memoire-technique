@@ -1,23 +1,29 @@
 import { ArrowLeft, Check } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 interface MobilizedPersonEditProps {
-  person: MobilizedPerson;
-  company: ParticipatingCompany;
-  onClose: () => void;
-  onSave: (person: MobilizedPerson, shouldBeRepresentative?: boolean) => void;
+  person?: MobilizedPerson;
+  company?: ParticipatingCompany;
+  onClose?: () => void;
+  onSave?: (person: MobilizedPerson, shouldBeRepresentative?: boolean) => void;
 }
 
 function MobilizedPersonEdit({
-  person,
-  company,
+  person: personProp,
+  company: companyProp,
   onClose,
   onSave,
 }: MobilizedPersonEditProps) {
+  const { companySlug, personSlug } = useParams();
+  const navigate = useNavigate();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
+
   const [personName, setPersonName] = useState("");
   const [dailyRate, setDailyRate] = useState(650);
   const [cvText, setCvText] = useState("");
@@ -25,15 +31,89 @@ function MobilizedPersonEdit({
   const [processing, setProcessing] = useState(false);
   const [shouldBeRepresentative, setShouldBeRepresentative] = useState(false);
 
-  const isCurrentRepresentative = company.representativeId === person.id;
+  // Si pas de company/person en props, les chercher via les params d'URL
+  const company =
+    companyProp ||
+    currentProject?.participatingCompanies?.find((c) => c.slug === companySlug);
+  const person =
+    personProp || company?.mobilizedPeople?.find((p) => p.slug === personSlug);
 
   // Initialiser les champs avec les données de la personne
   useEffect(() => {
-    setPersonName(person.name || "");
-    setDailyRate(person.dailyRate || 650);
-    setCvText(person.cvText || "");
-    setCvSummary(person.cvSummary || "");
+    if (person) {
+      setPersonName(person.name || "");
+      setDailyRate(person.dailyRate || 650);
+      setCvText(person.cvText || "");
+      setCvSummary(person.cvSummary || "");
+    }
   }, [person]);
+
+  if (!company || !person) return <div>Personne ou entreprise introuvable</div>;
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
+
+  // Fonction utilitaire pour valider le representativeId
+  const validateRepresentativeId = (
+    representativeId: string | undefined,
+    mobilizedPeople: Array<{ id: string }>,
+  ): string | undefined => {
+    if (!representativeId) return undefined;
+
+    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
+    const isValid = mobilizedPeople.some(
+      (person) => person.id === representativeId,
+    );
+
+    return isValid ? representativeId : undefined;
+  };
+
+  const handleSave = (
+    updatedPerson: MobilizedPerson,
+    shouldBeRepresentative?: boolean,
+  ) => {
+    if (onSave) {
+      onSave(updatedPerson, shouldBeRepresentative);
+    } else {
+      // Logique de sauvegarde par défaut pour le routage
+      const updatedPeople = (company.mobilizedPeople ?? []).map((p) =>
+        p.id === person.id ? updatedPerson : p,
+      );
+
+      // Valider le representativeId existant et l'effacer s'il n'est pas valide
+      let representativeId = validateRepresentativeId(
+        company.representativeId,
+        updatedPeople,
+      );
+
+      // Gérer la désignation explicite comme représentant
+      if (shouldBeRepresentative) {
+        representativeId = updatedPerson.id;
+      } else if (!representativeId && updatedPeople.length > 0) {
+        // S'il n'y a pas de représentant valide et qu'il y a des personnes mobilisées, assigner la première
+        representativeId = updatedPeople[0].id;
+      }
+
+      const updatedCompany = {
+        ...company,
+        mobilizedPeople: updatedPeople,
+        representativeId,
+      };
+      updateCurrentProject({
+        participatingCompanies: currentProject?.participatingCompanies?.map(
+          (c) => (c.id === company.id ? updatedCompany : c),
+        ),
+      });
+      handleClose();
+    }
+  };
+
+  const isCurrentRepresentative = company.representativeId === person.id;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +125,7 @@ function MobilizedPersonEdit({
       cvSummary: cvSummary || undefined,
     };
 
-    onSave(updatedPerson, shouldBeRepresentative);
+    handleSave(updatedPerson, shouldBeRepresentative);
     // onClose(); // supprimé pour éviter la double navigation
   };
 
@@ -55,7 +135,7 @@ function MobilizedPersonEdit({
       <div className="border-b pb-4">
         <div className="mb-2 flex items-center gap-3">
           <ButtonLink
-            onClick={onClose}
+            onClick={handleClose}
             className="flex shrink-0 items-center gap-1"
           >
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />

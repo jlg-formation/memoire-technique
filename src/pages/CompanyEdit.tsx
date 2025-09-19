@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Plus, Users, Trash2 } from "lucide-react";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
@@ -12,11 +13,13 @@ import MobilizedPersonCreate from "./MobilizedPersonCreate";
 import MobilizedPersonEdit from "./MobilizedPersonEdit";
 
 interface CompanyEditProps {
-  company: ParticipatingCompany;
-  onClose: () => void;
+  company?: ParticipatingCompany;
+  onClose?: () => void;
 }
 
-function CompanyEdit({ company, onClose }: CompanyEditProps) {
+function CompanyEdit({ company: companyProp, onClose }: CompanyEditProps) {
+  const { companySlug } = useParams();
+  const navigate = useNavigate();
   const { currentProject, updateCurrentProject } = useCurrentProject();
 
   const [companyName, setCompanyName] = useState("");
@@ -35,19 +38,36 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
     null,
   );
 
+  // Si pas de company en prop, la chercher via les params d'URL
+  const company =
+    companyProp ||
+    currentProject?.participatingCompanies?.find((c) => c.slug === companySlug);
+
+  // Initialiser les champs avec les données de l'entreprise
+  useEffect(() => {
+    if (company) {
+      setCompanyName(company.name || "");
+      setPresentationSummary(company.presentationSummary || "");
+      setEquipmentText(company.equipmentText || "");
+    }
+    // La gestion du mandataire est déplacée dans Equipes.tsx
+  }, [company, currentProject]);
+
+  if (!company) return <div>Entreprise introuvable</div>;
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
+
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
 
   // Récupérer l'entreprise actuelle depuis le store pour avoir les données à jour
   const currentCompany = companies.find((c) => c.id === company.id) || company;
-
-  // Initialiser les champs avec les données de l'entreprise
-  useEffect(() => {
-    setCompanyName(company.name || "");
-    setPresentationSummary(company.presentationSummary || "");
-    setEquipmentText(company.equipmentText || "");
-    // La gestion du mandataire est déplacée dans Equipes.tsx
-  }, [company, currentProject]);
 
   // Fonction utilitaire pour valider le representativeId
   const validateRepresentativeId = (
@@ -172,7 +192,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
       c.id === company.id ? updatedCompany : c,
     );
     updateCurrentProject({ participatingCompanies: updatedCompanies });
-    onClose();
+    handleClose();
   };
 
   return (
@@ -200,7 +220,7 @@ function CompanyEdit({ company, onClose }: CompanyEditProps) {
           <div className="border-b pb-4">
             <div className="mb-2 flex items-center gap-3">
               <ButtonLink
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex shrink-0 items-center gap-1"
               >
                 <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />

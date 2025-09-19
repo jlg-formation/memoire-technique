@@ -1,27 +1,66 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
 import { uniqueSlug } from "../lib/strings/slugify";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 interface MobilizedPersonCreateProps {
-  company: ParticipatingCompany;
-  onClose: () => void;
-  onSave: (person: MobilizedPerson) => void;
+  company?: ParticipatingCompany;
+  onClose?: () => void;
+  onSave?: (person: MobilizedPerson) => void;
 }
 
 function MobilizedPersonCreate({
-  company,
+  company: companyProp,
   onClose,
   onSave,
 }: MobilizedPersonCreateProps) {
+  const { companySlug } = useParams();
+  const navigate = useNavigate();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
+
   const [personName, setPersonName] = useState("");
   const [dailyRate, setDailyRate] = useState(650);
   const [cvText, setCvText] = useState("");
   const [cvSummary, setCvSummary] = useState("");
   const [processing, setProcessing] = useState(false);
+
+  // Si pas de company en prop, la chercher via les params d'URL
+  const company =
+    companyProp ||
+    currentProject?.participatingCompanies?.find((c) => c.slug === companySlug);
+
+  if (!company) return <div>Entreprise introuvable</div>;
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
+
+  const handleSave = (person: MobilizedPerson) => {
+    if (onSave) {
+      onSave(person);
+    } else {
+      // Logique de sauvegarde par défaut pour le routage
+      const updated = {
+        ...company,
+        mobilizedPeople: [...(company.mobilizedPeople ?? []), person],
+      };
+      updateCurrentProject({
+        participatingCompanies: currentProject?.participatingCompanies?.map(
+          (c) => (c.id === company.id ? updated : c),
+        ),
+      });
+      handleClose();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +77,7 @@ function MobilizedPersonCreate({
       cvSummary: cvSummary || undefined,
     };
 
-    onSave(newPerson);
+    handleSave(newPerson);
   };
 
   return (
@@ -47,7 +86,7 @@ function MobilizedPersonCreate({
       <div className="border-b pb-4">
         <div className="mb-2 flex items-center gap-3">
           <ButtonLink
-            onClick={onClose}
+            onClick={handleClose}
             className="flex shrink-0 items-center gap-1"
           >
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />

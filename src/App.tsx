@@ -3,7 +3,7 @@ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Projects from "./pages/Projects";
 import ProjectCreate from "./pages/ProjectCreate";
-import ProjectEditRoute from "./pages/ProjectEditRoute";
+import ProjectEdit from "./pages/ProjectEdit";
 import Equipes from "./pages/Equipes";
 import MarketDocs from "./pages/MarketDocs";
 import Missions from "./pages/Missions";
@@ -13,9 +13,9 @@ import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
 import { ButtonLink } from "./components/ui";
 import Debug from "./pages/Debug";
-import CompanyEditRoute from "./pages/CompanyEditRoute";
-import MobilizedPersonCreateRoute from "./pages/MobilizedPersonCreateRoute";
-import MobilizedPersonEditRoute from "./pages/MobilizedPersonEditRoute";
+import CompanyEdit from "./pages/CompanyEdit";
+import MobilizedPersonCreate from "./pages/MobilizedPersonCreate";
+import MobilizedPersonEdit from "./pages/MobilizedPersonEdit";
 import CompanyCreate from "./pages/CompanyCreate";
 
 function App() {
@@ -54,20 +54,20 @@ function App() {
             />
             <Route
               path="/projects/:projectSlug/edit"
-              element={<ProjectEditRoute />}
+              element={<ProjectEdit />}
             />
             <Route path="/equipes" element={<Equipes />} />
             <Route
               path="/equipes/entreprise/:companySlug/edit"
-              element={<CompanyEditRoute />}
+              element={<CompanyEdit />}
             />
             <Route
               path="/equipes/entreprise/:companySlug/personne/ajouter"
-              element={<MobilizedPersonCreateRoute />}
+              element={<MobilizedPersonCreate />}
             />
             <Route
               path="/equipes/entreprise/:companySlug/personne/:personSlug/edit"
-              element={<MobilizedPersonEditRoute />}
+              element={<MobilizedPersonEdit />}
             />
             <Route path="/documents" element={<MarketDocs />} />
             <Route path="/missions" element={<Missions />} />

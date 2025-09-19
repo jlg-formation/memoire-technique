@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { useProjectStore } from "../store/useProjectStore";
 import { extractConsultationInfo } from "../lib/OpenAI";
@@ -9,12 +10,14 @@ import type { Project } from "../types/project";
 import type { MethodologyScore } from "../lib/OpenAI/extractMethodologyScores";
 
 interface ProjectEditProps {
-  project: Project;
-  onClose: () => void;
+  project?: Project;
+  onClose?: () => void;
 }
 
-function ProjectEdit({ project, onClose }: ProjectEditProps) {
-  const { updateProject } = useProjectStore();
+function ProjectEdit({ project: projectProp, onClose }: ProjectEditProps) {
+  const { projectSlug } = useParams<{ projectSlug: string }>();
+  const navigate = useNavigate();
+  const { projects, updateProject } = useProjectStore();
 
   const [consultationTitle, setConsultationTitle] = useState("");
   const [submissionDeadline, setSubmissionDeadline] = useState("");
@@ -23,16 +26,44 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
   const [processing, setProcessing] = useState(false);
   const [analysisStep, setAnalysisStep] = useState<string>("");
   const [notation, setNotation] = useState<MethodologyScore[] | undefined>(
-    project.notation,
+    undefined,
   );
+
+  // Si pas de project en prop, le chercher via les params d'URL
+  const project = projectProp || projects.find((p) => p.slug === projectSlug);
 
   // Initialiser les champs avec les données du projet
   useEffect(() => {
-    setConsultationTitle(project.consultationTitle || "");
-    setSubmissionDeadline(project.submissionDeadline || "");
-    setSubmissionTime(project.submissionTime || "");
-    setWorksAmount(project.worksAmount?.toString() || "");
+    if (project) {
+      setConsultationTitle(project.consultationTitle || "");
+      setSubmissionDeadline(project.submissionDeadline || "");
+      setSubmissionTime(project.submissionTime || "");
+      setWorksAmount(project.worksAmount?.toString() || "");
+      setNotation(project.notation);
+    }
   }, [project]);
+
+  if (!project) {
+    return (
+      <div className="p-8 text-center text-red-600">
+        Projet introuvable
+        <button
+          className="ml-4 rounded bg-blue-500 px-4 py-2 text-white"
+          onClick={() => navigate("/projects")}
+        >
+          Retour aux projets
+        </button>
+      </div>
+    );
+  }
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate("/projects");
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +77,7 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
       notation,
     };
     updateProject(updatedProject);
-    onClose();
+    handleClose();
   };
 
   // Utilisation de FileAIUpload pour l'import RC
@@ -87,7 +118,7 @@ function ProjectEdit({ project, onClose }: ProjectEditProps) {
       <div className="border-b pb-4">
         <div className="mb-2 flex items-center gap-3">
           <ButtonLink
-            onClick={onClose}
+            onClick={handleClose}
             className="flex shrink-0 items-center gap-1"
           >
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
