@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "format": "prettier -w .",
     "format:changed": "bun ./scripts/format-changed.ts",
-    "code:stats": "bun ./scripts/code-stats.ts"
+    "code:stats": "bun ./scripts/code-stats.ts",
+    "export:git": "bun ./scripts/export-git.ts"
   },
   "dependencies": {
     "localforage": "^1.10.0",
