@@ -6,17 +6,16 @@ import MissionHeader from "../components/missions/MissionHeader";
 import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton";
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
-import NoProjectSelected from "../components/missions/states/NoProjectSelected";
 import { Briefcase } from "lucide-react";
 import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
 import { allMissionsTotalWithConstraints } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
 import { useMissionData, useMissionEstimation } from "../hooks/missions";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { MissionPriceConstraint } from "../types/project";
 
 export default function Missions() {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   const {
     categoryPercentages,
     updateCategoryPercentage,
@@ -36,10 +35,6 @@ export default function Missions() {
   const handleUpdateConstraints = (constraints: MissionPriceConstraint[]) => {
     updateCurrentProject({ missionPriceConstraints: constraints });
   };
-
-  if (!currentProject) {
-    return <NoProjectSelected />;
-  }
 
   const nonEmptyCategories = getNonEmptyCategories(currentProject);
   const missions = getAllMissions(missionCategories);
@@ -75,12 +70,7 @@ export default function Missions() {
         <InformationPanel />
 
         {/* Bouton CCTP - placé juste après le panneau informatif */}
-        {missionCategories && (
-          <CCTPDescriptionButton
-            missionCategories={missionCategories}
-            marketDocuments={currentProject?.marketDocuments || []}
-          />
-        )}
+        {missionCategories && <CCTPDescriptionButton />}
 
         <EstimationPanel
           worksAmount={worksAmount}

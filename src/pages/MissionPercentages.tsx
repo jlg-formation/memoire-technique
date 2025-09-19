@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import {
   getNonEmptyCategories,
   getMissionAmount,
@@ -41,7 +41,7 @@ interface CategoryMissionPercentageStringInputs {
 
 export default function MissionPercentages() {
   const navigate = useNavigate();
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   const [estimating, setEstimating] = useState(false);
   const [localPercentages, setLocalPercentages] =
     useState<CategoryMissionPercentageInputs>({

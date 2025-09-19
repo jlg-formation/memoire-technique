@@ -5,7 +5,7 @@ import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
 import { uniqueSlug } from "../lib/strings/slugify";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 
 interface CompanyCreateProps {
@@ -13,7 +13,7 @@ interface CompanyCreateProps {
 }
 
 function CompanyCreate({ onClose }: CompanyCreateProps) {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
 
   const [companyName, setCompanyName] = useState("");
   const [presentationSummary, setPresentationSummary] = useState("");

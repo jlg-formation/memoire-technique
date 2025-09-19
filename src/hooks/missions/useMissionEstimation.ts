@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useProjectStore } from "../../store/useProjectStore";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import {
   estimateMissionDaysWithCategories,
   performRigorousEstimation,
@@ -12,11 +12,11 @@ import type {
 } from "../../types/project";
 
 export function useMissionEstimation() {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   const [estimating, setEstimating] = useState(false);
 
   // Initialiser les pourcentages par catégorie avec des valeurs par défaut
-  const categoryPercentages = currentProject?.categoryPercentages || {};
+  const categoryPercentages = currentProject.categoryPercentages || {};
 
   const updateCategoryPercentage = (
     category: keyof CategoryPercentages,
@@ -28,7 +28,7 @@ export function useMissionEstimation() {
     };
 
     // Mettre à jour les montants cibles dans les estimations si on a un montant de travaux
-    if (currentProject?.worksAmount) {
+    if (currentProject.worksAmount) {
       const updatedEstimations = updateTargetAmountsInEstimations(
         currentProject.projectEstimation,
         currentProject.worksAmount,
@@ -52,10 +52,6 @@ export function useMissionEstimation() {
     try {
       if (!missionCategories) {
         throw new Error("Aucune catégorie de missions disponible");
-      }
-
-      if (!currentProject) {
-        throw new Error("Aucun projet courant disponible");
       }
 
       // Note: Dans la nouvelle approche en pipeline, les validations et calculs
@@ -110,10 +106,6 @@ export function useMissionEstimation() {
   ): Promise<void> => {
     setEstimating(true);
     try {
-      if (!currentProject) {
-        throw new Error("Aucun projet courant disponible");
-      }
-
       console.log(
         `🎯 Début de la réestimation rigoureuse pour la mission ${missionId}`,
       );

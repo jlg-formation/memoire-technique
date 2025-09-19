@@ -1,9 +1,9 @@
-import { useProjectStore } from "../../store/useProjectStore";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import type { ProjectEstimation } from "../../types/project";
 import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
 export function useMissionChanges(projectEstimation: ProjectEstimation) {
-  const { updateCurrentProject, currentProject } = useProjectStore();
+  const { updateCurrentProject, currentProject } = useCurrentProject();
 
   const handleChange = (
     missionId: string,
@@ -11,7 +11,7 @@ export function useMissionChanges(projectEstimation: ProjectEstimation) {
     personId: string,
     days: number,
   ): void => {
-    const category = findMissionCategory(missionId, currentProject?.missions);
+    const category = findMissionCategory(missionId, currentProject.missions);
     if (!category) return;
 
     const updated: ProjectEstimation = {
@@ -51,7 +51,7 @@ export function useMissionChanges(projectEstimation: ProjectEstimation) {
     personId: string,
     text: string,
   ): void => {
-    const category = findMissionCategory(missionId, currentProject?.missions);
+    const category = findMissionCategory(missionId, currentProject.missions);
     if (!category) return;
 
     const updated: ProjectEstimation = {
@@ -89,7 +89,7 @@ export function useMissionChanges(projectEstimation: ProjectEstimation) {
     missionId: string,
     description: string,
   ): void => {
-    if (!currentProject?.missions) return;
+    if (!currentProject.missions) return;
 
     const updatedMissions = { ...currentProject.missions };
 

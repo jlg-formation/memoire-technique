@@ -1,16 +1,15 @@
 import { useState } from "react";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 // import supprimé, la clé est gérée par la fonction utilitaire
 import { generateMemoire } from "../lib/OpenAI";
 import { ButtonPrimary } from "../components/ui";
 
 function Memoire() {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   // apiKey est maintenant géré par la fonction utilitaire
   const [generating, setGenerating] = useState(false);
 
   const handleGenerate = async () => {
-    if (!currentProject) return;
     // apiKey est maintenant géré par la fonction utilitaire
     setGenerating(true);
     try {

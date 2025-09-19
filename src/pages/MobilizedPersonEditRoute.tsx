@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import MobilizedPersonEdit from "./MobilizedPersonEdit";
 
 function MobilizedPersonEditRoute() {
   const { companySlug, personSlug } = useParams();
   const navigate = useNavigate();
-  const { currentProject, updateCurrentProject } = useProjectStore();
-  const company = currentProject?.participatingCompanies?.find(
+  const { currentProject, updateCurrentProject } = useCurrentProject();
+  const company = currentProject.participatingCompanies?.find(
     (c) => c.slug === companySlug,
   );
   const person = company?.mobilizedPeople?.find((p) => p.slug === personSlug);
@@ -57,7 +57,7 @@ function MobilizedPersonEditRoute() {
           representativeId,
         };
         updateCurrentProject({
-          participatingCompanies: currentProject?.participatingCompanies?.map(
+          participatingCompanies: currentProject.participatingCompanies?.map(
             (c) => (c.id === company.id ? updatedCompany : c),
           ),
         });

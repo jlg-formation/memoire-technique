@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import { executeDeleteAction } from "../lib/critical-actions";
 import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
 import CompanyCreate from "./CompanyCreate";
@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 function Equipes() {
   const navigate = useNavigate();
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
 
   const [currentView, setCurrentView] = useState<
     "list" | "create" | "edit" | "person-create" | "person-edit"

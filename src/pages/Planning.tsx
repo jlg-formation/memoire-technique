@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 // import supprimé, la clé est gérée par la fonction utilitaire
 import { generatePlanning } from "../lib/OpenAI";
 import PlanningChart from "../components/PlanningChart";
@@ -18,15 +18,9 @@ const getAllMissions = (missionCategories?: MissionCategories): Mission[] => {
 };
 
 function Planning() {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   // apiKey est maintenant géré par la fonction utilitaire
   const [generating, setGenerating] = useState(false);
-
-  if (!currentProject) {
-    return (
-      <div className="p-4 text-red-500">Veuillez sélectionner un projet.</div>
-    );
-  }
 
   const missionCategories = currentProject.missions;
   const missions = getAllMissions(missionCategories);

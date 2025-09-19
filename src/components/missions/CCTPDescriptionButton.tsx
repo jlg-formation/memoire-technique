@@ -1,22 +1,17 @@
 import { FileText } from "lucide-react";
 import AsyncPrimaryButton from "../ui/AsyncPrimaryButton";
 import { extractMissionDescriptions } from "../../lib/OpenAI";
-import { useProjectStore } from "../../store/useProjectStore";
-import type { MarketDocument, MissionCategories } from "../../types/project";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
+import type { MissionCategories } from "../../types/project";
 
-interface CCTPDescriptionButtonProps {
-  missionCategories: MissionCategories;
-  marketDocuments: MarketDocument[];
-}
-
-export default function CCTPDescriptionButton({
-  missionCategories,
-  marketDocuments,
-}: CCTPDescriptionButtonProps) {
-  const { updateCurrentProject } = useProjectStore();
+function CCTPDescriptionButton() {
+  const { currentProject, updateCurrentProject } = useCurrentProject();
 
   // Trouve le document CCTP
-  const cctpDocument = marketDocuments.find((doc) => doc.type === "CCTP");
+  const cctpDocument = currentProject.marketDocuments?.find(
+    (doc) => doc.type === "CCTP",
+  );
+  const missionCategories = currentProject.missions;
 
   // Le bouton est désactivé si aucun CCTP n'est chargé
   const isDisabled = !cctpDocument || !cctpDocument.text;
@@ -94,3 +89,5 @@ export default function CCTPDescriptionButton({
     </div>
   );
 }
+
+export default CCTPDescriptionButton;

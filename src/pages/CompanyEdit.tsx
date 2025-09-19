@@ -4,7 +4,7 @@ import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import { executeDeleteAction } from "../lib/critical-actions";
 import { uniqueSlug } from "../lib/strings/slugify";
 import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
@@ -17,7 +17,7 @@ interface CompanyEditProps {
 }
 
 function CompanyEdit({ company, onClose }: CompanyEditProps) {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
 
   const [companyName, setCompanyName] = useState("");
   const [presentationSummary, setPresentationSummary] = useState("");

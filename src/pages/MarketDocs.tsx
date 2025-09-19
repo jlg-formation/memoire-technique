@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { ButtonLink, EditableTextArea } from "../components/ui";
 import { Trash2 } from "lucide-react";
@@ -13,16 +13,10 @@ import { initProjectEstimation } from "../lib/missions";
 import type { MarketDocument, MarketDocumentType } from "../types/project";
 
 function MarketDocs() {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   const [processingSteps, setProcessingSteps] = useState<
     Record<string, string>
   >({});
-
-  if (!currentProject) {
-    return (
-      <div className="p-4 text-red-500">Veuillez sélectionner un projet.</div>
-    );
-  }
 
   const docs = currentProject.marketDocuments ?? [];
 

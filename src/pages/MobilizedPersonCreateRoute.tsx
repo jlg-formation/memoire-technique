@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useProjectStore } from "../store/useProjectStore";
+import { useCurrentProject } from "../store/useCurrentProjectStore";
 import MobilizedPersonCreate from "./MobilizedPersonCreate";
 
 function MobilizedPersonCreateRoute() {
   const { companySlug } = useParams();
   const navigate = useNavigate();
-  const { currentProject, updateCurrentProject } = useProjectStore();
-  const company = currentProject?.participatingCompanies?.find(
+  const { currentProject, updateCurrentProject } = useCurrentProject();
+  const company = currentProject.participatingCompanies?.find(
     (c) => c.slug === companySlug,
   );
   if (!company) return <div>Entreprise introuvable</div>;
@@ -20,7 +20,7 @@ function MobilizedPersonCreateRoute() {
           mobilizedPeople: [...(company.mobilizedPeople ?? []), person],
         };
         updateCurrentProject({
-          participatingCompanies: currentProject?.participatingCompanies?.map(
+          participatingCompanies: currentProject.participatingCompanies?.map(
             (c) => (c.id === company.id ? updated : c),
           ),
         });
