@@ -37,7 +37,7 @@ export function EditableTextArea({
     }
   };
 
-  const baseClassName = `w-full rounded-md border p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${className}`;
+  const baseClassName = `w-full rounded-md border pb-3 pl-3 pt-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none ${className}`;
 
   return (
     <div className="space-y-2">
@@ -46,6 +46,7 @@ export function EditableTextArea({
           {label}
         </label>
       )}
+
       <div className="relative">
         <textarea
           value={value}
@@ -57,26 +58,24 @@ export function EditableTextArea({
           disabled={disabled}
           className={`${baseClassName} ${
             !isEditing
-              ? "cursor-default resize-none overflow-hidden border-gray-200 bg-gray-50"
-              : "resize-both overflow-auto border-gray-300 bg-white"
-          } ${disabled ? "cursor-not-allowed opacity-50" : ""} pr-12`}
+              ? "cursor-default resize-none overflow-hidden border-gray-200 bg-gray-50 pr-12"
+              : "resize-both overflow-auto border-gray-300 bg-white pr-16"
+          } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
         />
 
         {!disabled && (
-          <div className="absolute top-2 right-2">
-            <button
-              type="button"
-              onClick={handleToggleEdit}
-              className={`flex h-8 w-8 items-center justify-center rounded-md border transition-colors ${
-                !isEditing
-                  ? "border-gray-200 bg-white text-gray-500 hover:border-blue-300 hover:text-blue-600"
-                  : "border-blue-200 bg-blue-50 text-blue-600 hover:bg-blue-100"
-              }`}
-              title={isEditing ? "Passer en lecture seule" : "Modifier"}
-            >
-              <Edit3 className="h-4 w-4" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleToggleEdit}
+            className={`absolute top-2 right-6 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-all duration-200 ${
+              !isEditing
+                ? "bg-gray-100/80 text-gray-400 backdrop-blur-sm hover:bg-gray-200 hover:text-gray-600"
+                : "bg-blue-100/90 text-blue-600 shadow-sm backdrop-blur-sm hover:bg-blue-200"
+            }`}
+            title={isEditing ? "Passer en lecture seule" : "Modifier"}
+          >
+            <Edit3 className="h-3.5 w-3.5" />
+          </button>
         )}
       </div>
 
