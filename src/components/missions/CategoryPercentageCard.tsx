@@ -20,7 +20,7 @@ export default function CategoryPercentageCard({
 }: CategoryPercentageCardProps) {
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-3 flex items-center gap-2">
+      <div className="mb-3 flex min-h-[4rem] items-start gap-2">
         <div className={`rounded-lg p-2 ${category.color}`}>
           <svg
             className="h-4 w-4"
@@ -37,7 +37,7 @@ export default function CategoryPercentageCard({
           </svg>
         </div>
         <div className="flex-1">
-          <h5 className="text-sm font-semibold text-slate-800">
+          <h5 className="text-sm leading-tight font-semibold text-slate-800">
             {category.name}
           </h5>
           <p className="text-xs text-slate-500">
