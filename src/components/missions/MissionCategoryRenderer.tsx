@@ -50,7 +50,6 @@ export const renderMissionCategory = (
     missionId: string,
     description: string,
   ) => void,
-  handleReestimateSingleMission?: (missionId: string) => Promise<void>,
 ) => {
   if (categoryMissions.length === 0) return null;
 
@@ -131,13 +130,12 @@ export const renderMissionCategory = (
             >
               <div className="space-y-4">
                 {/* Bouton de réestimation IA */}
-                {handleReestimateSingleMission && (
+                {
                   <MissionReestimateButton
                     missionId={mission.id}
-                    onReestimate={handleReestimateSingleMission}
                     disabled={estimating}
                   />
-                )}
+                }
 
                 {/* Comparaison des pourcentages en pleine largeur */}
                 {aiEstimation && (

@@ -68,7 +68,7 @@ export function MissionCategoriesDisplay({
     handleMissionDescriptionChange,
   } = useMissionChanges(missionEstimation);
 
-  const { estimating, handleReestimateSingleMission } = useMissionEstimation();
+  const { estimating } = useMissionEstimation();
 
   // Définitions des fonctions de calcul (reprises de Missions.tsx)
   const getMissionTotal = (missionId: string) =>
@@ -107,7 +107,6 @@ export function MissionCategoriesDisplay({
           currentProject?.recommendedPercentages,
           categoryConfig.key,
           handleMissionDescriptionChange,
-          handleReestimateSingleMission,
         );
       })}
     </>

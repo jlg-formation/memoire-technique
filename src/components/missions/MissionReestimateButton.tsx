@@ -1,19 +1,20 @@
-import AsyncPrimaryButton from "../ui/AsyncPrimaryButton";
 import { CheckCircle } from "lucide-react";
+import AsyncPrimaryButton from "../ui/AsyncPrimaryButton";
+import { useMissionEstimation } from "../../hooks/missions";
 
 interface MissionReestimateButtonProps {
   missionId: string;
-  onReestimate: (missionId: string) => Promise<void>;
   disabled?: boolean;
 }
 
 export function MissionReestimateButton({
   missionId,
-  onReestimate,
   disabled = false,
 }: MissionReestimateButtonProps) {
-  const handleReestimate = async () => {
-    await onReestimate(missionId);
+  const { handleReestimateSingleMission } = useMissionEstimation();
+
+  const handleReestimateMission = async () => {
+    await handleReestimateSingleMission(missionId);
   };
 
   return (
@@ -45,7 +46,7 @@ export function MissionReestimateButton({
         </div>
       </div>
       <AsyncPrimaryButton
-        onClick={handleReestimate}
+        onClick={handleReestimateMission}
         disabled={disabled}
         className="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
         icon={CheckCircle}
