@@ -16,7 +16,7 @@ import Debug from "./pages/Debug";
 import CompanyEditRoute from "./pages/CompanyEditRoute";
 import MobilizedPersonCreateRoute from "./pages/MobilizedPersonCreateRoute";
 import MobilizedPersonEditRoute from "./pages/MobilizedPersonEditRoute";
-import CompanyCreateRoute from "./pages/CompanyCreateRoute";
+import CompanyCreate from "./pages/CompanyCreate";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -80,7 +80,7 @@ function App() {
             <Route path="/parametres" element={<Settings />} />
             <Route
               path="/equipes/entreprise/create"
-              element={<CompanyCreateRoute />}
+              element={<CompanyCreate />}
             />
             <Route path="/debug" element={<Debug />} />
           </Routes>

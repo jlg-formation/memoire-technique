@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
@@ -9,10 +10,11 @@ import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 
 interface CompanyCreateProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 function CompanyCreate({ onClose }: CompanyCreateProps) {
+  const navigate = useNavigate();
   const { currentProject, updateCurrentProject } = useCurrentProject();
 
   const [companyName, setCompanyName] = useState("");
@@ -25,6 +27,14 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
+
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
+      navigate(-1);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +63,7 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
     }
 
     updateCurrentProject(updatedProject);
-    onClose();
+    handleClose();
   };
 
   return (
@@ -62,7 +72,7 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
       <div className="border-b pb-4">
         <div className="mb-2 flex items-center gap-3">
           <ButtonLink
-            onClick={onClose}
+            onClick={handleClose}
             className="flex shrink-0 items-center gap-1"
           >
             <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
