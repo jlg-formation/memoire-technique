@@ -1,8 +1,3 @@
-// Expose for FileAIUpload
-if (typeof window !== "undefined") {
-  // @ts-expect-error: Expose for FileAIUpload usage
-  window.extractPdfText = extractPdfText;
-}
 import * as pdfjsLib from "pdfjs-dist";
 import type {
   TextItem,

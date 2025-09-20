@@ -65,19 +65,11 @@ export default function FileAIUpload({
       let text = "";
 
       if (file.name.toLowerCase().endsWith(".docx")) {
-        // @ts-expect-error: window.extractDocxText est injecté dynamiquement
-        if (typeof window.extractDocxText !== "function") {
-          throw new Error("window.extractDocxText is not available");
-        }
-        // @ts-expect-error: window.extractDocxText est injecté dynamiquement
-        text = await window.extractDocxText(file);
+        const { extractDocxText } = await import("../../lib/docx");
+        text = await extractDocxText(file);
       } else {
-        // @ts-expect-error: window.extractPdfText est injecté dynamiquement
-        if (typeof window.extractPdfText !== "function") {
-          throw new Error("window.extractPdfText is not available");
-        }
-        // @ts-expect-error: window.extractPdfText est injecté dynamiquement
-        text = await window.extractPdfText(file);
+        const { extractPdfText } = await import("../../lib/pdf");
+        text = await extractPdfText(file);
       }
 
       if (cancelled) return;

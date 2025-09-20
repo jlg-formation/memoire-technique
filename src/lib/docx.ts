@@ -1,8 +1,3 @@
-// Expose for FileAIUpload
-if (typeof window !== "undefined") {
-  // @ts-expect-error: Expose for FileAIUpload usage
-  window.extractDocxText = extractDocxText;
-}
 let mammoth: typeof import("mammoth") | undefined;
 
 async function loadMammoth() {
