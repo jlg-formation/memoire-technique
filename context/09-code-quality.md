@@ -40,6 +40,10 @@ Elles sont obligatoires sauf mention explicite contraire.
 - Pas de `console.log` en prod → logger dédié
 - Éviter la duplication, réutiliser l’existant
 - Toujours destructurer si pertinent
+- **Préférer `for…of` aux `.forEach()`**
+  - Plus lisible et compatible avec `async/await`
+  - Utiliser `.map`, `.filter`, `.reduce` uniquement pour la transformation de données pure
+  - Éviter complètement `.forEach()`
 
 ---
 
