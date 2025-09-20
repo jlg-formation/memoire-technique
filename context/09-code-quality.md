@@ -104,7 +104,10 @@ Elles sont obligatoires sauf mention explicite contraire.
 - Pas d’inline styles
 - Créer des composants de style réutilisables
 - Responsive design obligatoire
-- Icônes Lucide React uniquement
+- Icônes Lucide React obligatoires pour représenter des actions, statuts ou visuels
+- **Éviter les caractères emoji en UI**
+  - Toujours préférer une icône Lucide React quand c’est possible
+  - Les emoji peuvent être tolérés uniquement dans du contenu textuel ou des tests rapides
 
 ---
 
