@@ -1,5 +1,13 @@
 import { useState, useRef } from "react";
-import { Check, Sparkles } from "lucide-react";
+import { Check, Sparkles, Loader2 } from "lucide-react";
+// Spinner lucide-react réutilisable
+function Spinner({
+  className = "h-6 w-6 text-gray-600",
+}: {
+  className?: string;
+}) {
+  return <Loader2 className={"animate-spin " + className} />;
+}
 
 interface FileAIUploadProps {
   disabled?: boolean;
@@ -30,7 +38,7 @@ export default function FileAIUpload({
 
   // Générer un ID unique pour chaque instance
   const inputId = useRef(
-    `file-ai-upload-input-${Math.random().toString(36).substr(2, 9)}`,
+    `file-ai-upload-input-${Math.random().toString(36).slice(2, 11)}`,
   );
 
   const setStep = setStatus ?? setInternalStep;
@@ -119,28 +127,10 @@ export default function FileAIUpload({
         {fileName || label}
       </label>
 
-      <style>{`
-        @keyframes breathing-dots {
-          0% { opacity: 0.3; }
-          25% { opacity: 0.8; }
-          50% { opacity: 1; }
-          75% { opacity: 0.8; }
-          100% { opacity: 0.3; }
-        }
-      `}</style>
-
       {/* Zone d'icône avec espace réservé permanent */}
       <div className="flex h-6 min-w-[32px] items-center justify-center gap-2">
         {isExtracting ? (
-          <span
-            className="text-2xl font-bold text-gray-600"
-            style={{
-              letterSpacing: 3,
-              animation: "breathing-dots 1.8s infinite ease-in-out",
-            }}
-          >
-            ...
-          </span>
+          <Spinner />
         ) : analysisStep && analysisStep.startsWith("Erreur") ? (
           <span className="text-sm font-medium text-gray-800">✗</span>
         ) : analysisStep && analysisStep.startsWith("Analyse terminée") ? (

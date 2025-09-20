@@ -42,10 +42,13 @@ Elles sont obligatoires sauf mention explicite contraire.
 - Pas de `console.log` en prod → logger dédié
 - Éviter la duplication, réutiliser l’existant
 - Toujours destructurer si pertinent
-- Préférer `for…of` aux `.forEach()`
+- **Préférer `for…of` aux `.forEach()`**
   - Plus lisible et compatible avec `async/await`
   - Utiliser `.map`, `.filter`, `.reduce` uniquement pour la transformation de données pure
   - Éviter complètement `.forEach()`
+- **Détecter et éviter toute utilisation de fonctions dépréciées**
+  - Ne jamais proposer ou générer de code avec des API marquées comme `@deprecated`
+  - Toujours proposer une alternative moderne quand une fonction dépréciée existe
 
 ---
 
@@ -114,6 +117,9 @@ Elles sont obligatoires sauf mention explicite contraire.
 - **Éviter les caractères emoji en UI**
   - Toujours préférer une icône Lucide React quand c’est possible
   - Les emoji peuvent être tolérés uniquement dans du contenu textuel ou des tests rapides
+- **Interdire les SVG inline** dans le code JSX/TSX
+  - Toujours importer les icônes via Lucide React
+  - Pas d’éléments `<svg>…</svg>` écrits à la main
 
 ---
 
