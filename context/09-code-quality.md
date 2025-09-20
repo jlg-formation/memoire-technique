@@ -156,6 +156,9 @@ Elles sont obligatoires sauf mention explicite contraire.
 - **Ne pas renommer les propriétés lors de la déstructuration des hooks**
   - Préférer `const { isValid, isTested } = useApiKeyValidation();`
   - Éviter `const { isValid: apiKeyIsValid } = useApiKeyValidation();`
+- **Déclarer un seul composant React par fichier**
+  - Pas de multiples composants exportés dans le même fichier
+  - Si besoin d’un composant interne, l’extraire dans son propre fichier
 
 ---
 
