@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router";
-import { useState } from "react";
+import { Menu } from "lucide-react";
+
 import Sidebar from "./components/Sidebar";
 import Projects from "./pages/Projects";
 import ProjectCreate from "./pages/ProjectCreate";
@@ -11,32 +12,42 @@ import MissionPercentages from "./pages/MissionPercentages";
 import Planning from "./pages/Planning";
 import Notation from "./pages/Notation";
 import Settings from "./pages/Settings";
-import { ButtonLink } from "./components/ui";
 import Debug from "./pages/Debug";
 import CompanyEdit from "./pages/CompanyEdit";
 import MobilizedPersonCreate from "./pages/MobilizedPersonCreate";
 import MobilizedPersonEdit from "./pages/MobilizedPersonEdit";
 import CompanyCreate from "./pages/CompanyCreate";
+import { ButtonLink } from "./components/ui";
+import { useNavigation } from "./hooks/useNavigation";
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isSidebarOpen, openSidebar, closeSidebar } = useNavigation();
 
   return (
     <div className="min-h-screen md:flex">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      {sidebarOpen && (
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      {isSidebarOpen && (
         <div
           className="fixed inset-0 z-30 cursor-pointer bg-black/50 md:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={closeSidebar}
+          aria-label="Fermer le menu de navigation"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Escape" || e.key === "Enter" || e.key === " ") {
+              closeSidebar();
+            }
+          }}
         />
       )}
       <div className="flex-1">
         <div className="mx-auto max-w-screen-lg p-0 sm:p-4">
           <ButtonLink
-            onClick={() => setSidebarOpen(true)}
+            onClick={openSidebar}
             className="mb-4 md:hidden"
+            aria-label="Ouvrir le menu de navigation"
           >
-            ☰
+            <Menu size={20} />
           </ButtonLink>
           <Routes>
             <Route

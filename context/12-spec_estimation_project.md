@@ -1,7 +1,9 @@
 # 📑 Spécification détaillée – Processus d’estimation basé sur `Project`
 
 ## 🎯 Objectif
+
 Permettre de générer et valider une **estimation des honoraires de maîtrise d’œuvre** directement dans la structure `Project`, en exploitant :
+
 - `missions` (`MissionCategories`)
 - `categoryPercentages` (`CategoryPercentages`)
 - `missionEstimations` (`MissionEstimation`)
@@ -12,14 +14,17 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 ## 🔹 Étape 1 – Initialisation de la structure
 
 ### Input
+
 - `Project.missions` : liste des missions classées en **base**, **pse**, **tranchesConditionnelles**, **variantes**.
 - `Project.categoryPercentages` : % attendus par catégorie (ex. base = 8 %).
 - `Project.companies` : entreprises avec leurs personnes mobilisées et taux journaliers (`dailyRate`).
 
 ### Output
+
 - Un objet `Project.missionEstimations` initialisé avec toutes les missions présentes, vides mais prêtes à recevoir des allocations.
 
 ### Objectif
+
 - **Squelette d’estimation** aligné sur les missions et pourcentages attendus.
 
 ---
@@ -27,11 +32,14 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 ## 🔹 Étape 2 – Intégration des contraintes
 
 ### Input
+
 - Liste des entreprises ayant transmis des chiffrages contraints.
 - Pour chaque mission : montant imposé pour l’entreprise.
 
 ### Output
+
 - Dans `missionEstimations`, au niveau de `companyAllocations` :
+
   ```ts
   {
     companyId: "BET-STRUC",
@@ -46,6 +54,7 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
   - **s’assurer que la somme = totalAmount**.
 
 ### Objectif
+
 - Respecter strictement les contraintes de prix des cotraitants.
 - Préserver la liberté de la MOE dans la justification interne (qui fait quoi et combien de jours).
 
@@ -54,24 +63,30 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 ## 🔹 Étape 3 – Allocation brute
 
 ### Input
+
 - Missions à compléter (non verrouillées).
 - `MobilizedPerson.dailyRate`.
 
 ### Output
+
 - Pour chaque mission → `companyAllocations` → `personAllocations`.
 - Exemple :
+
   ```ts
-  missionEstimations.base["aps"].companyAllocations["archi1"].personAllocations["p1"] = {
+  missionEstimations.base["aps"].companyAllocations["archi1"].personAllocations[
+    "p1"
+  ] = {
     days: 5,
     amount: 3500,
     justification: "Analyse du programme et esquisses",
-    locked: false
+    locked: false,
   };
   ```
 
 - `totalAmount` calculé pour chaque mission et entreprise.
 
 ### Objectif
+
 - Construire une **première répartition réaliste** en jours-hommes × taux.
 
 ---
@@ -79,25 +94,29 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 ## 🔹 Étape 4 – Vérification et ajustement
 
 ### Input
+
 - `Project.missionEstimations` rempli.
 - `Project.categoryPercentages` (attendus).
 - Tolérance ± 5 %.
 
 ### Calculs
+
 - **Pourcentage par mission** :
   \[
-  \%_{mission} = \frac{mission.totalAmount}{Project.totalWorkAmount} \times 100
+  \%\_{mission} = \frac{mission.totalAmount}{Project.totalWorkAmount} \times 100
   \]
 - **Pourcentage par catégorie** = somme des missions d’une catégorie.
 - **Écart** = % obtenu – % attendu.
 
 ### Contrôles supplémentaires
+
 - Pour chaque entreprise contrainte :
   \[
   \sum personAllocations.amount = companyAllocation.totalAmount
   \]
 
 ### Output
+
 - Mise à jour des champs :
   - `percentageOfCategory`
   - `percentageOfProject`
@@ -107,6 +126,7 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 - Ajustements automatiques proposés sur les missions non verrouillées.
 
 ### Objectif
+
 - **Garantir conformité** avec les % attendus et verrouillages.
 
 ---
@@ -114,19 +134,23 @@ Permettre de générer et valider une **estimation des honoraires de maîtrise d
 ## 🔹 Étape 5 – Justifications
 
 ### Input
+
 - `missionEstimations` vérifié.
 
 ### Output
+
 - Chaque `personAllocations` reçoit un champ `justification` (2–3 phrases max), adapté :
   - au **profil** (chef de projet, ingénieur, dessinateur, économiste, OPC, etc.),
   - à la **mission** (APS, APD, PRO, DET, etc.).
 
 Exemple :
+
 ```ts
-justification: "5 jours sont prévus pour élaborer les esquisses et organiser les réunions de cadrage avec la MOA."
+justification: "5 jours sont prévus pour élaborer les esquisses et organiser les réunions de cadrage avec la MOA.";
 ```
 
 ### Objectif
+
 - Rendre chaque ligne chiffrée **défendable devant un jury**.
 
 ---
@@ -134,9 +158,11 @@ justification: "5 jours sont prévus pour élaborer les esquisses et organiser l
 ## 🔹 Étape 6 – Synthèse finale
 
 ### Input
+
 - `missionEstimations` complété avec allocations et justifications.
 
 ### Output
+
 1. **Tableaux mission par mission**
    - Sigle, titre, description.
    - % attendu vs % obtenu vs écart.
@@ -150,6 +176,7 @@ justification: "5 jours sont prévus pour élaborer les esquisses et organiser l
    - Mise en avant du respect des % attendus.
 
 ### Objectif
+
 - Produire un **livrable exploitable** directement dans le mémoire technique.
 
 ---
