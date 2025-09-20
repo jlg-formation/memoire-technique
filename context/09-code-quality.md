@@ -26,6 +26,8 @@ Elles sont obligatoires sauf mention explicite contraire.
 - Pas de fonctions qui retournent `T | undefined` → toujours `T` ou `throw`
 - Type narrowing obligatoire
 - Fonctions async toujours typées `Promise<Type>`
+- Utiliser uniquement la syntaxe ECMAScript Modules (ESM) : `import` / `export`
+- Éviter totalement la syntaxe CommonJS (`require`, `module.exports`)
 
 ---
 
@@ -40,7 +42,7 @@ Elles sont obligatoires sauf mention explicite contraire.
 - Pas de `console.log` en prod → logger dédié
 - Éviter la duplication, réutiliser l’existant
 - Toujours destructurer si pertinent
-- **Préférer `for…of` aux `.forEach()`**
+- Préférer `for…of` aux `.forEach()`
   - Plus lisible et compatible avec `async/await`
   - Utiliser `.map`, `.filter`, `.reduce` uniquement pour la transformation de données pure
   - Éviter complètement `.forEach()`
