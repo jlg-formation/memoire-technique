@@ -9,12 +9,15 @@ export function extractCompanyName(text: string): string {
   if (match && match[1]) {
     return match[1].replace(/[.,;:!?"'()[\]{}<>]/g, "").trim();
   }
+
   // Sinon, retourne la première phrase jusqu'au premier point
   const dotIdx = firstLine.indexOf(".");
-  if (dotIdx > 0)
+  if (dotIdx > 0) {
     return firstLine
       .slice(0, dotIdx)
       .replace(/[.,;:!?"'()[\]{}<>]/g, "")
       .trim();
+  }
+
   return firstLine.replace(/[.,;:!?"'()[\]{}<>]/g, "").trim();
 }

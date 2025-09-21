@@ -63,13 +63,13 @@ Si une catégorie n'a pas de missions, utilise un tableau vide []`,
             name: item,
             sigle: "XXX", // Valeur par défaut quand pas de sigle
           };
-        } else {
-          return {
-            id: `${categoryPrefix}-${index + 1}`,
-            name: item.name,
-            sigle: item.sigle || "XXX", // Initialiser à XXX si null/undefined
-          };
         }
+
+        return {
+          id: `${categoryPrefix}-${index + 1}`,
+          name: item.name,
+          sigle: item.sigle || "XXX", // Initialiser à XXX si null/undefined
+        };
       });
 
     return {
