@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Check, Sparkles, Loader2 } from "lucide-react";
+import { extractTextFromFile } from "../../lib/file-extraction";
 // Spinner lucide-react réutilisable
 function Spinner({
   className = "h-6 w-6 text-gray-600",
@@ -62,15 +63,7 @@ export default function FileAIUpload({
     setStep("Extraction du contenu du fichier...");
 
     try {
-      let text = "";
-
-      if (file.name.toLowerCase().endsWith(".docx")) {
-        const { extractDocxText } = await import("../../lib/docx");
-        text = await extractDocxText(file);
-      } else {
-        const { extractPdfText } = await import("../../lib/pdf");
-        text = await extractPdfText(file);
-      }
+      const text = await extractTextFromFile(file);
 
       if (cancelled) return;
 
