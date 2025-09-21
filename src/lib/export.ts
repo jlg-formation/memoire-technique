@@ -98,6 +98,15 @@ export async function importProjectZIP(blob: Blob): Promise<Project> {
   return importProjectJSON(json);
 }
 
+export async function importProjectFromFile(file: File): Promise<Project> {
+  if (file.name.endsWith(".zip")) {
+    return await importProjectZIP(file);
+  }
+
+  const json = await file.text();
+  return importProjectJSON(json);
+}
+
 export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

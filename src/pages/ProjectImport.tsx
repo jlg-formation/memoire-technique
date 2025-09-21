@@ -1,9 +1,8 @@
 import { useState, useCallback } from "react";
 import { ArrowLeft, Upload } from "lucide-react";
 import { ButtonLink } from "../components/ui";
-import { importProjectJSON, importProjectZIP } from "../lib/export";
+import { importProjectFromFile } from "../lib/export";
 import { useProjectStore } from "../store/useProjectStore";
-import type { Project } from "../types/project";
 
 interface ProjectImportProps {
   onClose: () => void;
@@ -20,13 +19,7 @@ function ProjectImport({ onClose }: ProjectImportProps) {
 
       setImporting(true);
       try {
-        let project: Project;
-        if (file.name.endsWith(".zip")) {
-          project = await importProjectZIP(file);
-        } else {
-          const json = await file.text();
-          project = importProjectJSON(json);
-        }
+        const project = await importProjectFromFile(file);
         addProject(project);
         setProject(project);
         onClose();
