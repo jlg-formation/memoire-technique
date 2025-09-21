@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
+import { validateRepresentativeId } from "../lib/company-utils";
 import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
@@ -29,19 +30,6 @@ const isCVParseResult = (result: unknown): result is CVParseResult => {
     typeof (result as CVParseResult).text === "string" &&
     typeof (result as CVParseResult).summary === "string"
   );
-};
-const validateRepresentativeId = (
-  representativeId: string | undefined,
-  mobilizedPeople: Array<{ id: string }>,
-): string | undefined => {
-  if (!representativeId) return undefined;
-
-  // Prevent orphaned representative references
-  const isValid = mobilizedPeople.some(
-    (person) => person.id === representativeId,
-  );
-
-  return isValid ? representativeId : undefined;
 };
 
 function MobilizedPersonEdit({

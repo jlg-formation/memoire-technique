@@ -3,6 +3,7 @@ import { useCallback, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
+import { validateRepresentativeId } from "../lib/company-utils";
 import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
 import { uniqueSlug } from "../lib/strings/slugify";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
@@ -19,19 +20,6 @@ interface CVParsingResult {
   summary: string;
   name?: string;
 }
-const validateRepresentativeId = (
-  representativeId: string | undefined,
-  mobilizedPeople: MobilizedPerson[],
-): string | undefined => {
-  if (!representativeId) return undefined;
-
-  // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
-  const isValid = mobilizedPeople.some(
-    (person) => person.id === representativeId,
-  );
-
-  return isValid ? representativeId : undefined;
-};
 
 function MobilizedPersonCreate({
   company: companyProp,

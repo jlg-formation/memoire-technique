@@ -1,6 +1,7 @@
 import { useCurrentProject } from "../store/useCurrentProjectStore";
 import { executeDeleteAction } from "../lib/critical-actions";
-import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
+import { validateRepresentativeId } from "../lib/company-utils";
+import type { ParticipatingCompany } from "../types/project";
 import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
 import { Plus, Building2, Trash2, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -11,21 +12,6 @@ function Equipes() {
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
-
-  // Fonction utilitaire pour valider le representativeId
-  const validateRepresentativeId = (
-    representativeId: string | undefined,
-    mobilizedPeople: MobilizedPerson[],
-  ): string | undefined => {
-    if (!representativeId) return undefined;
-
-    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
-    const isValid = mobilizedPeople.some(
-      (person) => person.id === representativeId,
-    );
-
-    return isValid ? representativeId : undefined;
-  };
 
   const handleDeleteCompany = (id: string, companyName: string) => {
     executeDeleteAction(() => {
