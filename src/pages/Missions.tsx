@@ -6,22 +6,25 @@ import MissionHeader from "../components/missions/MissionHeader";
 import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton";
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
+import LoadingState from "../components/missions/states/LoadingState";
 import { Briefcase } from "lucide-react";
 import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
 import { allMissionsTotalWithConstraints } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
 import { useMissionData, useMissionEstimation } from "../hooks/missions";
-import { useCurrentProject } from "../store/useCurrentProjectStore";
+import { useProjectStore } from "../store/useProjectStore";
+import { useEffect } from "react";
 import type { MissionPriceConstraint } from "../types/project";
 
 export default function Missions() {
-  const { currentProject, updateCurrentProject } = useCurrentProject();
+  const { currentProject, updateCurrentProject, isLoading } = useProjectStore();
+
   const {
     categoryPercentages,
     updateCategoryPercentage,
     estimating,
     handleEstimate,
-  } = useMissionEstimation();
+  } = useMissionEstimation(currentProject, updateCurrentProject);
 
   const {
     missionEstimation,
@@ -31,6 +34,24 @@ export default function Missions() {
     missingRates,
     getDays,
   } = useMissionData(currentProject);
+
+  // Rediriger vers la liste des projets si aucun projet n'est sélectionné après le chargement
+  useEffect(() => {
+    if (!isLoading && !currentProject) {
+      window.location.href = "/memoire-technique/projects";
+    }
+  }, [isLoading, currentProject]);
+
+  // Afficher l'état de chargement si les projets sont en cours de chargement
+  if (isLoading) {
+    return <LoadingState message="Chargement du projet en cours..." />;
+  }
+
+  // Si aucun projet n'est sélectionné après le chargement, afficher un état de chargement
+  // pendant que la redirection se fait
+  if (!currentProject) {
+    return <LoadingState message="Redirection vers la liste des projets..." />;
+  }
 
   const handleUpdateConstraints = (constraints: MissionPriceConstraint[]) => {
     updateCurrentProject({ missionPriceConstraints: constraints });

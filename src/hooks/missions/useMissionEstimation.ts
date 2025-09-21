@@ -4,24 +4,28 @@ import {
   performRigorousEstimation,
 } from "../../lib/OpenAI";
 import { updateTargetAmountsInEstimations } from "../../lib/missions/categoryHelpers";
-import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import type {
   CategoryPercentages,
   MissionCategories,
   ProjectEstimation,
+  Project,
 } from "../../types/project";
 
-export function useMissionEstimation() {
-  const { currentProject, updateCurrentProject } = useCurrentProject();
+export function useMissionEstimation(
+  currentProject: Project | null,
+  updateCurrentProject: (data: Partial<Project>) => void,
+) {
   const [estimating, setEstimating] = useState(false);
 
   // Initialiser les pourcentages par catégorie avec des valeurs par défaut
-  const categoryPercentages = currentProject.categoryPercentages || {};
+  const categoryPercentages = currentProject?.categoryPercentages || {};
 
   const updateCategoryPercentage = (
     category: keyof CategoryPercentages,
     percentage: number,
   ) => {
+    if (!currentProject) return;
+
     const updated: CategoryPercentages = {
       ...categoryPercentages,
       [category]: percentage,
@@ -43,6 +47,8 @@ export function useMissionEstimation() {
   const handleEstimate = async (
     missionCategories: MissionCategories,
   ): Promise<void> => {
+    if (!currentProject) return;
+
     setEstimating(true);
     try {
       if (!missionCategories) {
@@ -99,6 +105,8 @@ export function useMissionEstimation() {
   const handleReestimateSingleMission = async (
     missionId: string,
   ): Promise<void> => {
+    if (!currentProject) return;
+
     setEstimating(true);
     try {
       console.log(
@@ -168,8 +176,6 @@ export function useMissionEstimation() {
   };
 
   return {
-    currentProject,
-    updateCurrentProject,
     categoryPercentages,
     updateCategoryPercentage,
     estimating,

@@ -6,18 +6,18 @@ import type {
 } from "../../types/project";
 import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
-export function useMissionData(currentProject: Project) {
+export function useMissionData(currentProject: Project | null) {
   const missionEstimation: ProjectEstimation =
-    currentProject.projectEstimation ?? {
+    currentProject?.projectEstimation ?? {
       base: { montantCible: 0, missions: {} },
       pse: { montantCible: 0, missions: {} },
       tranchesConditionnelles: { montantCible: 0, missions: {} },
       variantes: { montantCible: 0, missions: {} },
     };
 
-  const missionCategories = currentProject.missions;
-  const companies = currentProject.participatingCompanies ?? [];
-  const worksAmount = currentProject.worksAmount ?? 0;
+  const missionCategories = currentProject?.missions;
+  const companies = currentProject?.participatingCompanies ?? [];
+  const worksAmount = currentProject?.worksAmount ?? 0;
 
   const missingRates = companies.flatMap((company: ParticipatingCompany) =>
     (company.mobilizedPeople ?? []).filter(

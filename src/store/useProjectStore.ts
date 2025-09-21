@@ -12,6 +12,7 @@ const CURRENT_PROJECT_KEY = "current_project_id";
 type ProjectStore = {
   projects: Project[];
   currentProject: Project | null;
+  isLoading: boolean;
   addProject: (project: Project) => void;
   deleteProject: (id: string) => void;
   setProject: (project: Project) => void;
@@ -29,12 +30,14 @@ export const useProjectStore = create<ProjectStore>((set) => {
       currentProject: savedId
         ? (projects.find((p) => p.id === savedId) ?? null)
         : null,
+      isLoading: false,
     });
   });
 
   return {
     projects: [],
     currentProject: null,
+    isLoading: true,
     addProject: (project) => {
       const clean = stripPdfFields(project);
       set((state) => ({ projects: [...state.projects, clean] }));
@@ -57,11 +60,11 @@ export const useProjectStore = create<ProjectStore>((set) => {
     setProject: (project) => {
       const clean = stripPdfFields(project);
       localStorage.setItem(CURRENT_PROJECT_KEY, clean.id);
-      set({ currentProject: clean });
+      set({ currentProject: clean, isLoading: false });
     },
     clearCurrentProject: () => {
       localStorage.removeItem(CURRENT_PROJECT_KEY);
-      set({ currentProject: null });
+      set({ currentProject: null, isLoading: false });
     },
     updateProject: (project) => {
       const clean = stripPdfFields({

@@ -4,17 +4,22 @@ import type { Project } from "../types/project";
 interface UseCurrentProjectReturn {
   currentProject: Project;
   updateCurrentProject: (data: Partial<Project>) => void;
+  isLoading: boolean;
 }
 
 /**
  * Hook pour accéder au projet courant.
  * Lance une erreur JavaScript si aucun projet n'est sélectionné.
  *
- * @returns {UseCurrentProjectReturn} Le projet courant et la méthode de mise à jour
- * @throws {Error} Si aucun projet n'est sélectionné
+ * @returns {UseCurrentProjectReturn} Le projet courant, la méthode de mise à jour et l'état de chargement
+ * @throws {Error} Si aucun projet n'est sélectionné ou si le chargement est en cours
  */
 export const useCurrentProject = (): UseCurrentProjectReturn => {
-  const { currentProject, updateCurrentProject } = useProjectStore();
+  const { currentProject, updateCurrentProject, isLoading } = useProjectStore();
+
+  if (isLoading) {
+    throw new Error("Chargement des projets en cours...");
+  }
 
   if (!currentProject) {
     throw new Error(
@@ -25,5 +30,6 @@ export const useCurrentProject = (): UseCurrentProjectReturn => {
   return {
     currentProject,
     updateCurrentProject,
+    isLoading,
   };
 };
