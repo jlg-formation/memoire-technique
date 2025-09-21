@@ -1,5 +1,5 @@
 import { ArrowLeft, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
@@ -11,6 +11,12 @@ interface MobilizedPersonEditProps {
   person?: MobilizedPerson;
   company?: ParticipatingCompany;
   onSave?: (person: MobilizedPerson, shouldBeRepresentative?: boolean) => void;
+}
+
+interface CVParseResult {
+  text: string;
+  summary: string;
+  name?: string;
 }
 
 function MobilizedPersonEdit({
@@ -29,67 +35,57 @@ function MobilizedPersonEdit({
   const [processing, setProcessing] = useState(false);
   const [shouldBeRepresentative, setShouldBeRepresentative] = useState(false);
 
-  // Si pas de company/person en props, les chercher via les params d'URL
+  // Search for company/person in project data if not provided as props
   const company =
     companyProp ||
     currentProject?.participatingCompanies?.find((c) => c.slug === companySlug);
   const person =
     personProp || company?.mobilizedPeople?.find((p) => p.slug === personSlug);
 
-  // Initialiser les champs avec les données de la personne
-  useEffect(() => {
-    if (person) {
-      setPersonName(person.name || "");
-      setDailyRate(person.dailyRate || 650);
-      setCvText(person.cvText || "");
-      setCvSummary(person.cvSummary || "");
-    }
-  }, [person]);
-
-  if (!company || !person) return <div>Personne ou entreprise introuvable</div>;
-
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     navigate(-1);
-  };
+  }, [navigate]);
 
   // Fonction utilitaire pour valider le representativeId
-  const validateRepresentativeId = (
-    representativeId: string | undefined,
-    mobilizedPeople: Array<{ id: string }>,
-  ): string | undefined => {
-    if (!representativeId) return undefined;
+  const validateRepresentativeId = useCallback(
+    (
+      representativeId: string | undefined,
+      mobilizedPeople: Array<{ id: string }>,
+    ): string | undefined => {
+      if (!representativeId) return undefined;
 
-    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
-    const isValid = mobilizedPeople.some(
-      (person) => person.id === representativeId,
-    );
+      // Prevent orphaned representative references
+      const isValid = mobilizedPeople.some(
+        (person) => person.id === representativeId,
+      );
 
-    return isValid ? representativeId : undefined;
-  };
+      return isValid ? representativeId : undefined;
+    },
+    [],
+  );
 
-  const handleSave = (
-    updatedPerson: MobilizedPerson,
-    shouldBeRepresentative?: boolean,
-  ) => {
-    if (onSave) {
-      onSave(updatedPerson, shouldBeRepresentative);
-    } else {
-      // Logique de sauvegarde par défaut pour le routage
+  const handleSave = useCallback(
+    (updatedPerson: MobilizedPerson, shouldBeRepresentative?: boolean) => {
+      if (onSave) {
+        onSave(updatedPerson, shouldBeRepresentative);
+        return;
+      }
+
+      if (!company || !person) return;
+
       const updatedPeople = (company.mobilizedPeople ?? []).map((p) =>
         p.id === person.id ? updatedPerson : p,
       );
 
-      // Valider le representativeId existant et l'effacer s'il n'est pas valide
       let representativeId = validateRepresentativeId(
         company.representativeId,
         updatedPeople,
       );
 
-      // Gérer la désignation explicite comme représentant
       if (shouldBeRepresentative) {
         representativeId = updatedPerson.id;
       } else if (!representativeId && updatedPeople.length > 0) {
-        // S'il n'y a pas de représentant valide et qu'il y a des personnes mobilisées, assigner la première
+        // Ensure there's always a representative when people exist
         representativeId = updatedPeople[0].id;
       }
 
@@ -104,28 +100,91 @@ function MobilizedPersonEdit({
         ),
       });
       handleClose();
+    },
+    [
+      onSave,
+      company,
+      person,
+      validateRepresentativeId,
+      updateCurrentProject,
+      currentProject,
+      handleClose,
+    ],
+  );
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!person) return;
+
+      const updatedPerson: MobilizedPerson = {
+        ...person,
+        name: personName,
+        dailyRate,
+        cvText: cvText || undefined,
+        cvSummary: cvSummary || undefined,
+      };
+
+      handleSave(updatedPerson, shouldBeRepresentative);
+    },
+    [
+      person,
+      personName,
+      dailyRate,
+      cvText,
+      cvSummary,
+      shouldBeRepresentative,
+      handleSave,
+    ],
+  );
+
+  const handleCVParse = useCallback(
+    async (text: string): Promise<CVParseResult> => {
+      try {
+        setProcessing(true);
+        const { summary, name } = await parseMobilizedPersonCV(text);
+        return { text, summary, name };
+      } catch (error) {
+        console.error("Erreur lors du parsing du CV:", error);
+        throw new Error("Impossible de traiter le CV. Veuillez réessayer.");
+      }
+    },
+    [],
+  );
+
+  const handleCVResult = useCallback((result: unknown) => {
+    try {
+      const { text, summary, name } = result as CVParseResult;
+      setCvText(text);
+      setCvSummary(summary);
+      if (name) {
+        setPersonName(name);
+      }
+    } catch (error) {
+      console.error("Erreur lors du traitement du résultat:", error);
+    } finally {
+      setProcessing(false);
     }
-  };
+  }, []);
+
+  // Initialize form fields when person data changes
+  useEffect(() => {
+    if (person) {
+      setPersonName(person.name || "");
+      setDailyRate(person.dailyRate || 650);
+      setCvText(person.cvText || "");
+      setCvSummary(person.cvSummary || "");
+    }
+  }, [person]);
+
+  if (!company || !person) {
+    return <div>Personne ou entreprise introuvable</div>;
+  }
 
   const isCurrentRepresentative = company.representativeId === person.id;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const updatedPerson: MobilizedPerson = {
-      ...person,
-      name: personName,
-      dailyRate,
-      cvText: cvText || undefined,
-      cvSummary: cvSummary || undefined,
-    };
-
-    handleSave(updatedPerson, shouldBeRepresentative);
-    // onClose(); // supprimé pour éviter la double navigation
-  };
-
   return (
     <div className="min-h-screen space-y-6 p-2 sm:p-6">
-      {/* Header */}
       <div className="border-b pb-4">
         <div className="mb-2 flex items-center gap-3">
           <ButtonLink
@@ -144,7 +203,6 @@ function MobilizedPersonEdit({
         </p>
       </div>
 
-      {/* CV Upload Section */}
       <div className="rounded-lg bg-blue-50 p-3 sm:p-4">
         <h3 className="mb-2 text-sm font-medium text-blue-900 sm:text-base">
           Télécharger un nouveau CV
@@ -157,31 +215,14 @@ function MobilizedPersonEdit({
         <div className="space-y-3">
           <FileAIUpload
             label="Joindre le CV de la personne"
-            onParse={async (text) => {
-              setProcessing(true);
-              const { summary, name } = await parseMobilizedPersonCV(text);
-              return { text, summary, name };
-            }}
-            onResult={(result) => {
-              const { text, summary, name } = result as {
-                text: string;
-                summary: string;
-                name?: string;
-              };
-              setCvText(text);
-              setCvSummary(summary);
-              if (name) {
-                setPersonName(name);
-              }
-              setProcessing(false);
-            }}
+            onParse={handleCVParse}
+            onResult={handleCVResult}
             status=""
             setStatus={() => {}}
           />
         </div>
       </div>
 
-      {/* Form */}
       <form
         onSubmit={handleSubmit}
         className="space-y-4 sm:space-y-5"
@@ -228,7 +269,6 @@ function MobilizedPersonEdit({
           />
         )}
 
-        {/* Section représentant - seulement si pas déjà représentant */}
         {!isCurrentRepresentative && (
           <div className="rounded-lg bg-green-50 p-4">
             <div className="flex items-center">
@@ -254,7 +294,6 @@ function MobilizedPersonEdit({
           </div>
         )}
 
-        {/* Affichage si déjà représentant */}
         {isCurrentRepresentative && (
           <div className="rounded-lg bg-blue-50 p-4">
             <div className="flex items-center">
