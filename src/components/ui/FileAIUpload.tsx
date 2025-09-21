@@ -1,14 +1,7 @@
 import { useState, useRef } from "react";
-import { Check, Sparkles, Loader2 } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { extractTextFromFile } from "../../lib/file-extraction";
-// Spinner lucide-react réutilisable
-function Spinner({
-  className = "h-6 w-6 text-gray-600",
-}: {
-  className?: string;
-}) {
-  return <Loader2 className={"animate-spin " + className} />;
-}
+import Spinner from "./Spinner";
 
 interface FileAIUploadProps {
   disabled?: boolean;
