@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useProjectStore } from "../store/useProjectStore";
 import {
   exportProjectJSON,
@@ -8,7 +7,6 @@ import {
 import { executeDeleteAction } from "../lib/critical-actions";
 import type { Project } from "../types/project";
 import { useNavigate } from "react-router-dom";
-import ProjectImport from "./ProjectImport";
 import {
   ButtonPrimary,
   Button,
@@ -37,11 +35,6 @@ function Projects() {
   } = useProjectStore();
   const navigate = useNavigate();
 
-  const [currentView, setCurrentView] = useState<"list" | "import" | "edit">(
-    "list",
-  );
-  // Suppression de editingProject, non utilisé
-
   const handleExportJSON = (project: Project): void => {
     const json = exportProjectJSON(project);
     const blob = new Blob([json], { type: "application/json" });
@@ -69,10 +62,6 @@ function Projects() {
 
   // Suppression de handleCloseEdit, non utilisé
 
-  if (currentView === "import") {
-    return <ProjectImport onClose={() => setCurrentView("list")} />;
-  }
-
   return (
     <div className="h-full bg-gray-50">
       {/* Header */}
@@ -94,7 +83,7 @@ function Projects() {
           </ButtonPrimary>
 
           <Button
-            onClick={() => setCurrentView("import")}
+            onClick={() => navigate("/projects/import")}
             className="flex items-center gap-2"
           >
             <Upload className="h-5 w-5" />

@@ -17,6 +17,7 @@ import CompanyEdit from "./pages/CompanyEdit";
 import MobilizedPersonCreate from "./pages/MobilizedPersonCreate";
 import MobilizedPersonEdit from "./pages/MobilizedPersonEdit";
 import CompanyCreate from "./pages/CompanyCreate";
+import ProjectImport from "./pages/ProjectImport";
 import { ButtonLink } from "./components/ui";
 import { useNavigation } from "./hooks/useNavigation";
 
@@ -62,6 +63,10 @@ function App() {
             <Route
               path="/projects/create"
               element={<ProjectCreate onClose={() => window.history.back()} />}
+            />
+            <Route
+              path="/projects/import"
+              element={<ProjectImport onClose={() => window.history.back()} />}
             />
             <Route
               path="/projects/:projectSlug/edit"

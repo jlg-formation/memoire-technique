@@ -1,11 +1,6 @@
-import { useState } from "react";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
 import { executeDeleteAction } from "../lib/critical-actions";
 import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
-import CompanyCreate from "./CompanyCreate";
-import CompanyEdit from "./CompanyEdit";
-import MobilizedPersonCreate from "./MobilizedPersonCreate";
-import MobilizedPersonEdit from "./MobilizedPersonEdit";
 import { ButtonPrimary, ButtonLink, Select } from "../components/ui";
 import { Plus, Building2, Trash2, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -13,17 +8,6 @@ import { useNavigate } from "react-router-dom";
 function Equipes() {
   const navigate = useNavigate();
   const { currentProject, updateCurrentProject } = useCurrentProject();
-
-  const [currentView, setCurrentView] = useState<
-    "list" | "create" | "edit" | "person-create" | "person-edit"
-  >("list");
-  const [editingCompany, setEditingCompany] =
-    useState<ParticipatingCompany | null>(null);
-  const [selectedCompany, setSelectedCompany] =
-    useState<ParticipatingCompany | null>(null);
-  const [editingPerson, setEditingPerson] = useState<MobilizedPerson | null>(
-    null,
-  );
 
   const companies: ParticipatingCompany[] =
     currentProject?.participatingCompanies ?? [];
@@ -59,11 +43,6 @@ function Equipes() {
     }, companyName);
   };
 
-  const handleCloseEdit = (): void => {
-    setEditingCompany(null);
-    setCurrentView("list");
-  };
-
   const handleDeletePerson = (
     company: ParticipatingCompany,
     personId: string,
@@ -93,87 +72,6 @@ function Equipes() {
       updateCurrentProject({ participatingCompanies: updatedCompanies });
     }, `la personne ${personName}`);
   };
-
-  const handleSavePerson = (
-    person: MobilizedPerson,
-    shouldBeRepresentative?: boolean,
-  ): void => {
-    if (!selectedCompany) return;
-
-    const existingPeople = selectedCompany.mobilizedPeople ?? [];
-    let updatedPeople: MobilizedPerson[];
-
-    if (currentView === "person-edit" && editingPerson) {
-      // Mise à jour d'une personne existante
-      updatedPeople = existingPeople.map((p) =>
-        p.id === editingPerson.id ? person : p,
-      );
-    } else {
-      // Ajout d'une nouvelle personne
-      updatedPeople = [...existingPeople, person];
-    }
-
-    // Valider le representativeId existant et l'effacer s'il n'est pas valide
-    let representativeId = validateRepresentativeId(
-      selectedCompany.representativeId,
-      updatedPeople,
-    );
-
-    // Gérer la désignation explicite comme représentant
-    if (shouldBeRepresentative) {
-      representativeId = person.id;
-    } else if (!representativeId && updatedPeople.length > 0) {
-      // S'il n'y a pas de représentant valide et qu'il y a des personnes mobilisées, assigner la première ou la nouvelle
-      representativeId =
-        currentView === "person-edit" && editingPerson ? person.id : person.id;
-    }
-
-    const updatedCompanies = companies.map((c) =>
-      c.id === selectedCompany.id
-        ? { ...c, mobilizedPeople: updatedPeople, representativeId }
-        : c,
-    );
-
-    updateCurrentProject({ participatingCompanies: updatedCompanies });
-    setSelectedCompany(null);
-    setEditingPerson(null);
-    setCurrentView("list");
-  };
-
-  const handleClosePerson = (): void => {
-    setSelectedCompany(null);
-    setEditingPerson(null);
-    setCurrentView("list");
-  };
-
-  if (currentView === "create") {
-    return <CompanyCreate onClose={() => setCurrentView("list")} />;
-  }
-
-  if (currentView === "edit" && editingCompany) {
-    return <CompanyEdit company={editingCompany} onClose={handleCloseEdit} />;
-  }
-
-  if (currentView === "person-create" && selectedCompany) {
-    return (
-      <MobilizedPersonCreate
-        company={selectedCompany}
-        onClose={handleClosePerson}
-        onSave={handleSavePerson}
-      />
-    );
-  }
-
-  if (currentView === "person-edit" && selectedCompany && editingPerson) {
-    return (
-      <MobilizedPersonEdit
-        person={editingPerson}
-        company={selectedCompany}
-        onClose={handleClosePerson}
-        onSave={handleSavePerson}
-      />
-    );
-  }
 
   return (
     <div className="h-full bg-gray-50">
