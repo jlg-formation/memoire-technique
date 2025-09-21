@@ -109,31 +109,32 @@ export default function MissionPercentages() {
     };
 
     // Vérifier s'il y a déjà des pourcentages recommandés par l'IA
-    if (currentProject.recommendedPercentages) {
-      const fromAI: CategoryMissionPercentageInputs = {
-        base: {},
-        pse: {},
-        tranchesConditionnelles: {},
-        variantes: {},
-      };
-
-      nonEmptyCategories.forEach((category) => {
-        const aiCategoryPercentages =
-          currentProject.recommendedPercentages?.[category.key];
-        if (aiCategoryPercentages) {
-          category.missions.forEach((mission) => {
-            const aiEstimation = aiCategoryPercentages[mission.id];
-            fromAI[category.key][mission.id] =
-              aiEstimation?.categoryPercentage || 0;
-          });
-        }
-      });
-
-      setLocalPercentages(fromAI);
-      syncInputValues(fromAI);
-    } else {
+    if (!currentProject.recommendedPercentages) {
       initializeEqualPercentages();
+      return;
     }
+
+    const fromAI: CategoryMissionPercentageInputs = {
+      base: {},
+      pse: {},
+      tranchesConditionnelles: {},
+      variantes: {},
+    };
+
+    nonEmptyCategories.forEach((category) => {
+      const aiCategoryPercentages =
+        currentProject.recommendedPercentages?.[category.key];
+      if (aiCategoryPercentages) {
+        category.missions.forEach((mission) => {
+          const aiEstimation = aiCategoryPercentages[mission.id];
+          fromAI[category.key][mission.id] =
+            aiEstimation?.categoryPercentage || 0;
+        });
+      }
+    });
+
+    setLocalPercentages(fromAI);
+    syncInputValues(fromAI);
   }, [currentProject, nonEmptyCategories]);
 
   // Fonction pour mettre à jour une valeur d'entrée (string)

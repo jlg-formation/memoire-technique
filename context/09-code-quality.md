@@ -36,6 +36,9 @@ Elles sont obligatoires sauf mention explicite contraire.
 - ESLint + Prettier obligatoires
 - Fonctions utilitaires ≤ 20 lignes, hooks ≤ 40, composants ≤ 80, fichiers ≤ 300
 - Préférer early return / `throw` plutôt que `else`
+- Inciter les Guard clauses dans les fonctions et sortir le plus tôt possible
+- Quand plusieurs cas doivent être gérés dans une fonction, gérer le cas le plus simple d'abord et sortir.
+- Eviter le code qui part à droite (avoid pyramid of doom)
 - Variables/fonctions : noms explicites, pas d’abréviations obscures
 - Imports ordonnés : externes → internes → relatifs
 - Utiliser des path aliases (`@/…`) au lieu de chemins relatifs longs
