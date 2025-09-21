@@ -56,7 +56,7 @@ export function MissionCategoriesDisplay({
   constraints,
   onUpdateConstraints,
 }: MissionCategoriesDisplayProps) {
-  const { currentProject } = useCurrentProject();
+  const { currentProject, updateCurrentProject } = useCurrentProject();
 
   // Utilisation des hooks existants pour récupérer les données et fonctions
   const { missionCategories, companies, getDays, getJustification } =
@@ -68,7 +68,10 @@ export function MissionCategoriesDisplay({
     handleMissionDescriptionChange,
   } = useMissionChanges(missionEstimation);
 
-  const { estimating } = useMissionEstimation();
+  const { estimating } = useMissionEstimation(
+    currentProject,
+    updateCurrentProject,
+  );
 
   // Définitions des fonctions de calcul (reprises de Missions.tsx)
   const getMissionTotal = (missionId: string) =>

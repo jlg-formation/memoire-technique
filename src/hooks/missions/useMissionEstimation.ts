@@ -12,20 +12,18 @@ import type {
 } from "../../types/project";
 
 export function useMissionEstimation(
-  currentProject: Project | null,
+  currentProject: Project,
   updateCurrentProject: (data: Partial<Project>) => void,
 ) {
   const [estimating, setEstimating] = useState(false);
 
   // Initialiser les pourcentages par catégorie avec des valeurs par défaut
-  const categoryPercentages = currentProject?.categoryPercentages || {};
+  const categoryPercentages = currentProject.categoryPercentages || {};
 
   const updateCategoryPercentage = (
     category: keyof CategoryPercentages,
     percentage: number,
   ) => {
-    if (!currentProject) return;
-
     const updated: CategoryPercentages = {
       ...categoryPercentages,
       [category]: percentage,
@@ -47,8 +45,6 @@ export function useMissionEstimation(
   const handleEstimate = async (
     missionCategories: MissionCategories,
   ): Promise<void> => {
-    if (!currentProject) return;
-
     setEstimating(true);
     try {
       if (!missionCategories) {
@@ -105,8 +101,6 @@ export function useMissionEstimation(
   const handleReestimateSingleMission = async (
     missionId: string,
   ): Promise<void> => {
-    if (!currentProject) return;
-
     setEstimating(true);
     try {
       console.log(

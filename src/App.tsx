@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router";
 import { Menu } from "lucide-react";
 
 import Sidebar from "./components/Sidebar";
+import { ProjectGuard } from "./components/ProjectGuard";
 import Projects from "./pages/Projects";
 import ProjectCreate from "./pages/ProjectCreate";
 import ProjectEdit from "./pages/ProjectEdit";
@@ -18,6 +19,7 @@ import MobilizedPersonCreate from "./pages/MobilizedPersonCreate";
 import MobilizedPersonEdit from "./pages/MobilizedPersonEdit";
 import CompanyCreate from "./pages/CompanyCreate";
 import ProjectImport from "./pages/ProjectImport";
+import Memoire from "./pages/Memoire";
 import { ButtonLink } from "./components/ui";
 import { useNavigation } from "./hooks/useNavigation";
 
@@ -72,31 +74,94 @@ function App() {
               path="/projects/:projectSlug/edit"
               element={<ProjectEdit />}
             />
-            <Route path="/equipes" element={<Equipes />} />
+            <Route
+              path="/equipes"
+              element={
+                <ProjectGuard>
+                  <Equipes />
+                </ProjectGuard>
+              }
+            />
             <Route
               path="/equipes/entreprise/:companySlug/edit"
-              element={<CompanyEdit />}
+              element={
+                <ProjectGuard>
+                  <CompanyEdit />
+                </ProjectGuard>
+              }
             />
             <Route
               path="/equipes/entreprise/:companySlug/personne/ajouter"
-              element={<MobilizedPersonCreate />}
+              element={
+                <ProjectGuard>
+                  <MobilizedPersonCreate />
+                </ProjectGuard>
+              }
             />
             <Route
               path="/equipes/entreprise/:companySlug/personne/:personSlug/edit"
-              element={<MobilizedPersonEdit />}
+              element={
+                <ProjectGuard>
+                  <MobilizedPersonEdit />
+                </ProjectGuard>
+              }
             />
-            <Route path="/documents" element={<MarketDocs />} />
-            <Route path="/missions" element={<Missions />} />
+            <Route
+              path="/documents"
+              element={
+                <ProjectGuard>
+                  <MarketDocs />
+                </ProjectGuard>
+              }
+            />
+            <Route
+              path="/missions"
+              element={
+                <ProjectGuard>
+                  <Missions />
+                </ProjectGuard>
+              }
+            />
             <Route
               path="/missions/pourcentages"
-              element={<MissionPercentages />}
+              element={
+                <ProjectGuard>
+                  <MissionPercentages />
+                </ProjectGuard>
+              }
             />
-            <Route path="/planning" element={<Planning />} />
-            <Route path="/notation" element={<Notation />} />
+            <Route
+              path="/planning"
+              element={
+                <ProjectGuard>
+                  <Planning />
+                </ProjectGuard>
+              }
+            />
+            <Route
+              path="/notation"
+              element={
+                <ProjectGuard>
+                  <Notation />
+                </ProjectGuard>
+              }
+            />
+            <Route
+              path="/memoire"
+              element={
+                <ProjectGuard>
+                  <Memoire />
+                </ProjectGuard>
+              }
+            />
             <Route path="/parametres" element={<Settings />} />
             <Route
               path="/equipes/entreprise/create"
-              element={<CompanyCreate />}
+              element={
+                <ProjectGuard>
+                  <CompanyCreate />
+                </ProjectGuard>
+              }
             />
             <Route path="/debug" element={<Debug />} />
           </Routes>
