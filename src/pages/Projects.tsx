@@ -1,18 +1,5 @@
-import { useProjectStore } from "../store/useProjectStore";
-import {
-  exportProjectJSON,
-  exportProjectZIP,
-  downloadBlob,
-} from "../lib/export";
-import { executeDeleteAction } from "../lib/critical-actions";
-import type { Project } from "../types/project";
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ButtonPrimary,
-  Button,
-  ButtonLink,
-  AccentButton,
-} from "../components/ui";
 import {
   Plus,
   Upload,
@@ -24,6 +11,20 @@ import {
   Trash2,
   Edit3,
 } from "lucide-react";
+import {
+  ButtonPrimary,
+  Button,
+  ButtonLink,
+  AccentButton,
+} from "../components/ui";
+import { executeDeleteAction } from "../lib/critical-actions";
+import {
+  exportProjectJSON,
+  exportProjectZIP,
+  downloadBlob,
+} from "../lib/export";
+import { useProjectStore } from "../store/useProjectStore";
+import type { Project } from "../types/project";
 
 function Projects() {
   const {
@@ -36,35 +37,51 @@ function Projects() {
   const navigate = useNavigate();
 
   const handleExportJSON = (project: Project): void => {
-    const json = exportProjectJSON(project);
-    const blob = new Blob([json], { type: "application/json" });
-    downloadBlob(blob, `${project.consultationTitle}.json`);
+    try {
+      const json = exportProjectJSON(project);
+      const blob = new Blob([json], { type: "application/json" });
+      downloadBlob(blob, `${project.consultationTitle}.json`);
+    } catch (error) {
+      console.error("Erreur lors de l'export JSON:", error);
+      alert("Erreur lors de l'export JSON. Veuillez réessayer.");
+    }
   };
 
   const handleExportZIP = async (project: Project): Promise<void> => {
-    const blob = await exportProjectZIP(project);
-    downloadBlob(blob, `${project.consultationTitle}.zip`);
+    try {
+      const blob = await exportProjectZIP(project);
+      downloadBlob(blob, `${project.consultationTitle}.zip`);
+    } catch (error) {
+      console.error("Erreur lors de l'export ZIP:", error);
+      alert("Erreur lors de l'export ZIP. Veuillez réessayer.");
+    }
   };
 
   const handleEditProject = (project: Project): void => {
     navigate(`/projects/${project.slug}/edit`);
   };
 
+  const handleCreateProject = useCallback(() => {
+    navigate("/projects/create");
+  }, [navigate]);
+
+  const handleImportProject = useCallback(() => {
+    navigate("/projects/import");
+  }, [navigate]);
+
   const handleProjectClick = (project: Project): void => {
     if (currentProject?.id === project.id) {
-      // Si le projet est déjà sélectionné, le désélectionner
       clearCurrentProject();
-    } else {
-      // Sinon, le sélectionner
-      setProject(project);
+      return;
     }
+
+    setProject(project);
   };
 
   // Suppression de handleCloseEdit, non utilisé
 
   return (
     <div className="h-full bg-gray-50">
-      {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="px-6 py-4">
           <h1 className="text-2xl font-semibold text-gray-800">Projets</h1>
@@ -72,10 +89,9 @@ function Projects() {
       </div>
 
       <div className="p-6">
-        {/* Action Buttons */}
         <div className="mb-6 flex flex-wrap gap-3">
           <ButtonPrimary
-            onClick={() => navigate("/projects/create")}
+            onClick={handleCreateProject}
             className="flex items-center gap-2"
           >
             <Plus className="h-5 w-5" />
@@ -83,7 +99,7 @@ function Projects() {
           </ButtonPrimary>
 
           <Button
-            onClick={() => navigate("/projects/import")}
+            onClick={handleImportProject}
             className="flex items-center gap-2"
           >
             <Upload className="h-5 w-5" />
@@ -112,7 +128,6 @@ function Projects() {
           )}
         </div>
 
-        {/* Selected Project Info */}
         <div className="mb-6 flex h-28 flex-col rounded-lg border border-blue-200 bg-blue-50 p-4">
           {currentProject ? (
             <>
@@ -133,7 +148,6 @@ function Projects() {
           )}
         </div>
 
-        {/* Projects List */}
         {projects.length === 0 ? (
           <div className="py-12 text-center">
             <div className="mx-auto mb-4 h-24 w-24 text-gray-400">
@@ -146,7 +160,7 @@ function Projects() {
               Créez votre premier projet pour commencer.
             </p>
             <ButtonPrimary
-              onClick={() => navigate("/projects/create")}
+              onClick={handleCreateProject}
               className="inline-flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
