@@ -40,19 +40,12 @@ function CompanyCreate() {
       equipmentText,
     };
 
-    let updatedProject = {};
-
-    if (currentProject?.groupType === "seule") {
-      // Remplace l'entreprise principale
-      updatedProject = {
-        participatingCompanies: [newCompany],
-      };
-    } else {
-      // Ajoute à la liste
-      updatedProject = {
-        participatingCompanies: [...companies, newCompany],
-      };
-    }
+    // Ajoute à la liste des entreprises participantes
+    // En mode "seule", la première entreprise est le mandataire principal
+    // et les suivantes sont des sous-traitants
+    const updatedProject = {
+      participatingCompanies: [...companies, newCompany],
+    };
 
     updateCurrentProject(updatedProject);
     handleClose();
