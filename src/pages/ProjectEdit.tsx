@@ -11,10 +11,9 @@ import type { MethodologyScore } from "../lib/OpenAI/extractMethodologyScores";
 
 interface ProjectEditProps {
   project?: Project;
-  onClose?: () => void;
 }
 
-function ProjectEdit({ project: projectProp, onClose }: ProjectEditProps) {
+function ProjectEdit({ project: projectProp }: ProjectEditProps) {
   const { projectSlug } = useParams<{ projectSlug: string }>();
   const navigate = useNavigate();
   const { projects, updateProject } = useProjectStore();
@@ -58,11 +57,7 @@ function ProjectEdit({ project: projectProp, onClose }: ProjectEditProps) {
   }
 
   const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate("/projects");
-    }
+    navigate("/projects");
   };
 
   const handleSubmit = (e: React.FormEvent) => {

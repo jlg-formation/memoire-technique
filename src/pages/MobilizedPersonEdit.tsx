@@ -10,14 +10,12 @@ import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 interface MobilizedPersonEditProps {
   person?: MobilizedPerson;
   company?: ParticipatingCompany;
-  onClose?: () => void;
   onSave?: (person: MobilizedPerson, shouldBeRepresentative?: boolean) => void;
 }
 
 function MobilizedPersonEdit({
   person: personProp,
   company: companyProp,
-  onClose,
   onSave,
 }: MobilizedPersonEditProps) {
   const { companySlug, personSlug } = useParams();
@@ -51,11 +49,7 @@ function MobilizedPersonEdit({
   if (!company || !person) return <div>Personne ou entreprise introuvable</div>;
 
   const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   // Fonction utilitaire pour valider le representativeId

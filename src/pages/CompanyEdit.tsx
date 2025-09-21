@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Users, Trash2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { summarize } from "../lib/OpenAI";
 import { extractCompanyName } from "../lib/strings/extractCompanyName";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
-import { executeDeleteAction } from "../lib/critical-actions";
 import { uniqueSlug } from "../lib/strings/slugify";
-import type { ParticipatingCompany, MobilizedPerson } from "../types/project";
+import type { ParticipatingCompany } from "../types/project";
 
 function CompanyEdit() {
   const { companySlug } = useParams();
@@ -52,67 +51,6 @@ function CompanyEdit() {
 
   // Récupérer l'entreprise actuelle depuis le store pour avoir les données à jour
   const currentCompany = companies.find((c) => c.id === company.id) || company;
-
-  // Fonction utilitaire pour valider le representativeId
-  const validateRepresentativeId = (
-    representativeId: string | undefined,
-    mobilizedPeople: MobilizedPerson[],
-  ): string | undefined => {
-    if (!representativeId) return undefined;
-
-    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
-    const isValid = mobilizedPeople.some(
-      (person) => person.id === representativeId,
-    );
-
-    return isValid ? representativeId : undefined;
-  };
-
-  // Fonctions de gestion des personnes mobilisées
-  const handleCreatePerson = () => {
-    navigate(`/equipes/entreprise/${company.slug}/personne/ajouter`);
-  };
-
-  const handleEditPerson = (person: MobilizedPerson) => {
-    navigate(
-      `/equipes/entreprise/${company.slug}/personne/${person.slug}/edit`,
-    );
-  };
-
-  const handleDeletePerson = (personId: string) => {
-    const person = currentCompany.mobilizedPeople?.find(
-      (p) => p.id === personId,
-    );
-    const personName = person?.name || "cette personne";
-
-    executeDeleteAction(() => {
-      const updatedPeople = (currentCompany.mobilizedPeople || []).filter(
-        (p) => p.id !== personId,
-      );
-
-      // Valider le representativeId et l'effacer s'il correspond à la personne supprimée ou s'il n'est pas valide
-      let representativeId = validateRepresentativeId(
-        currentCompany.representativeId,
-        updatedPeople,
-      );
-
-      // Si pas de représentant valide et qu'il reste des personnes, assigner la première
-      if (!representativeId && updatedPeople.length > 0) {
-        representativeId = updatedPeople[0].id;
-      }
-
-      const updatedCompany = {
-        ...currentCompany,
-        mobilizedPeople: updatedPeople,
-        representativeId,
-      };
-      const updatedCompanies = companies.map((c) =>
-        c.id === company.id ? updatedCompany : c,
-      );
-
-      updateCurrentProject({ participatingCompanies: updatedCompanies });
-    }, personName);
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

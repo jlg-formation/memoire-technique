@@ -10,13 +10,11 @@ import type { MobilizedPerson, ParticipatingCompany } from "../types/project";
 
 interface MobilizedPersonCreateProps {
   company?: ParticipatingCompany;
-  onClose?: () => void;
   onSave?: (person: MobilizedPerson) => void;
 }
 
 function MobilizedPersonCreate({
   company: companyProp,
-  onClose,
   onSave,
 }: MobilizedPersonCreateProps) {
   const { companySlug } = useParams();
@@ -37,11 +35,7 @@ function MobilizedPersonCreate({
   if (!company) return <div>Entreprise introuvable</div>;
 
   const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   // Fonction utilitaire pour valider le representativeId
