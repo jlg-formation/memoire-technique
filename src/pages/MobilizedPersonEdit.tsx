@@ -19,6 +19,31 @@ interface CVParseResult {
   name?: string;
 }
 
+// Type guard to validate CV parsing result
+const isCVParseResult = (result: unknown): result is CVParseResult => {
+  return (
+    typeof result === "object" &&
+    result !== null &&
+    "text" in result &&
+    "summary" in result &&
+    typeof (result as CVParseResult).text === "string" &&
+    typeof (result as CVParseResult).summary === "string"
+  );
+};
+const validateRepresentativeId = (
+  representativeId: string | undefined,
+  mobilizedPeople: Array<{ id: string }>,
+): string | undefined => {
+  if (!representativeId) return undefined;
+
+  // Prevent orphaned representative references
+  const isValid = mobilizedPeople.some(
+    (person) => person.id === representativeId,
+  );
+
+  return isValid ? representativeId : undefined;
+};
+
 function MobilizedPersonEdit({
   person: personProp,
   company: companyProp,
@@ -46,66 +71,54 @@ function MobilizedPersonEdit({
     navigate(-1);
   }, [navigate]);
 
-  // Fonction utilitaire pour valider le representativeId
-  const validateRepresentativeId = useCallback(
-    (
-      representativeId: string | undefined,
-      mobilizedPeople: Array<{ id: string }>,
-    ): string | undefined => {
-      if (!representativeId) return undefined;
-
-      // Prevent orphaned representative references
-      const isValid = mobilizedPeople.some(
-        (person) => person.id === representativeId,
-      );
-
-      return isValid ? representativeId : undefined;
-    },
-    [],
-  );
-
   const handleSave = useCallback(
     (updatedPerson: MobilizedPerson, shouldBeRepresentative?: boolean) => {
-      if (onSave) {
-        onSave(updatedPerson, shouldBeRepresentative);
-        return;
+      try {
+        if (onSave) {
+          onSave(updatedPerson, shouldBeRepresentative);
+          return;
+        }
+
+        if (!company || !person) return;
+
+        const updatedPeople = (company.mobilizedPeople ?? []).map((p) =>
+          p.id === person.id ? updatedPerson : p,
+        );
+
+        let representativeId = validateRepresentativeId(
+          company.representativeId,
+          updatedPeople,
+        );
+
+        if (shouldBeRepresentative) {
+          representativeId = updatedPerson.id;
+        }
+
+        if (!representativeId && updatedPeople.length > 0) {
+          // Fallback: assign first person as representative to avoid null state
+          representativeId = updatedPeople[0].id;
+        }
+
+        const updatedCompany = {
+          ...company,
+          mobilizedPeople: updatedPeople,
+          representativeId,
+        };
+        updateCurrentProject({
+          participatingCompanies: currentProject?.participatingCompanies?.map(
+            (c) => (c.id === company.id ? updatedCompany : c),
+          ),
+        });
+        handleClose();
+      } catch (error) {
+        console.error("Erreur lors de la sauvegarde de la personne:", error);
+        throw error;
       }
-
-      if (!company || !person) return;
-
-      const updatedPeople = (company.mobilizedPeople ?? []).map((p) =>
-        p.id === person.id ? updatedPerson : p,
-      );
-
-      let representativeId = validateRepresentativeId(
-        company.representativeId,
-        updatedPeople,
-      );
-
-      if (shouldBeRepresentative) {
-        representativeId = updatedPerson.id;
-      } else if (!representativeId && updatedPeople.length > 0) {
-        // Ensure there's always a representative when people exist
-        representativeId = updatedPeople[0].id;
-      }
-
-      const updatedCompany = {
-        ...company,
-        mobilizedPeople: updatedPeople,
-        representativeId,
-      };
-      updateCurrentProject({
-        participatingCompanies: currentProject?.participatingCompanies?.map(
-          (c) => (c.id === company.id ? updatedCompany : c),
-        ),
-      });
-      handleClose();
     },
     [
       onSave,
       company,
       person,
-      validateRepresentativeId,
       updateCurrentProject,
       currentProject,
       handleClose,
@@ -115,17 +128,22 @@ function MobilizedPersonEdit({
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (!person) return;
+      try {
+        if (!person) return;
 
-      const updatedPerson: MobilizedPerson = {
-        ...person,
-        name: personName,
-        dailyRate,
-        cvText: cvText || undefined,
-        cvSummary: cvSummary || undefined,
-      };
+        const updatedPerson: MobilizedPerson = {
+          ...person,
+          name: personName,
+          dailyRate,
+          cvText: cvText || undefined,
+          cvSummary: cvSummary || undefined,
+        };
 
-      handleSave(updatedPerson, shouldBeRepresentative);
+        handleSave(updatedPerson, shouldBeRepresentative);
+      } catch (error) {
+        console.error("Erreur lors de la soumission du formulaire:", error);
+        throw error;
+      }
     },
     [
       person,
@@ -154,11 +172,14 @@ function MobilizedPersonEdit({
 
   const handleCVResult = useCallback((result: unknown) => {
     try {
-      const { text, summary, name } = result as CVParseResult;
-      setCvText(text);
-      setCvSummary(summary);
-      if (name) {
-        setPersonName(name);
+      if (!isCVParseResult(result)) {
+        throw new Error("Résultat de parsing CV invalide");
+      }
+
+      setCvText(result.text);
+      setCvSummary(result.summary);
+      if (result.name) {
+        setPersonName(result.name);
       }
     } catch (error) {
       console.error("Erreur lors du traitement du résultat:", error);
@@ -167,7 +188,6 @@ function MobilizedPersonEdit({
     }
   }, []);
 
-  // Initialize form fields when person data changes
   useEffect(() => {
     if (person) {
       setPersonName(person.name || "");
@@ -178,7 +198,7 @@ function MobilizedPersonEdit({
   }, [person]);
 
   if (!company || !person) {
-    return <div>Personne ou entreprise introuvable</div>;
+    throw new Error("Personne ou entreprise introuvable");
   }
 
   const isCurrentRepresentative = company.representativeId === person.id;
