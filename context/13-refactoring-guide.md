@@ -54,6 +54,8 @@ Il définit les règles de **refactoring automatique** que Copilot doit applique
 - Pas de fonctions anonymes inline dans les props → utiliser `useCallback`.
 - Props booléennes renommées avec préfixe (`is/has/can/should`).
 - Un seul composant React par fichier.
+- Remplacer les optimisations inutiles (`useMemo`, `useCallback`, `React.memo` non justifiés).
+- Garder uniquement celles qui réduisent un re-render prouvé.
 
 ---
 
@@ -85,8 +87,6 @@ Il définit les règles de **refactoring automatique** que Copilot doit applique
 
 ## 10. Performance
 
-- Remplacer les optimisations inutiles (`useMemo`, `useCallback`, `React.memo` non justifiés).
-- Garder uniquement celles qui réduisent un re-render prouvé.
 - Supprimer le code mort ou non utilisé.
 
 ---

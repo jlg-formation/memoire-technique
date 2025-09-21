@@ -1,5 +1,5 @@
 import { ArrowLeft, BarChart3, Save, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, ButtonPrimary } from "../components/ui";
 import AsyncPrimaryButton from "../components/ui/AsyncPrimaryButton";
@@ -60,25 +60,27 @@ export default function MissionPercentages() {
       variantes: {},
     });
 
-  // Fonction utilitaire pour synchroniser les valeurs string avec les valeurs numériques
-  const syncInputValues = (percentages: CategoryMissionPercentageInputs) => {
-    const stringValues: CategoryMissionPercentageStringInputs = {
-      base: {},
-      pse: {},
-      tranchesConditionnelles: {},
-      variantes: {},
-    };
+  const syncInputValues = useCallback(
+    (percentages: CategoryMissionPercentageInputs) => {
+      const stringValues: CategoryMissionPercentageStringInputs = {
+        base: {},
+        pse: {},
+        tranchesConditionnelles: {},
+        variantes: {},
+      };
 
-    Object.keys(percentages).forEach((categoryKey) => {
-      const category = categoryKey as keyof CategoryPercentages;
-      Object.keys(percentages[category]).forEach((missionId) => {
-        stringValues[category][missionId] =
-          percentages[category][missionId].toString();
-      });
-    });
+      for (const categoryKey of Object.keys(percentages)) {
+        const category = categoryKey as keyof CategoryPercentages;
+        for (const missionId of Object.keys(percentages[category])) {
+          stringValues[category][missionId] =
+            percentages[category][missionId].toString();
+        }
+      }
 
-    setInputValues(stringValues);
-  };
+      setInputValues(stringValues);
+    },
+    [],
+  );
 
   const nonEmptyCategories = useMemo(
     () => getNonEmptyCategories(currentProject),
@@ -95,14 +97,14 @@ export default function MissionPercentages() {
         variantes: {},
       };
 
-      nonEmptyCategories.forEach((category) => {
+      for (const category of nonEmptyCategories) {
         const missionCount = category.missions.length;
         const equalPercentage = missionCount > 0 ? 100 / missionCount : 0;
 
-        category.missions.forEach((mission) => {
+        for (const mission of category.missions) {
           initialized[category.key][mission.id] = equalPercentage;
-        });
-      });
+        }
+      }
 
       setLocalPercentages(initialized);
       syncInputValues(initialized);
@@ -121,23 +123,22 @@ export default function MissionPercentages() {
       variantes: {},
     };
 
-    nonEmptyCategories.forEach((category) => {
+    for (const category of nonEmptyCategories) {
       const aiCategoryPercentages =
         currentProject.recommendedPercentages?.[category.key];
-      if (aiCategoryPercentages) {
-        category.missions.forEach((mission) => {
-          const aiEstimation = aiCategoryPercentages[mission.id];
-          fromAI[category.key][mission.id] =
-            aiEstimation?.categoryPercentage || 0;
-        });
+      if (!aiCategoryPercentages) continue;
+
+      for (const mission of category.missions) {
+        const aiEstimation = aiCategoryPercentages[mission.id];
+        fromAI[category.key][mission.id] =
+          aiEstimation?.categoryPercentage || 0;
       }
-    });
+    }
 
     setLocalPercentages(fromAI);
     syncInputValues(fromAI);
-  }, [currentProject, nonEmptyCategories]);
+  }, [currentProject, nonEmptyCategories, syncInputValues]);
 
-  // Fonction pour mettre à jour une valeur d'entrée (string)
   const updateInputValue = (
     categoryKey: keyof CategoryPercentages,
     missionId: string,
@@ -152,14 +153,13 @@ export default function MissionPercentages() {
     }));
   };
 
-  // Fonction pour convertir une valeur string en nombre et mettre à jour les pourcentages
   const commitInputValue = (
     categoryKey: keyof CategoryPercentages,
     missionId: string,
     value: string,
   ) => {
     const numValue = parseFloat(value) || 0;
-    const clampedValue = Math.max(0, Math.min(100, numValue)); // Contrainte entre 0 et 100
+    const clampedValue = Math.max(0, Math.min(100, numValue));
 
     setLocalPercentages((prev) => ({
       ...prev,
@@ -169,7 +169,6 @@ export default function MissionPercentages() {
       },
     }));
 
-    // Synchroniser la valeur string avec la valeur numérique validée
     setInputValues((prev) => ({
       ...prev,
       [categoryKey]: {
@@ -179,16 +178,17 @@ export default function MissionPercentages() {
     }));
   };
 
-  // Calculer le total des pourcentages pour une catégorie
-  const getCategoryTotal = (categoryKey: keyof CategoryPercentages): number => {
-    return Object.values(localPercentages[categoryKey]).reduce(
-      (sum, val) => sum + val,
-      0,
-    );
-  };
+  const getCategoryTotal = useCallback(
+    (categoryKey: keyof CategoryPercentages): number => {
+      return Object.values(localPercentages[categoryKey]).reduce(
+        (sum, val) => sum + val,
+        0,
+      );
+    },
+    [localPercentages],
+  );
 
-  // Fonction pour estimer les pourcentages avec l'IA
-  const handleEstimateWithAI = async () => {
+  const handleEstimateWithAI = useCallback(async () => {
     if (!currentProject.missions) return;
 
     setEstimating(true);
@@ -197,7 +197,6 @@ export default function MissionPercentages() {
         currentProject.missions,
       );
 
-      // Mettre à jour les pourcentages locaux avec les résultats de l'IA
       const fromAI: CategoryMissionPercentageInputs = {
         base: {},
         pse: {},
@@ -205,67 +204,78 @@ export default function MissionPercentages() {
         variantes: {},
       };
 
-      nonEmptyCategories.forEach((category) => {
+      for (const category of nonEmptyCategories) {
         const aiCategoryPercentages = aiRecommendedPercentages[category.key];
-        if (aiCategoryPercentages) {
-          category.missions.forEach((mission) => {
-            const aiEstimation = aiCategoryPercentages[mission.id];
-            fromAI[category.key][mission.id] =
-              aiEstimation?.categoryPercentage || 0;
-          });
+        if (!aiCategoryPercentages) continue;
+
+        for (const mission of category.missions) {
+          const aiEstimation = aiCategoryPercentages[mission.id];
+          fromAI[category.key][mission.id] =
+            aiEstimation?.categoryPercentage || 0;
         }
-      });
+      }
 
       setLocalPercentages(fromAI);
       syncInputValues(fromAI);
 
-      // Sauvegarder aussi dans le projet
       updateCurrentProject({
         recommendedPercentages: aiRecommendedPercentages,
       });
     } catch (error) {
-      console.error("Erreur lors de l'estimation IA:", error);
+      console.error("Erreur lors de l'estimation IA:", {
+        error,
+        projectId: currentProject.id,
+        missionsCount: Object.keys(currentProject.missions || {}).length,
+      });
     }
     setEstimating(false);
-  };
+  }, [
+    currentProject.missions,
+    currentProject.id,
+    nonEmptyCategories,
+    syncInputValues,
+    updateCurrentProject,
+  ]);
 
-  // Fonction pour appliquer les pourcentages et retourner à /missions
-  const handleApply = () => {
-    // Convertir les pourcentages locaux en format AIRecommendedPercentages
+  const handleApply = useCallback(() => {
     const aiRecommendedPercentages: RecommendedMissionPercentages = {};
 
-    nonEmptyCategories.forEach((category) => {
+    for (const category of nonEmptyCategories) {
       const categoryPercentages: CategoryMissionPercentages = {};
 
-      category.missions.forEach((mission) => {
+      for (const mission of category.missions) {
         const categoryPercentage =
           localPercentages[category.key][mission.id] || 0;
 
-        // Récupérer la justification existante de l'IA si elle existe
         const existingAiEstimation =
           currentProject.recommendedPercentages?.[category.key]?.[mission.id];
         const existingJustification = existingAiEstimation?.justification;
 
-        // Utiliser la justification IA existante ou une justification par défaut
         const justification =
           existingJustification || "Défini manuellement par l'utilisateur";
 
-        // Le pourcentage par rapport au projet sera calculé dans la logique métier
+        // projectPercentage sera calculé dans la logique métier
         categoryPercentages[mission.id] = {
           categoryPercentage,
-          projectPercentage: 0, // Sera calculé plus tard
+          projectPercentage: 0,
           justification,
         };
-      });
+      }
 
       if (Object.keys(categoryPercentages).length > 0) {
         aiRecommendedPercentages[category.key] = categoryPercentages;
       }
-    });
+    }
 
     updateCurrentProject({ recommendedPercentages: aiRecommendedPercentages });
     navigate("/missions");
-  };
+  }, [
+    nonEmptyCategories,
+    localPercentages,
+    currentProject.recommendedPercentages,
+    updateCurrentProject,
+    navigate,
+  ]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-3 sm:p-6">
