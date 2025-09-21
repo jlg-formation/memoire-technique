@@ -9,11 +9,7 @@ import { uniqueSlug } from "../lib/strings/slugify";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { ParticipatingCompany } from "../types/project";
 
-interface CompanyCreateProps {
-  onClose?: () => void;
-}
-
-function CompanyCreate({ onClose }: CompanyCreateProps) {
+function CompanyCreate() {
   const navigate = useNavigate();
   const { currentProject, updateCurrentProject } = useCurrentProject();
 
@@ -29,11 +25,7 @@ function CompanyCreate({ onClose }: CompanyCreateProps) {
     currentProject?.participatingCompanies ?? [];
 
   const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
