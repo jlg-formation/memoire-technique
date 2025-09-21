@@ -1,6 +1,6 @@
-import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { ArrowLeft, Building2 } from "lucide-react";
+import { useCallback, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { ButtonLink, ButtonPrimary, EditableTextArea } from "../components/ui";
 import FileAIUpload from "../components/ui/FileAIUpload";
 import { parseMobilizedPersonCV } from "../lib/mobilizedPersonCV";
@@ -12,6 +12,26 @@ interface MobilizedPersonCreateProps {
   company?: ParticipatingCompany;
   onSave?: (person: MobilizedPerson) => void;
 }
+
+// Type for the CV parsing result
+interface CVParsingResult {
+  text: string;
+  summary: string;
+  name?: string;
+}
+const validateRepresentativeId = (
+  representativeId: string | undefined,
+  mobilizedPeople: MobilizedPerson[],
+): string | undefined => {
+  if (!representativeId) return undefined;
+
+  // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
+  const isValid = mobilizedPeople.some(
+    (person) => person.id === representativeId,
+  );
+
+  return isValid ? representativeId : undefined;
+};
 
 function MobilizedPersonCreate({
   company: companyProp,
@@ -32,76 +52,87 @@ function MobilizedPersonCreate({
     companyProp ||
     currentProject?.participatingCompanies?.find((c) => c.slug === companySlug);
 
-  if (!company) return <div>Entreprise introuvable</div>;
+  if (!company) {
+    throw new Error("Entreprise introuvable");
+  }
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     navigate(-1);
-  };
+  }, [navigate]);
 
-  // Fonction utilitaire pour valider le representativeId
-  const validateRepresentativeId = (
-    representativeId: string | undefined,
-    mobilizedPeople: MobilizedPerson[],
-  ): string | undefined => {
-    if (!representativeId) return undefined;
+  const handleSave = useCallback(
+    (person: MobilizedPerson) => {
+      try {
+        if (onSave) {
+          onSave(person);
+          return;
+        }
 
-    // Vérifier si le representativeId correspond à une personne mobilisée de l'entreprise
-    const isValid = mobilizedPeople.some(
-      (person) => person.id === representativeId,
-    );
+        // Logique de sauvegarde par défaut pour le routage
+        const updatedPeople = [...(company.mobilizedPeople ?? []), person];
 
-    return isValid ? representativeId : undefined;
-  };
+        // Valider le representativeId existant et l'effacer s'il n'est pas valide
+        let representativeId = validateRepresentativeId(
+          company.representativeId,
+          updatedPeople,
+        );
 
-  const handleSave = (person: MobilizedPerson) => {
-    if (onSave) {
-      onSave(person);
-    } else {
-      // Logique de sauvegarde par défaut pour le routage
-      const updatedPeople = [...(company.mobilizedPeople ?? []), person];
+        // Si pas de représentant valide et qu'il y a des personnes mobilisées, assigner la nouvelle personne
+        if (!representativeId && updatedPeople.length > 0) {
+          representativeId = person.id;
+        }
 
-      // Valider le representativeId existant et l'effacer s'il n'est pas valide
-      let representativeId = validateRepresentativeId(
-        company.representativeId,
-        updatedPeople,
-      );
-
-      // Si pas de représentant valide et qu'il y a des personnes mobilisées, assigner la nouvelle personne
-      if (!representativeId && updatedPeople.length > 0) {
-        representativeId = person.id;
+        const updated = {
+          ...company,
+          mobilizedPeople: updatedPeople,
+          representativeId,
+        };
+        updateCurrentProject({
+          participatingCompanies: currentProject?.participatingCompanies?.map(
+            (c) => (c.id === company.id ? updated : c),
+          ),
+        });
+        handleClose();
+      } catch (error) {
+        console.error("Erreur lors de la sauvegarde de la personne:", error);
+        throw error;
       }
+    },
+    [onSave, company, currentProject, updateCurrentProject, handleClose],
+  );
 
-      const updated = {
-        ...company,
-        mobilizedPeople: updatedPeople,
-        representativeId,
-      };
-      updateCurrentProject({
-        participatingCompanies: currentProject?.participatingCompanies?.map(
-          (c) => (c.id === company.id ? updated : c),
-        ),
-      });
-      handleClose();
-    }
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      try {
+        const existingSlugs = (company.mobilizedPeople ?? []).map(
+          (p) => p.slug ?? "",
+        );
+        const slug = uniqueSlug(personName, existingSlugs);
+        const newPerson: MobilizedPerson = {
+          id: crypto.randomUUID(),
+          slug,
+          name: personName,
+          dailyRate,
+          cvText: cvText || undefined,
+          cvSummary: cvSummary || undefined,
+        };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const existingSlugs = (company.mobilizedPeople ?? []).map(
-      (p) => p.slug ?? "",
-    );
-    const slug = uniqueSlug(personName, existingSlugs);
-    const newPerson: MobilizedPerson = {
-      id: crypto.randomUUID(),
-      slug,
-      name: personName,
+        handleSave(newPerson);
+      } catch (error) {
+        console.error("Erreur lors de la création de la personne:", error);
+        throw error;
+      }
+    },
+    [
+      company.mobilizedPeople,
+      personName,
       dailyRate,
-      cvText: cvText || undefined,
-      cvSummary: cvSummary || undefined,
-    };
-
-    handleSave(newPerson);
-  };
+      cvText,
+      cvSummary,
+      handleSave,
+    ],
+  );
 
   return (
     <div className="min-h-screen space-y-6 p-2 sm:p-6">
@@ -119,7 +150,7 @@ function MobilizedPersonCreate({
 
         {/* Badge entreprise */}
         <div className="mb-3 inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800">
-          <span className="mr-1">📢</span>
+          <Building2 className="mr-1 h-4 w-4" />
           {company.name}
         </div>
 
@@ -145,22 +176,32 @@ function MobilizedPersonCreate({
           <FileAIUpload
             label="Joindre le CV de la personne"
             onParse={async (text) => {
-              setProcessing(true);
-              const { summary, name } = await parseMobilizedPersonCV(text);
-              return { text, summary, name };
+              try {
+                setProcessing(true);
+                const { summary, name } = await parseMobilizedPersonCV(text);
+                return { text, summary, name };
+              } catch (error) {
+                console.error("Erreur lors de l'analyse du CV:", error);
+                setProcessing(false);
+                throw error;
+              }
             }}
             onResult={(result) => {
-              const { text, summary, name } = result as {
-                text: string;
-                summary: string;
-                name?: string;
-              };
-              setCvText(text);
-              setCvSummary(summary);
-              if (name) {
-                setPersonName(name);
+              try {
+                const parsedResult = result as CVParsingResult;
+                setCvText(parsedResult.text);
+                setCvSummary(parsedResult.summary);
+                if (parsedResult.name) {
+                  setPersonName(parsedResult.name);
+                }
+                setProcessing(false);
+              } catch (error) {
+                console.error(
+                  "Erreur lors du traitement du résultat CV:",
+                  error,
+                );
+                setProcessing(false);
               }
-              setProcessing(false);
             }}
             status=""
             setStatus={() => {}}
