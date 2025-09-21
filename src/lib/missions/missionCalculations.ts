@@ -54,17 +54,17 @@ export const missionTotalWithConstraints = (
     if (constraint) {
       // Si contrainte, utiliser le prix imposé
       return total + constraint.imposedAmount;
-    } else {
-      // Sinon, calculer normalement
-      const people = company.mobilizedPeople ?? [];
-      return (
-        total +
-        people.reduce(
-          (sum, p) => sum + personCost(missionId, company, p, getDays),
-          0,
-        )
-      );
     }
+
+    // Sinon, calculer normalement
+    const people = company.mobilizedPeople ?? [];
+    return (
+      total +
+      people.reduce(
+        (sum, p) => sum + personCost(missionId, company, p, getDays),
+        0,
+      )
+    );
   }, 0);
 };
 
