@@ -31,7 +31,7 @@ export default function Missions() {
     worksAmount,
     missingRates,
     getDays,
-  } = useMissionData(currentProject);
+  } = useMissionData();
 
   const handleUpdateConstraints = (constraints: MissionPriceConstraint[]) => {
     updateCurrentProject({ missionPriceConstraints: constraints });

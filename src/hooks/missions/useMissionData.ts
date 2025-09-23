@@ -2,11 +2,12 @@ import type {
   ProjectEstimation,
   ParticipatingCompany,
   MobilizedPerson,
-  Project,
 } from "../../types/project";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import { findMissionCategory } from "../../lib/missions/categoryHelpers";
 
-export function useMissionData(currentProject: Project | null) {
+export function useMissionData() {
+  const { currentProject } = useCurrentProject();
   const missionEstimation: ProjectEstimation =
     currentProject?.projectEstimation ?? {
       base: { montantCible: 0, missions: {} },

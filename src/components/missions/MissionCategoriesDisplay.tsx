@@ -60,7 +60,7 @@ export function MissionCategoriesDisplay({
 
   // Utilisation des hooks existants pour récupérer les données et fonctions
   const { missionCategories, companies, getDays, getJustification } =
-    useMissionData(currentProject);
+    useMissionData();
 
   const {
     handleChange,
