@@ -114,16 +114,6 @@ export interface MissionPriceConstraint {
   justification: string;
 }
 
-export interface PersonAllocation {
-  personId: string;
-  /** Nombre de jours attribués à cette personne */
-  days: number;
-  /** Montant correspondant (jours × taux journalier) */
-  amount: number;
-  /** Justification technique de l'attribution */
-  technicalReason: string;
-}
-
 export interface Project {
   id: string;
   /** Titre de la consultation extrait du RC */
