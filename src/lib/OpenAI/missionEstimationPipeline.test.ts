@@ -16,6 +16,7 @@ const testProject: Project = {
   participatingCompanies: [
     {
       id: "archi1",
+      slug: "cabinet-architecte",
       name: "Cabinet Architecte",
       mobilizedPeople: [
         {
