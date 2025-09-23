@@ -1,6 +1,5 @@
 import { CheckCircle } from "lucide-react";
 import { useMissionEstimation } from "../../hooks/missions";
-import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import AsyncPrimaryButton from "../ui/AsyncPrimaryButton";
 
 interface MissionReestimateButtonProps {
@@ -12,11 +11,7 @@ export function MissionReestimateButton({
   missionId,
   disabled = false,
 }: MissionReestimateButtonProps) {
-  const { currentProject, updateCurrentProject } = useCurrentProject();
-  const { handleReestimateSingleMission } = useMissionEstimation(
-    currentProject!,
-    updateCurrentProject,
-  );
+  const { handleReestimateSingleMission } = useMissionEstimation();
 
   const handleReestimateMission = async () => {
     await handleReestimateSingleMission(missionId);

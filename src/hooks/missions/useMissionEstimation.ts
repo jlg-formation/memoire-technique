@@ -8,13 +8,12 @@ import type {
   CategoryPercentages,
   MissionCategories,
   ProjectEstimation,
-  Project,
 } from "../../types/project";
 
-export function useMissionEstimation(
-  currentProject: Project,
-  updateCurrentProject: (data: Partial<Project>) => void,
-) {
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
+
+export function useMissionEstimation() {
+  const { currentProject, updateCurrentProject } = useCurrentProject();
   const [estimating, setEstimating] = useState(false);
 
   // Initialiser les pourcentages par catégorie avec des valeurs par défaut
@@ -89,7 +88,7 @@ export function useMissionEstimation(
         currentProject.projectEstimation,
       );
 
-      updateCurrentProject({ projectEstimation: missionEstimations });
+  updateCurrentProject({ projectEstimation: missionEstimations });
 
       console.log("✅ Projet mis à jour avec les nouvelles estimations");
     } catch (err) {

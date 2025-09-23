@@ -22,7 +22,7 @@ export default function Missions() {
     updateCategoryPercentage,
     estimating,
     handleEstimate,
-  } = useMissionEstimation(currentProject, updateCurrentProject);
+  } = useMissionEstimation();
 
   const {
     missionEstimation,
