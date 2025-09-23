@@ -7,10 +7,10 @@ import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton"
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
 import { Briefcase } from "lucide-react";
-import { getNonEmptyCategories } from "../lib/missions/categoryHelpers";
+// ...existing code...
 import { allMissionsTotalWithConstraints } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
-import { useMissionData, useMissionEstimation } from "../hooks/missions";
+import { useMissionData } from "../hooks/missions";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { MissionPriceConstraint } from "../types/project";
 
@@ -18,17 +18,9 @@ export default function Missions() {
   const { currentProject, updateCurrentProject } = useCurrentProject();
 
   const {
-    categoryPercentages,
-    updateCategoryPercentage,
-    estimating,
-    handleEstimate,
-  } = useMissionEstimation();
-
-  const {
     missionEstimation,
     missionCategories,
     companies,
-    worksAmount,
     missingRates,
     getDays,
   } = useMissionData();
@@ -37,7 +29,7 @@ export default function Missions() {
     updateCurrentProject({ missionPriceConstraints: constraints });
   };
 
-  const nonEmptyCategories = getNonEmptyCategories(currentProject);
+  // const nonEmptyCategories = getNonEmptyCategories(currentProject); // plus utilisé
   const missions = getAllMissions(missionCategories);
 
   if (missingRates.length) {
@@ -73,15 +65,7 @@ export default function Missions() {
         {/* Bouton CCTP - placé juste après le panneau informatif */}
         {missionCategories && <CCTPDescriptionButton />}
 
-        <EstimationPanel
-          worksAmount={worksAmount}
-          categoryPercentages={categoryPercentages}
-          nonEmptyCategories={nonEmptyCategories}
-          updateCategoryPercentage={updateCategoryPercentage}
-          onEstimate={() => handleEstimate(missionCategories!)}
-          estimating={estimating}
-          allMissionsTotal={totalAllMissions}
-        />
+        <EstimationPanel />
 
         {/* Missions List - Utilise les composants décomposés */}
         <div className="space-y-3 sm:space-y-4">

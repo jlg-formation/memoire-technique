@@ -1,42 +1,46 @@
 import AsyncPrimaryButton from "../ui/AsyncPrimaryButton";
 import CategoryPercentageCard from "./CategoryPercentageCard";
-import type { CategoryPercentages, Mission } from "../../types/project";
+import type { Mission } from "../../types/project";
 import {
   getCategoryTargetAmount,
   getTotalTargetAmount,
 } from "../../lib/missions";
+import { getNonEmptyCategories } from "../../lib/missions/categoryHelpers";
+import { allMissionsTotalWithConstraints } from "../../lib/missions/missionCalculations";
+import { useMissionEstimation, useMissionData } from "../../hooks/missions";
+import { useCurrentProject } from "../../store/useCurrentProjectStore";
 import { Sparkles, BarChart3, Calculator, Lightbulb } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ButtonPrimary } from "../ui";
 
-interface EstimationPanelProps {
-  worksAmount: number;
-  categoryPercentages: CategoryPercentages;
-  nonEmptyCategories: Array<{
-    key: keyof CategoryPercentages;
-    name: string;
-    missions: Mission[];
-    color: string;
-  }>;
-  updateCategoryPercentage: (
-    category: keyof CategoryPercentages,
-    percentage: number,
-  ) => void;
-  onEstimate: () => Promise<void>;
-  estimating: boolean;
-  allMissionsTotal: number;
-}
-
-export default function EstimationPanel({
-  worksAmount,
-  categoryPercentages,
-  nonEmptyCategories,
-  updateCategoryPercentage,
-  onEstimate,
-  estimating,
-  allMissionsTotal,
-}: EstimationPanelProps) {
+export default function EstimationPanel() {
   const navigate = useNavigate();
+  const { currentProject } = useCurrentProject();
+  const {
+    categoryPercentages,
+    updateCategoryPercentage,
+    estimating,
+    handleEstimate,
+  } = useMissionEstimation();
+  const { missionCategories, companies, worksAmount, getDays } =
+    useMissionData();
+
+  const nonEmptyCategories = getNonEmptyCategories(currentProject);
+  // Concatène toutes les missions des catégories en un seul tableau
+  const allMissions: Mission[] = missionCategories
+    ? [
+        ...missionCategories.base,
+        ...missionCategories.pse,
+        ...missionCategories.tranchesConditionnelles,
+        ...missionCategories.variantes,
+      ]
+    : [];
+  const allMissionsTotal = allMissionsTotalWithConstraints(
+    allMissions,
+    companies,
+    getDays,
+    currentProject.missionPriceConstraints || [],
+  );
   const totalTargetAmount = getTotalTargetAmount(
     worksAmount,
     categoryPercentages,
@@ -73,7 +77,6 @@ export default function EstimationPanel({
                 worksAmount,
                 percentage,
               );
-
               return (
                 <CategoryPercentageCard
                   key={category.key}
@@ -138,7 +141,7 @@ export default function EstimationPanel({
               </span>
             </h4>
             <AsyncPrimaryButton
-              onClick={onEstimate}
+              onClick={() => handleEstimate(missionCategories!)}
               disabled={estimating}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 sm:px-6"
               icon={Sparkles}
