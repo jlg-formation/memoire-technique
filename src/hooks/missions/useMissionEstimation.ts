@@ -41,11 +41,10 @@ export function useMissionEstimation() {
     });
   };
 
-  const handleEstimate = async (
-    missionCategories: MissionCategories,
-  ): Promise<void> => {
+  const handleEstimate = async (): Promise<void> => {
     setEstimating(true);
     try {
+      const missionCategories = currentProject?.missions;
       if (!missionCategories) {
         throw new Error("Aucune catégorie de missions disponible");
       }
@@ -78,7 +77,6 @@ export function useMissionEstimation() {
         throw new Error("Pourcentage manquant pour les variantes");
       }
 
-      // Utiliser la nouvelle version qui prend seulement le projet
       const missionEstimations =
         await estimateMissionDaysWithCategories(currentProject);
 
@@ -88,7 +86,7 @@ export function useMissionEstimation() {
         currentProject.projectEstimation,
       );
 
-  updateCurrentProject({ projectEstimation: missionEstimations });
+      updateCurrentProject({ projectEstimation: missionEstimations });
 
       console.log("✅ Projet mis à jour avec les nouvelles estimations");
     } catch (err) {
