@@ -25,12 +25,23 @@ function MobilizedPeopleList({ company, onUpdate }: MobilizedPeopleListProps) {
       summary: string;
       name?: string;
     };
+    // Génération du slug simple (nom ou id)
+    const baseSlug = (name || "nom-a-definir")
+      .toLowerCase()
+      .replace(/\s+/g, "-");
+    const existingSlugs = people.map((p) => p.slug ?? "");
+    let slug = baseSlug;
+    let i = 1;
+    while (existingSlugs.includes(slug)) {
+      slug = `${baseSlug}-${i++}`;
+    }
     const newPerson: MobilizedPerson = {
       id: crypto.randomUUID(),
+      slug,
       name: name || "Nom à définir",
       dailyRate,
-      cvText: text,
-      cvSummary: summary,
+      cvText: text ?? "",
+      cvSummary: summary ?? "",
     };
     onUpdate([...people, newPerson]);
     setShowAddForm(false);

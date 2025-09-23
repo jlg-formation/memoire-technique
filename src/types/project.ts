@@ -1,11 +1,11 @@
 export interface MobilizedPerson {
   id: string;
-  slug?: string; // slug lisible pour l'URL
+  slug: string; // slug lisible pour l'URL
   name: string;
   /** Taux journalier hors taxes en euros */
-  dailyRate?: number;
-  cvText?: string;
-  cvSummary?: string;
+  dailyRate: number;
+  cvText: string;
+  cvSummary: string;
 }
 
 export interface ParticipatingCompany {

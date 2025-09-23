@@ -123,8 +123,9 @@ function MobilizedPersonEdit({
           ...person,
           name: personName,
           dailyRate,
-          cvText: cvText || undefined,
-          cvSummary: cvSummary || undefined,
+          cvText: cvText ?? "",
+          cvSummary: cvSummary ?? "",
+          slug: person.slug ?? "", // slug toujours présent
         };
 
         handleSave(updatedPerson, shouldBeRepresentative);

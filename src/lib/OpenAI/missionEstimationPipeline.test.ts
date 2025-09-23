@@ -18,7 +18,14 @@ const testProject: Project = {
       id: "archi1",
       name: "Cabinet Architecte",
       mobilizedPeople: [
-        { id: "p1", name: "Architecte Senior", dailyRate: 800 },
+        {
+          id: "p1",
+          slug: "architecte-senior",
+          name: "Architecte Senior",
+          dailyRate: 800,
+          cvText: "",
+          cvSummary: "",
+        },
       ],
     },
   ],

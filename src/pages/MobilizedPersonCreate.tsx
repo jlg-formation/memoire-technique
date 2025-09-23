@@ -102,8 +102,8 @@ function MobilizedPersonCreate({
           slug,
           name: personName,
           dailyRate,
-          cvText: cvText || undefined,
-          cvSummary: cvSummary || undefined,
+          cvText: cvText ?? "",
+          cvSummary: cvSummary ?? "",
         };
 
         handleSave(newPerson);

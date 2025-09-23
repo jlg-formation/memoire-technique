@@ -1,16 +1,15 @@
-import InformationPanel from "../components/missions/InformationPanel";
+import { Briefcase } from "lucide-react";
+import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton";
 import EstimationPanel from "../components/missions/EstimationPanel";
-import TotalSummary from "../components/missions/TotalSummary";
+import InformationPanel from "../components/missions/InformationPanel";
 import { MissionCategoriesDisplay } from "../components/missions/MissionCategoriesDisplay";
 import MissionHeader from "../components/missions/MissionHeader";
-import CCTPDescriptionButton from "../components/missions/CCTPDescriptionButton";
 import EmptyState from "../components/missions/states/EmptyState";
 import MissingRatesAlert from "../components/missions/states/MissingRatesAlert";
-import { Briefcase } from "lucide-react";
-// ...existing code...
+import TotalSummary from "../components/missions/TotalSummary";
+import { useMissionData } from "../hooks/missions";
 import { allMissionsTotalWithConstraints } from "../lib/missions/missionCalculations";
 import { getAllMissions } from "../lib/missions/missionHelpers";
-import { useMissionData } from "../hooks/missions";
 import { useCurrentProject } from "../store/useCurrentProjectStore";
 import type { MissionPriceConstraint } from "../types/project";
 
@@ -29,7 +28,6 @@ export default function Missions() {
     updateCurrentProject({ missionPriceConstraints: constraints });
   };
 
-  // const nonEmptyCategories = getNonEmptyCategories(currentProject); // plus utilisé
   const missions = getAllMissions(missionCategories);
 
   if (missingRates.length) {
